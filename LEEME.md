@@ -42,8 +42,8 @@ Aplicación web que permite a los usuarios gestionar un **armario digital** dond
 ---
 
 ## Autores
-- Nombre del Autor 1 - [GitHub]( amonterooq )
-- Nombre del Autor 2 - [GitHub]( fmonteroi )
+- Nombre del Autor 1 - [GitHub]( https://github.com/amonterooq )
+- Nombre del Autor 2 - [GitHub]( https://github.com/fmonteroi )
 
 
 
