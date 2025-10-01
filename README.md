@@ -1,3 +1,65 @@
+# NADA
+
+---
+
+## LOGO  
+*(Aquí iría el logo de la aplicación)*  
+
+---
+
+## Integrantes  
+- Francisco Montero Sánchez 07256309Q
+- Ana Montero Preciado FALTADNI
+
+---
+
+## Eslogan    
+*¿No tienes NADA que ponerte?*  
+*NADA te ayuda a tenerlo TODO en tu armario*  
+
+---
+
+## Resumen  
+La aplicación web **NADA** permite a los usuarios gestionar un **armario digital** donde pueden subir fotos de sus prendas, organizarlas y combinarlas para crear conjuntos personalizados.  
+
+---
+
+## Descripción  
+**NADA** es una aplicación web que busca simplificar la organización de la ropa en un entorno digital.  
+El sistema ofrece a los usuarios la posibilidad de:  
+- Subir fotos de sus prendas.  
+- Guardarlas en un armario virtual personal.  
+- Clasificarlas en categorías (camisetas, pantalones, zapatos, etc.).  
+- Combinar las prendas para crear looks o conjuntos personalizados.  
+- Buscar y filtrar ropa por tipo, color o marca.  
+
+Cada usuario contará con su propio armario virtual gracias a la persistencia de datos.  
+
+---
+
+## Funcionalidades, Requisitos, “Pliego de condiciones”  
+- Subir fotos de prendas y almacenarlas en el armario virtual.  
+- Organización de prendas por categorías (camisetas, pantalones, zapatos, etc.).  
+- Creación de conjuntos personalizados combinando diferentes prendas.  
+- Búsqueda y filtrado de prendas por tipo, color o marca.  
+- Interfaz amigable y fácil de usar.  
+- Persistencia de datos para que cada usuario tenga su propio armario digital.  
+- Adaptabilidad a diferentes dispositivos (responsive).  
+
+---
+
+## Funcionalidades opcionales, recomendables o futuribles  
+- Recomendación automática de conjuntos según el clima o la ocasión.  
+- Posibilidad de compartir conjuntos en redes sociales.  
+- Estadísticas de uso (qué prendas usas más, colores favoritos, etc.).  
+- Sugerencias de compra relacionadas con las prendas del usuario.  
+- Modo colaborativo (compartir armarios entre amigos o familiares).  
+
+
+
+
+# Cosas de ana
+
 # Armario Virtual
 
 Aplicación web que permite a los usuarios gestionar un **armario digital** donde pueden subir fotos de sus prendas, organizarlas y combinarlas para crear conjuntos personalizados.
