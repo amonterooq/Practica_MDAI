@@ -3,37 +3,42 @@
 ---
 
 ## LOGO  
-*(Aquí iría el logo de la aplicación)*  
+![Logo NADA](src/images/logo.png)
 
 ---
 
-## Integrantes  
-- Francisco Montero Sánchez 07256309Q
-- Ana Montero Preciado FALTADNI
+## Integrantes
+- **Francisco Montero Sánchez** — 07256309Q  
+  ![Foto Francisco](src/images/francisco.jpg)
+
+- **Ana Montero Preciado** — 09213540Q  
+  ![Foto Ana](src/images/ana.jpg)
+
 
 ---
 
 ## Eslogan    
 *¿No tienes NADA que ponerte?*  
-*NADA te ayuda a tenerlo TODO en tu armario*  
+***NADA** te ayuda a tenerlo TODO en tu armario*  
 
 ---
 
 ## Resumen  
-La aplicación web **NADA** permite a los usuarios gestionar un **armario digital** donde pueden subir fotos de sus prendas, organizarlas y combinarlas para crear conjuntos personalizados.  
-
+**NADA** es una aplicación web que permite gestionar un **armario digital personal**.  
+Los usuarios pueden subir fotos de sus prendas, organizarlas por categorías y combinarlas para crear conjuntos personalizados de manera sencilla.
 ---
 
 ## Descripción  
-**NADA** es una aplicación web que busca simplificar la organización de la ropa en un entorno digital.  
-El sistema ofrece a los usuarios la posibilidad de:  
+El objetivo de **NADA** es digitalizar la gestión de la ropa, ofreciendo una plataforma intuitiva y práctica para optimizar el uso del armario.  
+
+El sistema permite:
 - Subir fotos de sus prendas.  
 - Guardarlas en un armario virtual personal.  
 - Clasificarlas en categorías (camisetas, pantalones, zapatos, etc.).  
 - Combinar las prendas para crear looks o conjuntos personalizados.  
 - Buscar y filtrar ropa por tipo, color o marca.  
 
-Cada usuario contará con su propio armario virtual gracias a la persistencia de datos.  
+Cada usuario dispone de un armario digital único gracias a la **persistencia de datos**.
 
 ---
 
@@ -55,57 +60,39 @@ Cada usuario contará con su propio armario virtual gracias a la persistencia de
 - Sugerencias de compra relacionadas con las prendas del usuario.  
 - Modo colaborativo (compartir armarios entre amigos o familiares).  
 
+# mirame a ver que te parece poner esto:
 
-
-
-# Cosas de ana
-
-# Armario Virtual
-
-Aplicación web que permite a los usuarios gestionar un **armario digital** donde pueden subir fotos de sus prendas, organizarlas y combinarlas para crear conjuntos personalizados.
-
----
-
-## Características Principales
-- Subir fotos de prendas y almacenarlas en el armario virtual.
-- Organización de prendas por categorías (camisetas, pantalones, zapatos, etc.).
-- Creación de conjuntos personalizados combinando diferentes prendas.
-- Busqueda y filtrado de prendas por tipo, color o marca.
-- Interfaz amigable y fácil de usar.
-- Persistencia de datos (cada usuario tiene su propio armario).
+# Armario Virtual — Detalles Técnicos
 
 ---
 
 ## Tecnologías Utilizadas
 - **Backend**: Java con Spring Boot.
-- **Frontend**:
-- **Base de Datos**: MySQL (creo que al final dijimos que esta pero el profe dijo que nos iba a enseñar a guardas la memoria de la base de datos h2 para que no se borre).
-- **Almacenamiento de Imágenes**: ¿una fumada?
+- **Frontend**: *(por definir, ej. React, Angular o Thymeleaf)*.
+- **Base de Datos**: MySQL (con soporte inicial en memoria mediante H2, según la asignatura).
+- **Almacenamiento de Imágenes**: Por definir (posible servicio externo o sistema de ficheros).
 - **Control de Versiones**: Git y GitHub.
-- ns si alguna otra cosa más xdd
-- **Otras Herramientas**: Maven para la gestión de dependencias y construcción del proyecto.
+- **Gestión de Dependencias y Build**: Maven.
 
 ---
 
 ## Estructura del Proyecto
 - `src/main/java`: Código fuente de la aplicación.
 - `src/main/resources`: Recursos estáticos y archivos de configuración.
-- `src/test/java`: Pruebas unitarias y de integración.
-- `pom.xml`: Archivo de configuración de Maven.
-- `LEEME.md`: Documentación del proyecto.
-- `Ayuda.md`: Guía de ayuda y referencias.
+- `src/test/java`: Pruebas unitarias e integración.
+- `pom.xml`: Configuración de Maven.
+- `README.md`: Documentación principal del proyecto.
 - `docs/`: Documentación adicional y guías de usuario.
-- `config/`: Archivos de configuración específicos del entorno.
-- `scripts/`: Scripts útiles para la automatización de tareas.
-- `lib/`: Librerías externas si las hay.
-- `logs/`: Directorio para archivos de log generados por la aplicación.
-- `build/`: Archivos generados durante el proceso de construcción del proyecto.
+- `config/`: Configuraciones específicas por entorno.
+- `scripts/`: Scripts de automatización.
+- `lib/`: Librerías externas.
+- `logs/`: Archivos de registro de la aplicación.
+- `build/`: Archivos generados en el proceso de construcción.
 
 ---
 
 ## Autores
-- Nombre del Autor 1 - [GitHub]( https://github.com/amonterooq )
-- Nombre del Autor 2 - [GitHub]( https://github.com/fmonteroi )
-
+- **Ana Montero Preciado** — [GitHub](https://github.com/amonterooq)
+- **Francisco Montero Sánchez** — [GitHub](https://github.com/fmonteroi)  
 
 
