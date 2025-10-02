@@ -3,18 +3,17 @@
 ---
 
 ## LOGO  
-![Logo NADA](src/images/logo.png)
-
+<p align="center">
+  <img src="src/images/logo.png" alt="Logo NADA" width="200"/>
+</p>
 ---
 
 ## Integrantes
 - **Francisco Montero Sánchez** — 07256309Q  
-  ![Foto Francisco](src/images/francisco.jpg)
+  <img src="src/images/francisco.jpg" alt="Foto Francisco" width="120"/>
 
 - **Ana Montero Preciado** — 09213540Q  
-  ![Foto Ana](src/images/ana.jpg)
-
-
+  <img src="src/images/ana.jpg" alt="Foto Ana" width="120"/>
 ---
 
 ## Eslogan    
@@ -23,20 +22,15 @@
 
 ---
 
-## Resumen  
+## Resumen
 **NADA** es una aplicación web que permite gestionar un **armario digital personal**.  
 Los usuarios pueden subir fotos de sus prendas, organizarlas por categorías y combinarlas para crear conjuntos personalizados de manera sencilla.
 ---
 
 ## Descripción  
-El objetivo de **NADA** es digitalizar la gestión de la ropa, ofreciendo una plataforma intuitiva y práctica para optimizar el uso del armario.  
-
-El sistema permite:
-- Subir fotos de sus prendas.  
-- Guardarlas en un armario virtual personal.  
-- Clasificarlas en categorías (camisetas, pantalones, zapatos, etc.).  
-- Combinar las prendas para crear looks o conjuntos personalizados.  
-- Buscar y filtrar ropa por tipo, color o marca.  
+La aplicación **NADA** permite crear una cuenta a la que se asociará un armario virtual en el que el usuario podrá agregar sus prendas para crear sus propios conjuntos.
+El sistema tiene un armario donde se almacenarán todas las prendas segun su tipo y características comunes comunes como el color o la talla. Esto permite a cada usuario
+gestionar su ropa de una forma más cómoda. Una vez subidas las prendas se podrán combinar para crear diferentes conjuntos que ayuden con el día a día.
 
 Cada usuario dispone de un armario digital único gracias a la **persistencia de datos**.
 
