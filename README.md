@@ -6,6 +6,7 @@
 <p align="center">
   <img src="src/images/logo.png" alt="Logo NADA" width="200"/>
 </p>
+
 ---
 
 ## Integrantes
@@ -22,13 +23,16 @@
 ---
 
 ## Resumen
+
 **NADA** es una aplicación web que permite gestionar un **armario digital personal**.  
 Los usuarios pueden subir fotos de sus prendas, organizarlas por categorías y combinarlas para crear conjuntos personalizados de manera sencilla.
+
 ---
 
 ## Descripción  
-NADA es una aplicación web diseñada para facilitar la gestión de tu armario digital personal. El sistema permite a cada usuario crear una cuenta y asociar un armario virtual donde puede subir fotos de sus prendas, organizarlas por categorías y características como color o talla, y combinarlas para crear conjuntos personalizados.
-El proceso es sencillo: sube una foto de tu prenda, elige la categoría (camiseta, pantalón, zapato, etc.), añade detalles como color y talla, y guarda la prenda en tu armario digital. Luego, selecciona varias prendas para crear un conjunto y guárdalo para futuras ocasiones.
+NADA es una aplicación web diseñada para facilitar la gestión de tu armario digital personal. <br>
+El sistema permite a cada usuario crear una cuenta y asociar un armario virtual donde puede subir fotos de sus prendas, organizarlas por categorías y características como color o talla, y combinarlas para crear conjuntos personalizados.<br>
+El proceso es sencillo: sube una foto de tu prenda, elige la categoría (camiseta, pantalón, zapato, etc.), añade detalles como color y talla, y guarda la prenda en tu armario digital. Luego, selecciona varias prendas para crear un conjunto y guárdalo para futuras ocasiones.<br><br>
 Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunión” (puedes añadir notas o comentarios hasta 256 caracteres).
 
 ---
