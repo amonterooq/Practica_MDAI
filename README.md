@@ -38,13 +38,16 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 ---
 
 ## Funcionalidades, Requisitos, “Pliego de condiciones”  
+- El usuario debe poder **crear una cuenta** y poder **acceder** a ella con un usuario y contraseña.
 - El usuario debe poder **subir fotos de sus prendas** y almacenarlas en su armario virtual.
 - El usuario debe poder **organizar las prendas** por:
-    - Categorías (camisetas, pantalones, zapatos, etc.)
+    - Tipo de prenda (Parte superior, parte inferior o calzado)
+    - Categorías (Dentro de la parte superior hay camisetas, sudaderas, chaquetas...)
     - Color
+    - Marca
     - Talla
 - El usuario puede **buscar prendas** introduciendo información en una barra de búsqueda.
-    - La búsqueda puede ser por **tipo, color, marca o talla**.
+    - La búsqueda puede ser por **tipo, categoría, color, marca o talla**.
     - Los resultados de la búsqueda se mostrarán **agrupados primero por tipo de prenda y luego por características**.
 - La interacción con los resultados de la búsqueda contempla dos casos:
     - Si el usuario selecciona una prenda: puede **ver sus detalles y editar la información**.
@@ -68,40 +71,5 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 - Posibilidad de **elegir el idioma** para la interfaz de usuario.
 - En el proceso de creación de conjuntos, permitir la **inclusión de mensajes publicitarios**, enlaces a tiendas de moda, imágenes del conjunto o del usuario, y ofertas relacionadas con las prendas seleccionadas.
 
-<!--
-# mirame a ver que te parece poner esto:
 
-# Armario Virtual — Detalles Técnicos
-
----
-
-## Tecnologías Utilizadas
-- **Backend**: Java con Spring Boot.
-- **Frontend**: *(por definir, ej. React, Angular o Thymeleaf)*.
-- **Base de Datos**: MySQL (con soporte inicial en memoria mediante H2, según la asignatura).
-- **Almacenamiento de Imágenes**: Por definir (posible servicio externo o sistema de ficheros).
-- **Control de Versiones**: Git y GitHub.
-- **Gestión de Dependencias y Build**: Maven.
-
----
-
-## Estructura del Proyecto
-- `src/main/java`: Código fuente de la aplicación.
-- `src/main/resources`: Recursos estáticos y archivos de configuración.
-- `src/test/java`: Pruebas unitarias e integración.
-- `pom.xml`: Configuración de Maven.
-- `README.md`: Documentación principal del proyecto.
-- `docs/`: Documentación adicional y guías de usuario.
-- `config/`: Configuraciones específicas por entorno.
-- `scripts/`: Scripts de automatización.
-- `lib/`: Librerías externas.
-- `logs/`: Archivos de registro de la aplicación.
-- `build/`: Archivos generados en el proceso de construcción.
-
----
-
-## Autores
-- **Ana Montero Preciado** — [GitHub](https://github.com/amonterooq)
-- **Francisco Montero Sánchez** — [GitHub](https://github.com/fmonteroi)  
--->
 
