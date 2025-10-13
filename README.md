@@ -4,17 +4,17 @@
 
 ## LOGO  
 <p align="center">
-  <img src="src/images/logo.png" alt="Logo NADA" width="200"/>
+  <img src="images/logo.png" alt="Logo NADA" width="200"/>
 </p>
 
 ---
 
 ## Integrantes
 - **Francisco Montero Sánchez** — 07256309Q  
-  <img src="src/images/francisco.jpg" alt="Foto Francisco" width="120"/>
+  <img src="images/francisco.jpg" alt="Foto Francisco" width="120"/>
 
 - **Ana Montero Preciado** — 09213540Q  
-  <img src="src/images/ana.jpg" alt="Foto Ana" width="120"/>
+  <img src="images/ana.jpg" alt="Foto Ana" width="120"/>
 ---
 
 ## Eslogan    
