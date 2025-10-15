@@ -55,12 +55,12 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- H2 solo para TEST -->
+        <!-- H2 por si acaso
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-           <!-- <scope>test</scope> -->
-        </dependency>
+           <scope>test</scope>
+        </dependency> -->
 
         <!-- Tests -->
         <dependency>
@@ -69,7 +69,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 
     <build>
 		<plugins>

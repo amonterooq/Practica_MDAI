@@ -1,18 +1,15 @@
 spring:
   application:
     name: NADA
-    # esto luego se borra
-  datasource:
-    url: jdbc:h2:mem:nada;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: update   # para empezar rápido; luego cámbialo a 'validate' + migraciones
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
 
 ---
+
 spring:
   config:
     activate:
@@ -21,6 +18,7 @@ spring:
     url: jdbc:mysql://${MYSQL_HOST:db}:${MYSQL_PORT:3306}/${MYSQL_DB:nada}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
     username: ${MYSQL_USER:nada}
     password: ${MYSQL_PASSWORD:nada}
+    driver-class-name: com.mysql.cj.jdbc.Driver   # <-- explícito para evitar H2
   jpa:
     open-in-view: false
     hibernate:

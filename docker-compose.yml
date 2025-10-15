@@ -8,7 +8,6 @@ services:
       MYSQL_PASSWORD: nada
       MYSQL_ROOT_PASSWORD: root
     command: >
-      --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_0900_ai_ci
     volumes:
