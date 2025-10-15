@@ -55,11 +55,11 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- H2 -->
+        <!-- H2 solo para TEST -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+           <!-- <scope>test</scope> -->
         </dependency>
 
         <!-- Tests -->

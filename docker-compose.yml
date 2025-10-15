@@ -1,0 +1,42 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: mysql_db
+    environment:
+      MYSQL_DATABASE: nada
+      MYSQL_USER: nada
+      MYSQL_PASSWORD: nada
+      MYSQL_ROOT_PASSWORD: root
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"   # si tienes MySQL local ocupando 3306, cambia a "3307:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -proot --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+
+  app:
+    build: .
+    container_name: spring_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_DB: nada
+      MYSQL_USER: nada
+      MYSQL_PASSWORD: nada
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: NADA
+    # esto luego se borra
+  datasource:
+    url: jdbc:h2:mem:nada;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update   # para empezar rápido; luego cámbialo a 'validate' + migraciones
+    properties:
+      hibernate:
+        format_sql: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:db}:${MYSQL_PORT:3306}/${MYSQL_DB:nada}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
+    username: ${MYSQL_USER:nada}
+    password: ${MYSQL_PASSWORD:nada}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
