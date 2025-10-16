@@ -13,7 +13,7 @@ public class Usuario {
     private String password;
     private String email;
 
-    public Usuario(){
+    public Usuario() {
     }
 
     public Usuario(String username, String password, String email) {
@@ -52,5 +52,11 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        Object obj = (Usuario) o;
+        return this.id == ((Usuario) obj).getId();
     }
 }
