@@ -1,9 +1,9 @@
 package com.nada.nada.data.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CascadeType;
 
+@Entity
 public class Prenda {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -12,13 +12,18 @@ public class Prenda {
     private String color;
     private String marca;
 
+    @ManyToOne
+    private Usuario usuario;
+
+
     public Prenda() {
     }
 
-    public Prenda(String nombre, String color, String marca) {
+    public Prenda(String nombre, String color, String marca, Usuario usuario) {
         this.nombre = nombre;
         this.color = color;
         this.marca = marca;
+        this.usuario = usuario;
     }
 
     public long getId() {
@@ -51,6 +56,14 @@ public class Prenda {
 
     public void setMarca(String marca) {
         this.marca = marca;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @Override

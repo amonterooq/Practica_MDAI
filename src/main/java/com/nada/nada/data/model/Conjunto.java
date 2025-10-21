@@ -1,21 +1,24 @@
 package com.nada.nada.data.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+@Entity
 public class Conjunto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
 
+    @ManyToOne
+    private Usuario usuario;
+
     public Conjunto() {
 
     }
-    public Conjunto(Long id, String nombre) {
+    public Conjunto(Long id, String nombre, Usuario usuario) {
         this.id = id;
         this.nombre = nombre;
+        this.usuario = usuario;
     }
 
     public Long getId() {
@@ -32,6 +35,14 @@ public class Conjunto {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @Override

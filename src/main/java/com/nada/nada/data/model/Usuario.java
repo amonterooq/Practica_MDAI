@@ -2,6 +2,9 @@ package com.nada.nada.data.model;
 
 import jakarta.persistence.*;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
@@ -13,6 +16,12 @@ public class Usuario {
     private String password;
     private String email;
 
+    @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Prenda> prendas = new LinkedList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Conjunto> conjuntos = new LinkedList<>();
+
     public Usuario() {
     }
 
@@ -20,6 +29,8 @@ public class Usuario {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.prendas = new LinkedList<>();
+        this.conjuntos = new LinkedList<>();
     }
 
     public Long getId() {
@@ -54,9 +65,35 @@ public class Usuario {
         this.email = email;
     }
 
+    public List<Prenda> getPrendas() {
+        return prendas;
+    }
+
+    public void setPrendas(List<Prenda> prendas) {
+        this.prendas = prendas;
+    }
+
+    public List<Conjunto> getConjuntos() {
+        return conjuntos;
+    }
+
+    public void setConjuntos(List<Conjunto> conjuntos) {
+        this.conjuntos = conjuntos;
+    }
+
+    public boolean addPrenda(Prenda prenda) {
+        return this.prendas.add(prenda);
+    }
+
+    public boolean addConjunto(Conjunto conjunto) {
+        return this.conjuntos.add(conjunto);
+    }
+
     @Override
     public boolean equals(Object o) {
-        Object obj = (Usuario) o;
-        return this.id == ((Usuario) obj).getId();
+        //Object obj = (Usuario) o;
+        Usuario obj = (Usuario) o;
+        //return this.id == ((Usuario) obj).getId();
+        return this.id == obj.getId();
     }
 }
