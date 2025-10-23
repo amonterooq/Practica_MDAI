@@ -1,18 +1,21 @@
 package com.nada.nada.data.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CascadeType;
+import java.util.Objects;
 
 @Entity
-public class Prenda {
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo_prenda", discriminatorType = DiscriminatorType.STRING)
+public abstract class Prenda {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String nombre;
     private String color;
     private String marca;
 
-    @ManyToOne
+    //@ManyToOne(fetch = FetchType.LAZY) mirar
+    //@JoinColumn(name = "usuario_id") mirar
     private Usuario usuario;
 
 
@@ -26,11 +29,12 @@ public class Prenda {
         this.usuario = usuario;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -68,8 +72,15 @@ public class Prenda {
 
     @Override
     public boolean equals(Object o) {
-        Object obj = (Prenda) o;
-        return this.id == ((Prenda) obj).getId();
+        if (this == o) return true;
+        if (!(o instanceof Prenda)) return false;
+        Prenda other = (Prenda) o;
+        return id != null && other.id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.nada.nada.data.model;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Conjunto {
@@ -47,7 +48,14 @@ public class Conjunto {
 
     @Override
     public boolean equals(Object o) {
-        Object obj = (Conjunto) o;
-        return this.id == ((Conjunto) obj).getId();
+        if (this == o) return true;
+        if (!(o instanceof Conjunto)) return false;
+        Conjunto that = (Conjunto) o;
+        return id != null && that.id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

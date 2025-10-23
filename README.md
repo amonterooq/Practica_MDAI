@@ -4,17 +4,17 @@
 
 ## LOGO  
 <p align="center">
-  <img src="images/logo.png" alt="Logo NADA" width="200"/>
+  <img src="src/main/resources/images/logo.png" alt="Logo NADA" width="200"/>
 </p>
 
 ---
 
 ## Integrantes
 - **Francisco Montero Sánchez** — 07256309Q  
-  <img src="images/francisco.jpg" alt="Foto Francisco" width="120"/>
+  <img src="src/main/resources/images/francisco.jpg" alt="Foto Francisco" width="120"/>
 
 - **Ana Montero Preciado** — 09213540Q  
-  <img src="images/ana.jpg" alt="Foto Ana" width="120"/>
+  <img src="src/main/resources/images/ana.jpg" alt="Foto Ana" width="120"/>
 ---
 
 ## Eslogan    
@@ -57,6 +57,7 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 - El usuario debe poder **eliminar o modificar** prendas y conjuntos de su armario digital.
 - El usuario debe poder **ver los conjuntos guardados y las prendas disponibles** en su armario.
 - La **persistencia de datos** debe garantizar que **cada usuario tenga su propio armario digital único**.
+- Al **eliminar un usuario** se eliminarán todas sus prendas y conjuntos asociados.
 
 ---
 
@@ -71,5 +72,14 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 - Posibilidad de **elegir el idioma** para la interfaz de usuario.
 - En el proceso de creación de conjuntos, permitir la **inclusión de mensajes publicitarios**, enlaces a tiendas de moda, imágenes del conjunto o del usuario, y ofertas relacionadas con las prendas seleccionadas.
 
+---
 
+## Diagrama E-R
+<img src="src/main/resources/images/DiagramaER.PNG" alt="DiagramaER"/>
+
+---
+
+## Instalación de la BD
+
+Esto toca rellenarlo
 

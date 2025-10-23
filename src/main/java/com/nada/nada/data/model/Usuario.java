@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "usuarios")
@@ -91,9 +92,14 @@ public class Usuario {
 
     @Override
     public boolean equals(Object o) {
-        //Object obj = (Usuario) o;
-        Usuario obj = (Usuario) o;
-        //return this.id == ((Usuario) obj).getId();
-        return this.id == obj.getId();
+        if (this == o) return true;
+        if (!(o instanceof Usuario)) return false;
+        Usuario usuario = (Usuario) o;
+        return id != null && usuario.id != null && id.equals(usuario.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
