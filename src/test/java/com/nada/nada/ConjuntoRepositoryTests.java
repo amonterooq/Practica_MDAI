@@ -4,10 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class NadaApplicationTests {
+class ConjuntoRepositoryTests {
 
 	@Test
-	void contextLoads() {
+	void contextLoads() { //mirar que es esto
 	}
 
+	@Test
+	void testAlgo() {
+
+    }
 }

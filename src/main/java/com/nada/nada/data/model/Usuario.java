@@ -2,6 +2,7 @@ package com.nada.nada.data.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +22,7 @@ public class Usuario {
     private List<Prenda> prendas = new LinkedList<>();
 
     @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Conjunto> conjuntos = new LinkedList<>();
+    private List<Conjunto> conjuntos = new ArrayList<>();
 
     public Usuario() {
     }
@@ -31,7 +32,7 @@ public class Usuario {
         this.password = password;
         this.email = email;
         this.prendas = new LinkedList<>();
-        this.conjuntos = new LinkedList<>();
+        this.conjuntos = new ArrayList<>();
     }
 
     public Long getId() {

@@ -13,13 +13,26 @@ public class Conjunto {
     @ManyToOne
     private Usuario usuario;
 
+    @ManyToOne
+    private PrendaSuperior prendaSuperior;
+
+    @ManyToOne
+    private PrendaInferior prendaInferior;
+
+    @ManyToOne
+    private PrendaCalzado prendaCalzado;
+
+
     public Conjunto() {
 
     }
-    public Conjunto(Long id, String nombre, Usuario usuario) {
-        this.id = id;
+
+    public Conjunto(String nombre, Usuario usuario, PrendaSuperior prendaSuperior, PrendaInferior prendaInferior, PrendaCalzado prendaCalzado) {
         this.nombre = nombre;
         this.usuario = usuario;
+        this.prendaSuperior = prendaSuperior;
+        this.prendaInferior = prendaInferior;
+        this.prendaCalzado = prendaCalzado;
     }
 
     public Long getId() {
@@ -46,16 +59,50 @@ public class Conjunto {
         this.usuario = usuario;
     }
 
+    public PrendaSuperior getPrendaSuperior() {
+        return prendaSuperior;
+    }
+
+    public void setPrendaSuperior(PrendaSuperior prendaSuperior) {
+        this.prendaSuperior = prendaSuperior;
+    }
+
+    public PrendaInferior getPrendaInferior() {
+        return prendaInferior;
+    }
+
+    public void setPrendaInferior(PrendaInferior prendaInferior) {
+        this.prendaInferior = prendaInferior;
+    }
+
+    public PrendaCalzado getPrendaCalzado() {
+        return prendaCalzado;
+    }
+
+    public void setPrendaCalzado(PrendaCalzado prendaCalzado) {
+        this.prendaCalzado = prendaCalzado;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Conjunto)) return false;
-        Conjunto that = (Conjunto) o;
-        return id != null && that.id != null && id.equals(that.id);
+        if (!(o instanceof Conjunto conjunto)) return false;
+        return Objects.equals(id, conjunto.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Conjunto{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", usuario=" + usuario +
+                ", prendaSuperior=" + prendaSuperior +
+                ", prendaInferior=" + prendaInferior +
+                ", prendaCalzado=" + prendaCalzado +
+                '}';
     }
 }

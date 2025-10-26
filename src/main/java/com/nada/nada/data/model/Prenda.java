@@ -9,14 +9,13 @@ import java.util.Objects;
 public abstract class Prenda {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String nombre;
-    private String color;
-    private String marca;
+    protected Long id;
+    protected String nombre;
+    protected String color;
+    protected String marca;
 
-    //@ManyToOne(fetch = FetchType.LAZY) mirar
-    //@JoinColumn(name = "usuario_id") mirar
-    private Usuario usuario;
+    @ManyToOne
+    protected Usuario usuario;
 
 
     public Prenda() {
@@ -83,4 +82,14 @@ public abstract class Prenda {
         return Objects.hash(id);
     }
 
+    @Override
+    public String toString() {
+        return "Prenda{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", color='" + color + '\'' +
+                ", marca='" + marca + '\'' +
+                ", usuario=" + usuario +
+                '}';
+    }
 }
