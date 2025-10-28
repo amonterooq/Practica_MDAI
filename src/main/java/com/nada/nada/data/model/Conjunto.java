@@ -9,6 +9,7 @@ public class Conjunto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
+    private String descripcion;
 
     @ManyToOne
     private Usuario usuario;
@@ -27,9 +28,10 @@ public class Conjunto {
 
     }
 
-    public Conjunto(String nombre, Usuario usuario, PrendaSuperior prendaSuperior, PrendaInferior prendaInferior, PrendaCalzado prendaCalzado) {
+    public Conjunto(String nombre, Usuario usuario, String descripcion, PrendaSuperior prendaSuperior, PrendaInferior prendaInferior, PrendaCalzado prendaCalzado) {
         this.nombre = nombre;
         this.usuario = usuario;
+        this.descripcion = descripcion;
         this.prendaSuperior = prendaSuperior;
         this.prendaInferior = prendaInferior;
         this.prendaCalzado = prendaCalzado;
@@ -49,6 +51,14 @@ public class Conjunto {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public Usuario getUsuario() {
@@ -99,6 +109,7 @@ public class Conjunto {
         return "Conjunto{" +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
+                ", descripcion='" + descripcion + '\'' +
                 ", usuario=" + usuario +
                 ", prendaSuperior=" + prendaSuperior +
                 ", prendaInferior=" + prendaInferior +

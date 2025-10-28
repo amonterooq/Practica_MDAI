@@ -13,6 +13,7 @@ public abstract class Prenda {
     protected String nombre;
     protected String color;
     protected String marca;
+    protected String urlImagen;
 
     @ManyToOne
     protected Usuario usuario;
@@ -21,11 +22,12 @@ public abstract class Prenda {
     public Prenda() {
     }
 
-    public Prenda(String nombre, String color, String marca, Usuario usuario) {
+    public Prenda(String nombre, String color, String marca, Usuario usuario, String urlImagen) {
         this.nombre = nombre;
         this.color = color;
         this.marca = marca;
         this.usuario = usuario;
+        this.urlImagen = urlImagen;
     }
 
     public Long getId() {
@@ -69,6 +71,14 @@ public abstract class Prenda {
         this.usuario = usuario;
     }
 
+    public String getUrlImagen() {
+        return urlImagen;
+    }
+
+    public void setUrlImagen(String urlImagen) {
+        this.urlImagen = urlImagen;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,7 +99,8 @@ public abstract class Prenda {
                 ", nombre='" + nombre + '\'' +
                 ", color='" + color + '\'' +
                 ", marca='" + marca + '\'' +
-                ", usuario=" + usuario +
+                ", usuario=" + usuario + '\'' +
+                ", url='" + urlImagen +
                 '}';
     }
 }
