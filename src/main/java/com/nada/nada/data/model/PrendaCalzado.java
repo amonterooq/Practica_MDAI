@@ -24,8 +24,8 @@ public class PrendaCalzado extends Prenda{
         this.categoria = categoria;
     }
 
-    public PrendaCalzado(String nombre, String color, String marca, Usuario usuario, List<Conjunto> conjuntos, CategoriaCalzado categoria) {
-        super(nombre, color, marca, usuario);
+    public PrendaCalzado(String nombre, String color, String marca, Usuario usuario, String urlImagen, List<Conjunto> conjuntos, CategoriaCalzado categoria) {
+        super(nombre, color, marca, usuario, urlImagen);
         this.conjuntos = conjuntos;
         this.categoria = categoria;
     }

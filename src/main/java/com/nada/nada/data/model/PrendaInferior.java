@@ -21,8 +21,8 @@ public class PrendaInferior extends Prenda {
         this.conjuntos = conjuntos;
     }
 
-    public PrendaInferior(String nombre, String color, String marca, Usuario usuario, CategoriaInferior categoriaInferior, List<Conjunto> conjuntos) {
-        super(nombre, color, marca, usuario);
+    public PrendaInferior(String nombre, String color, String marca, Usuario usuario, String urlImagen, CategoriaInferior categoriaInferior, List<Conjunto> conjuntos) {
+        super(nombre, color, marca, usuario, urlImagen);
         this.categoriaInferior = categoriaInferior;
         this.conjuntos = conjuntos;
     }

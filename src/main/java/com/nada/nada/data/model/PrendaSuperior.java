@@ -26,8 +26,8 @@ public class PrendaSuperior extends Prenda {
         this.manga = manga;
     }
 
-    public PrendaSuperior(String nombre, String color, String marca, Usuario usuario, CategoriaSuperior categoria, List<Conjunto> conjuntos, Manga manga) {
-        super(nombre, color, marca, usuario);
+    public PrendaSuperior(String nombre, String color, String marca, Usuario usuario, String urlImagen, CategoriaSuperior categoria, List<Conjunto> conjuntos, Manga manga) {
+        super(nombre, color, marca, usuario, urlImagen);
         this.categoria = categoria;
         this.conjuntos = conjuntos;
         this.manga = manga;

@@ -23,7 +23,6 @@ public class Conjunto {
     @ManyToOne
     private PrendaCalzado prendaCalzado;
 
-
     public Conjunto() {
 
     }
