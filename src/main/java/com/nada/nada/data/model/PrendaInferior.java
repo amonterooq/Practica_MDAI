@@ -43,4 +43,7 @@ public class PrendaInferior extends Prenda {
         this.conjuntos = conjuntos;
     }
 
+    public void setCategoria(CategoriaInferior categoriaInferior) {
+
+    }
 }
