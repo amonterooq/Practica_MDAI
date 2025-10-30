@@ -11,7 +11,7 @@ public class PrendaCalzado extends Prenda{
 
     private CategoriaCalzado categoria;
 
-    @OneToMany(mappedBy = "prendaCalzado")
+    @OneToMany(mappedBy = "prendaCalzado", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Conjunto> conjuntos = new ArrayList<>();
 
     public PrendaCalzado() {

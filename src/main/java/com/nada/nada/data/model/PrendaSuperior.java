@@ -1,8 +1,6 @@
 package com.nada.nada.data.model;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +12,7 @@ public class PrendaSuperior extends Prenda {
     private CategoriaSuperior categoria;
     private Manga manga;
 
-    @OneToMany(mappedBy = "prendaSuperior")
+    @OneToMany(mappedBy = "prendaSuperior", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Conjunto> conjuntos = new ArrayList<>();
 
     public PrendaSuperior() {

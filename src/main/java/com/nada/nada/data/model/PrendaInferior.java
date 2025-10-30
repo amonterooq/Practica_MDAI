@@ -11,7 +11,7 @@ public class PrendaInferior extends Prenda {
 
     private CategoriaInferior categoriaInferior;
 
-    @OneToMany(mappedBy = "prendaInferior")
+    @OneToMany(mappedBy = "prendaInferior", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Conjunto> conjuntos = new ArrayList<>();
 
     public PrendaInferior() {}
