@@ -13,7 +13,7 @@ public abstract class Prenda {
     protected String nombre;
     protected String color;
     protected String marca;
-    protected  String talla;
+    protected String talla;
     protected String urlImagen;
 
     @ManyToOne
@@ -23,11 +23,12 @@ public abstract class Prenda {
     public Prenda() {
     }
 
-    public Prenda(String nombre, String color, String marca, Usuario usuario, String urlImagen) {
+    public Prenda(String nombre, String color, String marca, Usuario usuario, String talla, String urlImagen) {
         this.nombre = nombre;
         this.color = color;
         this.marca = marca;
         this.usuario = usuario;
+        this.talla = talla; // Capaz hay que cambiarlo por un enum
         this.urlImagen = urlImagen;
     }
 
@@ -72,6 +73,14 @@ public abstract class Prenda {
         this.usuario = usuario;
     }
 
+    public String getTalla() {
+        return talla;
+    }
+
+    public void setTalla(String talla) {
+        this.talla = talla;
+    }
+
     public String getUrlImagen() {
         return urlImagen;
     }
@@ -101,6 +110,7 @@ public abstract class Prenda {
                 ", color='" + color + '\'' +
                 ", marca='" + marca + '\'' +
                 ", usuario=" + usuario + '\'' +
+                ", talla=" + talla + '\'' +
                 ", url='" + urlImagen +
                 '}';
     }
