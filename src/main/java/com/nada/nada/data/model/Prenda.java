@@ -13,6 +13,7 @@ public abstract class Prenda {
     protected String nombre;
     protected String color;
     protected String marca;
+    protected  String talla;
     protected String urlImagen;
 
     @ManyToOne
