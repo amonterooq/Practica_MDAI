@@ -1,4 +1,4 @@
-package com.nada.nada;
+ package com.nada.nada;
 
 import com.nada.nada.data.model.*;
 import com.nada.nada.data.repository.*;
@@ -9,26 +9,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
 public class PrendaRepositoryTest {
 
-    @Autowired
-    private TestEntityManager em;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private PrendaRepository prendaRepository;
-    @Autowired
-    private PrendaSuperiorRepository prendaSuperiorRepository;
-    @Autowired
-    private PrendaInferiorRepository prendaInferiorRepository;
-    @Autowired
-    private PrendaCalzadoRepository prendaCalzadoRepository;
+    @Autowired private TestEntityManager em;
+    @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private PrendaRepository prendaRepository;
+    @Autowired private PrendaSuperiorRepository prendaSuperiorRepository;
+    @Autowired private PrendaInferiorRepository prendaInferiorRepository;
+    @Autowired private PrendaCalzadoRepository prendaCalzadoRepository;
 
     private Usuario seedUsuario() {
         Usuario u = new Usuario();
@@ -129,9 +120,8 @@ public class PrendaRepositoryTest {
         assertEquals("user1", p.getUsuario().getUsername());
     }
 
-    // java
     @org.springframework.transaction.annotation.Transactional
-    @org.junit.jupiter.api.Test
+    @Test
     void usuarioPoseeMultiplesPrendas_segunRepositorioBase() {
         Usuario u = seedUsuario();
 
@@ -175,7 +165,7 @@ public class PrendaRepositoryTest {
                 .allMatch(p -> p.getUsuario() != null && p.getUsuario().getId().equals(u.getId())));
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void eliminarPrendaNoEliminaUsuario() {
         Usuario u = seedUsuario();
 
@@ -199,13 +189,13 @@ public class PrendaRepositoryTest {
         assertTrue(usuarioRepository.findById(u.getId()).isPresent());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void buscarPorNombreInexistenteDevuelveNull() {
         Prenda p = prendaRepository.findByNombre("no-existe-xyz");
         assertNull(p);
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void actualizarCamposDePrenda() {
         Usuario u = seedUsuario();
 

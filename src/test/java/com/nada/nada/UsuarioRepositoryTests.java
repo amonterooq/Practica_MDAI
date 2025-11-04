@@ -1,41 +1,27 @@
 package com.nada.nada;
 
 import com.nada.nada.data.model.*;
-import com.nada.nada.data.repository.ConjuntoRepository;
-import com.nada.nada.data.repository.PrendaCalzadoRepository;
-import com.nada.nada.data.repository.PrendaInferiorRepository;
-import com.nada.nada.data.repository.PrendaRepository;
-import com.nada.nada.data.repository.PrendaSuperiorRepository;
-import com.nada.nada.data.repository.UsuarioRepository;
+import com.nada.nada.data.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class UsuarioRepositoryTests {
 
-    @Autowired
-    private TestEntityManager em;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private PrendaSuperiorRepository prendaSuperiorRepository;
-    @Autowired
-    private PrendaInferiorRepository prendaInferiorRepository;
-    @Autowired
-    private PrendaCalzadoRepository prendaCalzadoRepository;
-    @Autowired
-    private ConjuntoRepository conjuntoRepository;
+    @Autowired private TestEntityManager em;
+    @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private PrendaSuperiorRepository prendaSuperiorRepository;
+    @Autowired private PrendaInferiorRepository prendaInferiorRepository;
+    @Autowired private PrendaCalzadoRepository prendaCalzadoRepository;
+    @Autowired private ConjuntoRepository conjuntoRepository;
 
     private Usuario nuevoUsuario(String username) {
         Usuario u = new Usuario();
@@ -112,7 +98,6 @@ class UsuarioRepositoryTests {
         c.setPrendaCalzado(cal);
         conjuntoRepository.save(c);
 
-        // mantener la bidireccionalidad en memoria
         u.addPrenda(sup);
         u.addPrenda(inf);
         u.addPrenda(cal);
@@ -123,7 +108,6 @@ class UsuarioRepositoryTests {
 
         Usuario recargado = usuarioRepository.findByUsername("bob");
         assertNotNull(recargado);
-        // colecciones LAZY accesibles dentro de la transacción del test
         assertEquals(3, recargado.getPrendas().size());
         assertEquals(1, recargado.getConjuntos().size());
     }
@@ -182,6 +166,4 @@ class UsuarioRepositoryTests {
         assertThat(rc.getPrendaInferior().getUsuario().getId()).isEqualTo(fetched.getId());
         assertThat(rc.getPrendaCalzado().getUsuario().getId()).isEqualTo(fetched.getId());
     }
-
 }
-

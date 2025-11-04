@@ -2,7 +2,6 @@ package com.nada.nada;
 
 import com.nada.nada.data.model.*;
 import com.nada.nada.data.repository.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -10,8 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -19,19 +17,14 @@ class ConjuntoRepositoryTests {
 
     @Autowired
     private TestEntityManager em;
-
     @Autowired
     private UsuarioRepository usuarioRepository;
-
     @Autowired
     private PrendaSuperiorRepository prendaSuperiorRepository;
-
     @Autowired
     private PrendaInferiorRepository prendaInferiorRepository;
-
     @Autowired
     private PrendaCalzadoRepository prendaCalzadoRepository;
-
     @Autowired
     private ConjuntoRepository conjuntoRepository;
 
@@ -39,7 +32,7 @@ class ConjuntoRepositoryTests {
         Usuario u = new Usuario();
         u.setUsername(username);
         u.setPassword("pwd");
-        u.setEmail(username + "@mail.com");
+        u.setEmail(username + "@gmail.com");
         return usuarioRepository.save(u);
     }
 
@@ -106,7 +99,6 @@ class ConjuntoRepositoryTests {
         assertEquals(pi.getId(), rec.getPrendaInferior().getId());
         assertEquals(pc.getId(), rec.getPrendaCalzado().getId());
 
-        // regla de negocio: todas las prendas del conjunto pertenecen al mismo usuario
         assertEquals(rec.getUsuario().getId(), rec.getPrendaSuperior().getUsuario().getId());
         assertEquals(rec.getUsuario().getId(), rec.getPrendaInferior().getUsuario().getId());
         assertEquals(rec.getUsuario().getId(), rec.getPrendaCalzado().getUsuario().getId());
@@ -137,7 +129,7 @@ class ConjuntoRepositoryTests {
         assertTrue(prendaCalzadoRepository.findById(pc.getId()).isPresent());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void permitirReutilizarPrendaEnVariosConjuntos() {
         Usuario u = nuevoUsuario("reuse");
         PrendaSuperior ps = sup(u);
@@ -179,7 +171,7 @@ class ConjuntoRepositoryTests {
         assertEquals(antes + 2, conjuntoRepository.count());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void actualizarConjunto_cambiaPrendasYDescripcion() {
         Usuario u = nuevoUsuario("upd");
         PrendaSuperior ps1 = sup(u);
@@ -218,7 +210,7 @@ class ConjuntoRepositoryTests {
         assertEquals(pc2.getId(), after.getPrendaCalzado().getId());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void guardarConjuntoSinUsuarioDebeFallar() {
         Usuario u = nuevoUsuario("nouser");
         PrendaSuperior ps = sup(u);
@@ -226,19 +218,18 @@ class ConjuntoRepositoryTests {
         Conjunto c = new Conjunto();
         c.setNombre("Sin usuario");
         c.setDescripcion("X");
-        // sin c.setUsuario(...)
         c.setPrendaSuperior(ps);
 
         assertThatThrownBy(() -> {
             conjuntoRepository.save(c);
-            em.flush(); // fuerza la constraint NOT NULL
+            em.flush();
         }).isInstanceOfAny(
                 org.springframework.dao.DataIntegrityViolationException.class,
                 IllegalArgumentException.class
         );
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void eliminarConjuntoNoEliminaUsuario() {
         Usuario u = nuevoUsuario("keepuser");
         PrendaSuperior ps = sup(u);
@@ -261,17 +252,17 @@ class ConjuntoRepositoryTests {
         assertTrue(usuarioRepository.findById(u.getId()).isPresent());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void descripcionNoDebeExceder256Caracteres() {
         Usuario u = nuevoUsuario("limite-desc");
         Conjunto c = new Conjunto();
         c.setUsuario(u);
         c.setNombre("Desc larga");
-        c.setDescripcion("x".repeat(257)); // > 256
+        c.setDescripcion("x".repeat(257));
 
         assertThatThrownBy(() -> {
             conjuntoRepository.save(c);
-            em.flush(); // fuerza la validación/constraint en BD
+            em.flush();
         }).isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
     }
 }

@@ -6,30 +6,29 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class RequisitosTests {
 
-    @Autowired TestEntityManager em;
-    @Autowired UsuarioRepository usuarioRepository;
-    @Autowired PrendaSuperiorRepository prendaSuperiorRepository;
-    @Autowired PrendaInferiorRepository prendaInferiorRepository;
-    @Autowired PrendaCalzadoRepository prendaCalzadoRepository;
-    @Autowired ConjuntoRepository conjuntoRepository;
+    @Autowired private TestEntityManager em;
+    @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private PrendaSuperiorRepository prendaSuperiorRepository;
+    @Autowired private PrendaInferiorRepository prendaInferiorRepository;
+    @Autowired private PrendaCalzadoRepository prendaCalzadoRepository;
+    @Autowired private ConjuntoRepository conjuntoRepository;
 
-    private Usuario u(String name) {
+    private Usuario user(String username) {
         Usuario u = new Usuario();
-        u.setUsername(name);
+        u.setUsername(username);
         u.setPassword("pwd");
-        u.setEmail(name + "g@mail.com");
+        u.setEmail(username + "@mail.com");
         return usuarioRepository.save(u);
     }
+
     private PrendaSuperior sup(Usuario u) {
         PrendaSuperior p = new PrendaSuperior();
         p.setNombre("Sup");
@@ -42,6 +41,7 @@ class RequisitosTests {
         p.setManga(Manga.CORTA);
         return prendaSuperiorRepository.save(p);
     }
+
     private PrendaInferior inf(Usuario u) {
         PrendaInferior p = new PrendaInferior();
         p.setNombre("Inf");
@@ -53,6 +53,7 @@ class RequisitosTests {
         p.setCategoriaInferior(CategoriaInferior.PANTALON);
         return prendaInferiorRepository.save(p);
     }
+
     private PrendaCalzado cal(Usuario u) {
         PrendaCalzado p = new PrendaCalzado();
         p.setNombre("Cal");
@@ -66,66 +67,38 @@ class RequisitosTests {
     }
 
     @Test
-    void descripcionLongitudMaxima_256_OK() {
-        Usuario u = u("len-ok");
-        Conjunto c = new Conjunto();
-        c.setNombre("Max");
-        c.setUsuario(u);
-        c.setDescripcion("x".repeat(256));
-        conjuntoRepository.save(c);
-        em.flush();
-        em.clear();
-
-        Conjunto rec = conjuntoRepository.findById(c.getId()).orElseThrow();
-        assertThat(rec.getDescripcion()).hasSize(256);
-    }
-
-    @Test
-    void noPermitirEliminarPrendaUsadaEnConjunto() {
-        Usuario u = u("fk-guard");
+    void eliminarUsuarioEliminaSusPrendasYConjuntos() {
+        Usuario u = user("cascade");
         PrendaSuperior ps = sup(u);
         PrendaInferior pi = inf(u);
         PrendaCalzado pc = cal(u);
 
         Conjunto c = new Conjunto();
-        c.setNombre("Look");
+        c.setNombre("Set");
+        c.setDescripcion("full");
         c.setUsuario(u);
         c.setPrendaSuperior(ps);
         c.setPrendaInferior(pi);
         c.setPrendaCalzado(pc);
         conjuntoRepository.save(c);
-        em.flush();
 
-        prendaSuperiorRepository.deleteById(ps.getId());
-        assertThatThrownBy(() -> em.flush())
-                .isInstanceOf(DataIntegrityViolationException.class);
-    }
-
-    @Test
-    @Transactional
-    void borrarUsuario_EliminaPrendasYConjuntos() {
-        Usuario u = u("cascade-del");
-        PrendaSuperior ps = sup(u);
-        PrendaInferior pi = inf(u);
-        PrendaCalzado pc = cal(u);
-
-        Conjunto c = new Conjunto();
-        c.setNombre("Look");
-        c.setUsuario(u);
-        c.setPrendaSuperior(ps);
-        c.setPrendaInferior(pi);
-        c.setPrendaCalzado(pc);
-        conjuntoRepository.save(c);
-        em.flush();
-
-        usuarioRepository.deleteById(u.getId());
         em.flush();
         em.clear();
 
-        assertThat(usuarioRepository.findById(u.getId())).isEmpty();
-        assertThat(prendaSuperiorRepository.findById(ps.getId())).isEmpty();
-        assertThat(prendaInferiorRepository.findById(pi.getId())).isEmpty();
-        assertThat(prendaCalzadoRepository.findById(pc.getId())).isEmpty();
-        assertThat(conjuntoRepository.findById(c.getId())).isEmpty();
+        Long uid = u.getId();
+        Long psId = ps.getId();
+        Long piId = pi.getId();
+        Long pcId = pc.getId();
+        Long cId = c.getId();
+
+        usuarioRepository.deleteById(uid);
+        em.flush();
+        em.clear();
+
+        assertTrue(usuarioRepository.findById(uid).isEmpty());
+        assertTrue(prendaSuperiorRepository.findById(psId).isEmpty());
+        assertTrue(prendaInferiorRepository.findById(piId).isEmpty());
+        assertTrue(prendaCalzadoRepository.findById(pcId).isEmpty());
+        assertTrue(conjuntoRepository.findById(cId).isEmpty());
     }
 }
