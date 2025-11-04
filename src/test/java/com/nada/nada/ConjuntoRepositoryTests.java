@@ -1,100 +1,277 @@
 package com.nada.nada;
 
 import com.nada.nada.data.model.*;
-import com.nada.nada.data.repository.ConjuntoRepository;
-import com.nada.nada.data.repository.PrendaRepository;
-import com.nada.nada.data.repository.UsuarioRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.validation.ConstraintViolationException;
+import com.nada.nada.data.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class ConjuntoRepositoryTests {
 
-    @Autowired UsuarioRepository usuarioRepository;
-    @Autowired PrendaRepository prendaRepository;
-    @Autowired ConjuntoRepository conjuntoRepository;
-    @Autowired EntityManager em;
+    @Autowired
+    private TestEntityManager em;
 
-    private PrendaSuperior sup(Usuario u) { PrendaSuperior p = new PrendaSuperior(); p.setUsuario(u); p.setCategoria(CategoriaSuperior.CAMISETA); p.setColor("Azul"); p.setMarca("Zara"); p.setTalla("M"); return p; }
-    private PrendaInferior inf(Usuario u) { PrendaInferior p = new PrendaInferior(); p.setUsuario(u); p.setCategoria(CategoriaInferior.PANTALON); p.setColor("Blanco"); p.setMarca("Levis"); p.setTalla("40"); return p; }
-    private PrendaCalzado calz(Usuario u) { PrendaCalzado p = new PrendaCalzado(); p.setUsuario(u); p.setCategoria(CategoriaCalzado.SANDALIAS); p.setColor("Negro"); p.setMarca("Nike"); p.setTalla("42"); return p; }
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PrendaSuperiorRepository prendaSuperiorRepository;
+
+    @Autowired
+    private PrendaInferiorRepository prendaInferiorRepository;
+
+    @Autowired
+    private PrendaCalzadoRepository prendaCalzadoRepository;
+
+    @Autowired
+    private ConjuntoRepository conjuntoRepository;
+
+    private Usuario nuevoUsuario(String username) {
+        Usuario u = new Usuario();
+        u.setUsername(username);
+        u.setPassword("pwd");
+        u.setEmail(username + "@mail.com");
+        return usuarioRepository.save(u);
+    }
+
+    private PrendaSuperior sup(Usuario u) {
+        PrendaSuperior p = new PrendaSuperior();
+        p.setNombre("Camiseta");
+        p.setColor("Blanco");
+        p.setMarca("M");
+        p.setUsuario(u);
+        p.setTalla("M");
+        p.setUrlImagen("u");
+        p.setCategoria(CategoriaSuperior.CAMISETA);
+        p.setManga(Manga.CORTA);
+        return prendaSuperiorRepository.save(p);
+    }
+
+    private PrendaInferior inf(Usuario u) {
+        PrendaInferior p = new PrendaInferior();
+        p.setNombre("Pantalon");
+        p.setColor("Negro");
+        p.setMarca("M");
+        p.setUsuario(u);
+        p.setTalla("32");
+        p.setUrlImagen("u");
+        p.setCategoriaInferior(CategoriaInferior.PANTALON);
+        return prendaInferiorRepository.save(p);
+    }
+
+    private PrendaCalzado cal(Usuario u) {
+        PrendaCalzado p = new PrendaCalzado();
+        p.setNombre("Zapatilla");
+        p.setColor("Azul");
+        p.setMarca("M");
+        p.setUsuario(u);
+        p.setTalla("42");
+        p.setUrlImagen("u");
+        p.setCategoria(CategoriaCalzado.DEPORTIVO);
+        return prendaCalzadoRepository.save(p);
+    }
 
     @Test
-    @Transactional
-    void crearConjuntoConTresPrendasDelMismoUsuario() {
-        Usuario u = new Usuario("Creador", "nada", "nada@gmail.com");
-        usuarioRepository.save(u);
+    void guardarYRecuperarConjuntoCompleto() {
+        Usuario u = nuevoUsuario("eva");
+        PrendaSuperior ps = sup(u);
+        PrendaInferior pi = inf(u);
+        PrendaCalzado pc = cal(u);
 
-        PrendaSuperior ps = prendaRepository.save(sup(u));
-        PrendaInferior pi = prendaRepository.save(inf(u));
-        PrendaCalzado pc = prendaRepository.save(calz(u));
-        prendaRepository.flush();
+        Conjunto c = new Conjunto();
+        c.setNombre("Look Diario");
+        c.setDescripcion("Conjunto diario");
+        c.setUsuario(u);
+        c.setPrendaSuperior(ps);
+        c.setPrendaInferior(pi);
+        c.setPrendaCalzado(pc);
+        Conjunto guardado = conjuntoRepository.save(c);
 
-        Conjunto cj = new Conjunto();
-        cj.setUsuario(u);
-        cj.setPrendaSuperior(ps);
-        cj.setPrendaInferior(pi);
-        cj.setPrendaCalzado(pc);
-        cj.setDescripcion("Reunión");
-        conjuntoRepository.save(cj);
+        em.flush();
         em.clear();
 
-        Conjunto fetched = conjuntoRepository.findById(cj.getId()).orElseThrow();
-        assertThat(fetched.getUsuario().getId()).isEqualTo(u.getId());
-        assertThat(fetched.getPrendaSuperior().getUsuario().getId()).isEqualTo(u.getId());
-        assertThat(fetched.getPrendaInferior().getUsuario().getId()).isEqualTo(u.getId());
-        assertThat(fetched.getPrendaCalzado().getUsuario().getId()).isEqualTo(u.getId());
+        Conjunto rec = conjuntoRepository.findById(guardado.getId()).orElseThrow();
+        assertEquals("Look Diario", rec.getNombre());
+        assertEquals("eva", rec.getUsuario().getUsername());
+        assertEquals(ps.getId(), rec.getPrendaSuperior().getId());
+        assertEquals(pi.getId(), rec.getPrendaInferior().getId());
+        assertEquals(pc.getId(), rec.getPrendaCalzado().getId());
+
+        // regla de negocio: todas las prendas del conjunto pertenecen al mismo usuario
+        assertEquals(rec.getUsuario().getId(), rec.getPrendaSuperior().getUsuario().getId());
+        assertEquals(rec.getUsuario().getId(), rec.getPrendaInferior().getUsuario().getId());
+        assertEquals(rec.getUsuario().getId(), rec.getPrendaCalzado().getUsuario().getId());
     }
 
     @Test
-    void notaNoDebeExceder256Caracteres() {
-        Usuario u = new Usuario("Límite Nota", "pwd", "limite@example.com");
-        usuarioRepository.save(u);
+    void eliminarConjuntoNoEliminaPrendas() {
+        Usuario u = nuevoUsuario("max");
+        PrendaSuperior ps = sup(u);
+        PrendaInferior pi = inf(u);
+        PrendaCalzado pc = cal(u);
 
-        Conjunto cj = new Conjunto();
-        cj.setUsuario(u);
-        cj.setDescripcion("x".repeat(257)); // > 256
+        Conjunto c = new Conjunto();
+        c.setNombre("Look");
+        c.setUsuario(u);
+        c.setPrendaSuperior(ps);
+        c.setPrendaInferior(pi);
+        c.setPrendaCalzado(pc);
+        c = conjuntoRepository.save(c);
 
-        assertThatThrownBy(() -> {
-            conjuntoRepository.save(cj);
-            em.flush();
-        }).isInstanceOfAny(ConstraintViolationException.class, org.springframework.dao.DataIntegrityViolationException.class);
+        em.flush();
+        conjuntoRepository.deleteById(c.getId());
+        em.flush();
+        em.clear();
+
+        assertTrue(prendaSuperiorRepository.findById(ps.getId()).isPresent());
+        assertTrue(prendaInferiorRepository.findById(pi.getId()).isPresent());
+        assertTrue(prendaCalzadoRepository.findById(pc.getId()).isPresent());
     }
 
-    // java
-    @Test
-    @Transactional
-    void noPermitirPrendasDeOtroUsuarioEnConjunto() {
-        Usuario u1 = new Usuario("U1", "pwd1", "u1@example.com");
-        Usuario u2 = new Usuario("U2", "pwd2", "u2@example.com");
-        usuarioRepository.save(u1);
-        usuarioRepository.save(u2);
+    @org.junit.jupiter.api.Test
+    void permitirReutilizarPrendaEnVariosConjuntos() {
+        Usuario u = nuevoUsuario("reuse");
+        PrendaSuperior ps = sup(u);
+        PrendaInferior pi = inf(u);
+        PrendaCalzado pc = cal(u);
 
-        PrendaSuperior ps = prendaRepository.save(sup(u1)); // pertenece a u1
-        PrendaInferior pi = prendaRepository.save(inf(u2)); // pertenece a u2 (distinto usuario)
-        PrendaCalzado pc = prendaRepository.save(calz(u1));
-        // forzar sincronización si el repo no expone flush; usamos em.flush() en la aserción más abajo
+        long antes = conjuntoRepository.count();
 
-        Conjunto cj = new Conjunto();
-        cj.setUsuario(u1);
-        cj.setPrendaSuperior(ps);
-        cj.setPrendaInferior(pi);  // inválido: distinta pertenencia
-        cj.setPrendaCalzado(pc);
-        cj.setNota("Invalid");
+        Conjunto c1 = new Conjunto();
+        c1.setNombre("Look 1");
+        c1.setDescripcion("Día 1");
+        c1.setUsuario(u);
+        c1.setPrendaSuperior(ps);
+        c1.setPrendaInferior(pi);
+        c1.setPrendaCalzado(pc);
+        conjuntoRepository.save(c1);
 
-        assertThatThrownBy(() -> {
-            conjuntoRepository.save(cj);
-            em.flush();
-        }).isInstanceOfAny(IllegalArgumentException.class, org.springframework.dao.DataIntegrityViolationException.class);
+        Conjunto c2 = new Conjunto();
+        c2.setNombre("Look 2");
+        c2.setDescripcion("Día 2");
+        c2.setUsuario(u);
+        c2.setPrendaSuperior(ps);
+        c2.setPrendaInferior(pi);
+        c2.setPrendaCalzado(pc);
+        conjuntoRepository.save(c2);
+
+        em.flush();
+        em.clear();
+
+        Conjunto r1 = conjuntoRepository.findById(c1.getId()).orElseThrow();
+        Conjunto r2 = conjuntoRepository.findById(c2.getId()).orElseThrow();
+
+        assertEquals(ps.getId(), r1.getPrendaSuperior().getId());
+        assertEquals(ps.getId(), r2.getPrendaSuperior().getId());
+        assertEquals(pi.getId(), r1.getPrendaInferior().getId());
+        assertEquals(pi.getId(), r2.getPrendaInferior().getId());
+        assertEquals(pc.getId(), r1.getPrendaCalzado().getId());
+        assertEquals(pc.getId(), r2.getPrendaCalzado().getId());
+        assertEquals(antes + 2, conjuntoRepository.count());
     }
 
+    @org.junit.jupiter.api.Test
+    void actualizarConjunto_cambiaPrendasYDescripcion() {
+        Usuario u = nuevoUsuario("upd");
+        PrendaSuperior ps1 = sup(u);
+        PrendaInferior pi1 = inf(u);
+        PrendaCalzado pc1 = cal(u);
+        PrendaSuperior ps2 = sup(u);
+        PrendaInferior pi2 = inf(u);
+        PrendaCalzado pc2 = cal(u);
+
+        Conjunto c = new Conjunto();
+        c.setNombre("Inicial");
+        c.setDescripcion("old");
+        c.setUsuario(u);
+        c.setPrendaSuperior(ps1);
+        c.setPrendaInferior(pi1);
+        c.setPrendaCalzado(pc1);
+        c = conjuntoRepository.save(c);
+
+        em.flush();
+        em.clear();
+
+        Conjunto loaded = conjuntoRepository.findById(c.getId()).orElseThrow();
+        loaded.setDescripcion("new");
+        loaded.setPrendaSuperior(ps2);
+        loaded.setPrendaInferior(pi2);
+        loaded.setPrendaCalzado(pc2);
+        conjuntoRepository.save(loaded);
+
+        em.flush();
+        em.clear();
+
+        Conjunto after = conjuntoRepository.findById(c.getId()).orElseThrow();
+        assertEquals("new", after.getDescripcion());
+        assertEquals(ps2.getId(), after.getPrendaSuperior().getId());
+        assertEquals(pi2.getId(), after.getPrendaInferior().getId());
+        assertEquals(pc2.getId(), after.getPrendaCalzado().getId());
+    }
+
+    @org.junit.jupiter.api.Test
+    void guardarConjuntoSinUsuarioDebeFallar() {
+        Usuario u = nuevoUsuario("nouser");
+        PrendaSuperior ps = sup(u);
+
+        Conjunto c = new Conjunto();
+        c.setNombre("Sin usuario");
+        c.setDescripcion("X");
+        // sin c.setUsuario(...)
+        c.setPrendaSuperior(ps);
+
+        assertThatThrownBy(() -> {
+            conjuntoRepository.save(c);
+            em.flush(); // fuerza la constraint NOT NULL
+        }).isInstanceOfAny(
+                org.springframework.dao.DataIntegrityViolationException.class,
+                IllegalArgumentException.class
+        );
+    }
+
+    @org.junit.jupiter.api.Test
+    void eliminarConjuntoNoEliminaUsuario() {
+        Usuario u = nuevoUsuario("keepuser");
+        PrendaSuperior ps = sup(u);
+        PrendaInferior pi = inf(u);
+        PrendaCalzado pc = cal(u);
+
+        Conjunto c = new Conjunto();
+        c.setNombre("Look");
+        c.setUsuario(u);
+        c.setPrendaSuperior(ps);
+        c.setPrendaInferior(pi);
+        c.setPrendaCalzado(pc);
+        c = conjuntoRepository.save(c);
+
+        em.flush();
+        conjuntoRepository.deleteById(c.getId());
+        em.flush();
+        em.clear();
+
+        assertTrue(usuarioRepository.findById(u.getId()).isPresent());
+    }
+
+    @org.junit.jupiter.api.Test
+    void descripcionNoDebeExceder256Caracteres() {
+        Usuario u = nuevoUsuario("limite-desc");
+        Conjunto c = new Conjunto();
+        c.setUsuario(u);
+        c.setNombre("Desc larga");
+        c.setDescripcion("x".repeat(257)); // > 256
+
+        assertThatThrownBy(() -> {
+            conjuntoRepository.save(c);
+            em.flush(); // fuerza la validación/constraint en BD
+        }).isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+    }
 }
