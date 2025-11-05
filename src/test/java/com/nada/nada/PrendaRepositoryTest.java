@@ -1,12 +1,12 @@
- package com.nada.nada;
+package com.nada.nada;
 
 import com.nada.nada.data.model.*;
 import com.nada.nada.data.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,12 +14,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 public class PrendaRepositoryTest {
 
-    @Autowired private TestEntityManager em;
-    @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private PrendaRepository prendaRepository;
-    @Autowired private PrendaSuperiorRepository prendaSuperiorRepository;
-    @Autowired private PrendaInferiorRepository prendaInferiorRepository;
-    @Autowired private PrendaCalzadoRepository prendaCalzadoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PrendaRepository prendaRepository;
+
+    @Autowired
+    private PrendaSuperiorRepository prendaSuperiorRepository;
+
+    @Autowired
+    private PrendaInferiorRepository prendaInferiorRepository;
+
+    @Autowired
+    private PrendaCalzadoRepository prendaCalzadoRepository;
 
     private Usuario seedUsuario() {
         Usuario u = new Usuario();
@@ -30,7 +38,14 @@ public class PrendaRepositoryTest {
     }
 
     @Test
-    void guardarYBuscarPorNombreEnRepositorioBase() {
+    void testComprobarDatosIniciales() {
+        Prenda p = prendaRepository.findById(1);
+        assertNotNull(p);
+        assertEquals("Camiseta blanca", p.getNombre());
+    }
+
+    @Test
+    void testGuardarYBuscarPorNombreEnRepositorioBase() {
         Usuario u = seedUsuario();
 
         PrendaSuperior sup = new PrendaSuperior();
@@ -39,13 +54,11 @@ public class PrendaRepositoryTest {
         sup.setMarca("Acme");
         sup.setUsuario(u);
         sup.setTalla("M");
-        sup.setUrlImagen("url");
+        sup.setDirImagen("url");
         sup.setCategoria(CategoriaSuperior.CAMISETA);
         sup.setManga(Manga.CORTA);
 
         prendaRepository.save(sup);
-        em.flush();
-        em.clear();
 
         Prenda encontrada = prendaRepository.findByNombre("Camiseta Blanca");
         assertNotNull(encontrada);
@@ -54,7 +67,8 @@ public class PrendaRepositoryTest {
     }
 
     @Test
-    void persistenciaDeHerencia_Subclases() {
+    void testPersistenciaDeHerenciaSubclases() {
+        int numPrendasInicial = (int) prendaRepository.count();
         Usuario u = seedUsuario();
 
         PrendaSuperior sup = new PrendaSuperior();
@@ -63,7 +77,7 @@ public class PrendaRepositoryTest {
         sup.setMarca("Marca");
         sup.setUsuario(u);
         sup.setTalla("L");
-        sup.setUrlImagen("u1");
+        sup.setDirImagen("u1");
         sup.setCategoria(CategoriaSuperior.CAMISA);
         sup.setManga(Manga.LARGA);
 
@@ -73,7 +87,7 @@ public class PrendaRepositoryTest {
         inf.setMarca("Marca");
         inf.setUsuario(u);
         inf.setTalla("32");
-        inf.setUrlImagen("u2");
+        inf.setDirImagen("u2");
         inf.setCategoriaInferior(CategoriaInferior.PANTALON);
 
         PrendaCalzado cal = new PrendaCalzado();
@@ -82,24 +96,21 @@ public class PrendaRepositoryTest {
         cal.setMarca("Marca");
         cal.setUsuario(u);
         cal.setTalla("42");
-        cal.setUrlImagen("u3");
+        cal.setDirImagen("u3");
         cal.setCategoria(CategoriaCalzado.FORMAL);
 
         prendaSuperiorRepository.save(sup);
         prendaInferiorRepository.save(inf);
         prendaCalzadoRepository.save(cal);
 
-        em.flush();
-        em.clear();
-
-        assertEquals(3, prendaRepository.count());
+        assertEquals(numPrendasInicial + 3, prendaRepository.count());
         assertTrue(prendaRepository.findByNombre("Camisa") instanceof PrendaSuperior);
         assertTrue(prendaRepository.findByNombre("Pantalon") instanceof PrendaInferior);
         assertTrue(prendaRepository.findByNombre("Zapato") instanceof PrendaCalzado);
     }
 
     @Test
-    void relacionPrendaConUsuario() {
+    void testRelacionPrendaConUsuario() {
         Usuario u = seedUsuario();
 
         PrendaInferior inf = new PrendaInferior();
@@ -108,21 +119,19 @@ public class PrendaRepositoryTest {
         inf.setMarca("Acme");
         inf.setUsuario(u);
         inf.setTalla("32");
-        inf.setUrlImagen("url");
+        inf.setDirImagen("url");
         inf.setCategoriaInferior(CategoriaInferior.JEAN);
 
         prendaRepository.save(inf);
-        em.flush();
-        em.clear();
 
         Prenda p = prendaRepository.findByNombre("Jean");
         assertNotNull(p.getUsuario());
         assertEquals("user1", p.getUsuario().getUsername());
     }
 
-    @org.springframework.transaction.annotation.Transactional
+
     @Test
-    void usuarioPoseeMultiplesPrendas_segunRepositorioBase() {
+    void testUsuarioPoseeMultiplesPrendasSegunRepositorioBase() {
         Usuario u = seedUsuario();
 
         PrendaSuperior sup = new PrendaSuperior();
@@ -131,7 +140,7 @@ public class PrendaRepositoryTest {
         sup.setMarca("Zara");
         sup.setUsuario(u);
         sup.setTalla("M");
-        sup.setUrlImagen("url-sup");
+        sup.setDirImagen("url-sup");
         sup.setCategoria(CategoriaSuperior.CAMISETA);
         sup.setManga(Manga.CORTA);
 
@@ -141,7 +150,7 @@ public class PrendaRepositoryTest {
         inf.setMarca("Levis");
         inf.setUsuario(u);
         inf.setTalla("40");
-        inf.setUrlImagen("url-inf");
+        inf.setDirImagen("url-inf");
         inf.setCategoriaInferior(CategoriaInferior.PANTALON);
 
         PrendaCalzado calz = new PrendaCalzado();
@@ -150,23 +159,23 @@ public class PrendaRepositoryTest {
         calz.setMarca("Nike");
         calz.setUsuario(u);
         calz.setTalla("42");
-        calz.setUrlImagen("url-calz");
+        calz.setDirImagen("url-calz");
         calz.setCategoria(CategoriaCalzado.FORMAL);
 
         prendaRepository.save(sup);
         prendaRepository.save(inf);
         prendaRepository.save(calz);
-        em.flush();
-        em.clear();
 
-        Usuario fetched = usuarioRepository.findById(u.getId()).orElseThrow();
-        assertEquals(3, fetched.getPrendas().size());
-        assertTrue(fetched.getPrendas().stream()
-                .allMatch(p -> p.getUsuario() != null && p.getUsuario().getId().equals(u.getId())));
+        // verifica por el repositorio (no por la colección inversa)
+        assertEquals(3, prendaRepository.countByUsuario_Id(u.getId()));
+
+        assertTrue(java.util.stream.Stream.of("Top User","Bottom User","Shoes User")
+                .map(prendaRepository::findByNombre)
+                .allMatch(p -> p != null && p.getUsuario() != null && p.getUsuario().getId().equals(u.getId())));
     }
 
     @Test
-    void eliminarPrendaNoEliminaUsuario() {
+    void testEliminarPrendaNoEliminaUsuario() {
         Usuario u = seedUsuario();
 
         PrendaSuperior p = new PrendaSuperior();
@@ -175,28 +184,25 @@ public class PrendaRepositoryTest {
         p.setMarca("Acme");
         p.setUsuario(u);
         p.setTalla("M");
-        p.setUrlImagen("url");
+        p.setDirImagen("url");
         p.setCategoria(CategoriaSuperior.CAMISETA);
         p.setManga(Manga.CORTA);
 
         p = prendaRepository.save(p);
-        em.flush();
 
         prendaRepository.delete(p);
-        em.flush();
-        em.clear();
 
         assertTrue(usuarioRepository.findById(u.getId()).isPresent());
     }
 
     @Test
-    void buscarPorNombreInexistenteDevuelveNull() {
+    void testBuscarPorNombreInexistenteDevuelveNull() {
         Prenda p = prendaRepository.findByNombre("no-existe-xyz");
         assertNull(p);
     }
 
     @Test
-    void actualizarCamposDePrenda() {
+    void testActualizarCamposDePrenda() {
         Usuario u = seedUsuario();
 
         PrendaSuperior p = new PrendaSuperior();
@@ -205,20 +211,16 @@ public class PrendaRepositoryTest {
         p.setMarca("Brand");
         p.setUsuario(u);
         p.setTalla("L");
-        p.setUrlImagen("u");
+        p.setDirImagen("u");
         p.setCategoria(CategoriaSuperior.CAMISA);
         p.setManga(Manga.LARGA);
 
         p = prendaRepository.save(p);
-        em.flush();
-        em.clear();
 
         Prenda loaded = prendaRepository.findByNombre("Editable");
         assertNotNull(loaded);
         loaded.setColor("Verde");
         prendaRepository.save(loaded);
-        em.flush();
-        em.clear();
 
         Prenda after = prendaRepository.findById(loaded.getId()).orElseThrow();
         assertEquals("Verde", after.getColor());

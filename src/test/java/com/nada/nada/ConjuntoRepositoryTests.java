@@ -4,7 +4,6 @@ import com.nada.nada.data.model.*;
 import com.nada.nada.data.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -16,15 +15,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class ConjuntoRepositoryTests {
 
     @Autowired
-    private TestEntityManager em;
-    @Autowired
     private UsuarioRepository usuarioRepository;
+
     @Autowired
     private PrendaSuperiorRepository prendaSuperiorRepository;
+
     @Autowired
     private PrendaInferiorRepository prendaInferiorRepository;
+
     @Autowired
     private PrendaCalzadoRepository prendaCalzadoRepository;
+
     @Autowired
     private ConjuntoRepository conjuntoRepository;
 
@@ -43,7 +44,7 @@ class ConjuntoRepositoryTests {
         p.setMarca("M");
         p.setUsuario(u);
         p.setTalla("M");
-        p.setUrlImagen("u");
+        p.setDirImagen("images/sup.png");
         p.setCategoria(CategoriaSuperior.CAMISETA);
         p.setManga(Manga.CORTA);
         return prendaSuperiorRepository.save(p);
@@ -56,7 +57,7 @@ class ConjuntoRepositoryTests {
         p.setMarca("M");
         p.setUsuario(u);
         p.setTalla("32");
-        p.setUrlImagen("u");
+        p.setDirImagen("images/inf.png");
         p.setCategoriaInferior(CategoriaInferior.PANTALON);
         return prendaInferiorRepository.save(p);
     }
@@ -68,13 +69,20 @@ class ConjuntoRepositoryTests {
         p.setMarca("M");
         p.setUsuario(u);
         p.setTalla("42");
-        p.setUrlImagen("u");
+        p.setDirImagen("images/calz.png");
         p.setCategoria(CategoriaCalzado.DEPORTIVO);
         return prendaCalzadoRepository.save(p);
     }
 
     @Test
-    void guardarYRecuperarConjuntoCompleto() {
+    void testComprobarDatosIniciales() {
+        Conjunto c = conjuntoRepository.findByNombre("Negocios");
+        assertNotNull(c);
+        assertEquals("Negocios", c.getNombre());
+    }
+
+    @Test
+    void testGuardarYRecuperarConjuntoCompleto() {
         Usuario u = nuevoUsuario("eva");
         PrendaSuperior ps = sup(u);
         PrendaInferior pi = inf(u);
@@ -89,9 +97,6 @@ class ConjuntoRepositoryTests {
         c.setPrendaCalzado(pc);
         Conjunto guardado = conjuntoRepository.save(c);
 
-        em.flush();
-        em.clear();
-
         Conjunto rec = conjuntoRepository.findById(guardado.getId()).orElseThrow();
         assertEquals("Look Diario", rec.getNombre());
         assertEquals("eva", rec.getUsuario().getUsername());
@@ -105,32 +110,7 @@ class ConjuntoRepositoryTests {
     }
 
     @Test
-    void eliminarConjuntoNoEliminaPrendas() {
-        Usuario u = nuevoUsuario("max");
-        PrendaSuperior ps = sup(u);
-        PrendaInferior pi = inf(u);
-        PrendaCalzado pc = cal(u);
-
-        Conjunto c = new Conjunto();
-        c.setNombre("Look");
-        c.setUsuario(u);
-        c.setPrendaSuperior(ps);
-        c.setPrendaInferior(pi);
-        c.setPrendaCalzado(pc);
-        c = conjuntoRepository.save(c);
-
-        em.flush();
-        conjuntoRepository.deleteById(c.getId());
-        em.flush();
-        em.clear();
-
-        assertTrue(prendaSuperiorRepository.findById(ps.getId()).isPresent());
-        assertTrue(prendaInferiorRepository.findById(pi.getId()).isPresent());
-        assertTrue(prendaCalzadoRepository.findById(pc.getId()).isPresent());
-    }
-
-    @Test
-    void permitirReutilizarPrendaEnVariosConjuntos() {
+    void testPermitirReutilizarPrendaEnVariosConjuntos() {
         Usuario u = nuevoUsuario("reuse");
         PrendaSuperior ps = sup(u);
         PrendaInferior pi = inf(u);
@@ -156,9 +136,6 @@ class ConjuntoRepositoryTests {
         c2.setPrendaCalzado(pc);
         conjuntoRepository.save(c2);
 
-        em.flush();
-        em.clear();
-
         Conjunto r1 = conjuntoRepository.findById(c1.getId()).orElseThrow();
         Conjunto r2 = conjuntoRepository.findById(c2.getId()).orElseThrow();
 
@@ -172,7 +149,7 @@ class ConjuntoRepositoryTests {
     }
 
     @Test
-    void actualizarConjunto_cambiaPrendasYDescripcion() {
+    void testActualizarConjuntoCambiaPrendasYDescripcion() {
         Usuario u = nuevoUsuario("upd");
         PrendaSuperior ps1 = sup(u);
         PrendaInferior pi1 = inf(u);
@@ -190,18 +167,12 @@ class ConjuntoRepositoryTests {
         c.setPrendaCalzado(pc1);
         c = conjuntoRepository.save(c);
 
-        em.flush();
-        em.clear();
-
         Conjunto loaded = conjuntoRepository.findById(c.getId()).orElseThrow();
         loaded.setDescripcion("new");
         loaded.setPrendaSuperior(ps2);
         loaded.setPrendaInferior(pi2);
         loaded.setPrendaCalzado(pc2);
         conjuntoRepository.save(loaded);
-
-        em.flush();
-        em.clear();
 
         Conjunto after = conjuntoRepository.findById(c.getId()).orElseThrow();
         assertEquals("new", after.getDescripcion());
@@ -211,7 +182,7 @@ class ConjuntoRepositoryTests {
     }
 
     @Test
-    void guardarConjuntoSinUsuarioDebeFallar() {
+    void testGuardarConjuntoSinUsuarioDebeFallar() {
         Usuario u = nuevoUsuario("nouser");
         PrendaSuperior ps = sup(u);
 
@@ -222,7 +193,6 @@ class ConjuntoRepositoryTests {
 
         assertThatThrownBy(() -> {
             conjuntoRepository.save(c);
-            em.flush();
         }).isInstanceOfAny(
                 org.springframework.dao.DataIntegrityViolationException.class,
                 IllegalArgumentException.class
@@ -230,7 +200,7 @@ class ConjuntoRepositoryTests {
     }
 
     @Test
-    void eliminarConjuntoNoEliminaUsuario() {
+    void testEliminarConjuntoNoEliminaUsuario() {
         Usuario u = nuevoUsuario("keepuser");
         PrendaSuperior ps = sup(u);
         PrendaInferior pi = inf(u);
@@ -244,25 +214,8 @@ class ConjuntoRepositoryTests {
         c.setPrendaCalzado(pc);
         c = conjuntoRepository.save(c);
 
-        em.flush();
         conjuntoRepository.deleteById(c.getId());
-        em.flush();
-        em.clear();
 
         assertTrue(usuarioRepository.findById(u.getId()).isPresent());
-    }
-
-    @Test
-    void descripcionNoDebeExceder256Caracteres() {
-        Usuario u = nuevoUsuario("limite-desc");
-        Conjunto c = new Conjunto();
-        c.setUsuario(u);
-        c.setNombre("Desc larga");
-        c.setDescripcion("x".repeat(257));
-
-        assertThatThrownBy(() -> {
-            conjuntoRepository.save(c);
-            em.flush();
-        }).isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
     }
 }

@@ -4,7 +4,6 @@ import com.nada.nada.data.model.*;
 import com.nada.nada.data.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +15,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 class UsuarioRepositoryTests {
 
-    @Autowired private TestEntityManager em;
-    @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private PrendaSuperiorRepository prendaSuperiorRepository;
-    @Autowired private PrendaInferiorRepository prendaInferiorRepository;
-    @Autowired private PrendaCalzadoRepository prendaCalzadoRepository;
-    @Autowired private ConjuntoRepository conjuntoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PrendaSuperiorRepository prendaSuperiorRepository;
+
+    @Autowired
+    private PrendaInferiorRepository prendaInferiorRepository;
+
+    @Autowired
+    private PrendaCalzadoRepository prendaCalzadoRepository;
+
+    @Autowired
+    private ConjuntoRepository conjuntoRepository;
 
     private Usuario nuevoUsuario(String username) {
         Usuario u = new Usuario();
@@ -38,7 +45,7 @@ class UsuarioRepositoryTests {
         p.setMarca("Acme");
         p.setUsuario(u);
         p.setTalla("M");
-        p.setUrlImagen("http://img/superior.png");
+        p.setDirImagen("http://img/superior.png");
         p.setCategoria(CategoriaSuperior.CAMISETA);
         p.setManga(Manga.CORTA);
         return p;
@@ -51,7 +58,7 @@ class UsuarioRepositoryTests {
         p.setMarca("Acme");
         p.setUsuario(u);
         p.setTalla("32");
-        p.setUrlImagen("http://img/inferior.png");
+        p.setDirImagen("http://img/inferior.png");
         p.setCategoriaInferior(CategoriaInferior.JEAN);
         return p;
     }
@@ -63,27 +70,33 @@ class UsuarioRepositoryTests {
         p.setMarca("Acme");
         p.setUsuario(u);
         p.setTalla("42");
-        p.setUrlImagen("http://img/calzado.png");
+        p.setDirImagen("http://img/calzado.png");
         p.setCategoria(CategoriaCalzado.DEPORTIVO);
         return p;
     }
 
     @Test
-    void guardarYBuscarUsuarioPorUsername() {
-        Usuario u = nuevoUsuario("alice");
-        usuarioRepository.save(u);
-        em.flush();
-        em.clear();
+    void testComprobarDatosIniciales() {
+        Usuario fran = usuarioRepository.findByUsername("fran");
+        assertNotNull(fran);
+        assertEquals("fran", fran.getUsername());
+    }
 
-        Usuario encontrado = usuarioRepository.findByUsername("alice");
+    @Test
+    void testGuardarYBuscarUsuarioPorUsername() {
+        Usuario u = nuevoUsuario("anita");
+        usuarioRepository.save(u);
+
+        Usuario encontrado = usuarioRepository.findByUsername("anita");
         assertNotNull(encontrado);
-        assertEquals("alice", encontrado.getUsername());
+        assertEquals("anita", encontrado.getUsername());
         assertNotNull(encontrado.getId());
     }
 
     @Test
-    void usuarioPoseePrendasYConjuntos() {
-        Usuario u = usuarioRepository.save(nuevoUsuario("bob"));
+    @Transactional
+    void testUsuarioPoseePrendasYConjuntos() {
+        Usuario u = usuarioRepository.save(nuevoUsuario("bobby"));
 
         PrendaSuperior sup = prendaSuperiorRepository.save(nuevaSuperior(u, "Camiseta Blanca"));
         PrendaInferior inf = prendaInferiorRepository.save(nuevaInferior(u, "Jeans Azul"));
@@ -103,32 +116,26 @@ class UsuarioRepositoryTests {
         u.addPrenda(cal);
         u.addConjunto(c);
 
-        em.flush();
-        em.clear();
 
-        Usuario recargado = usuarioRepository.findByUsername("bob");
+        Usuario recargado = usuarioRepository.findByUsername("bobby");
         assertNotNull(recargado);
         assertEquals(3, recargado.getPrendas().size());
         assertEquals(1, recargado.getConjuntos().size());
     }
 
     @Test
-    void buscarUsuarioNoExistenteDevuelveNull() {
+    void testBuscarUsuarioNoExistenteDevuelveNull() {
         Usuario inexistente = usuarioRepository.findByUsername("no-existe");
         assertThat(inexistente).isNull();
     }
 
     @Test
-    void actualizarDatosBasicosUsuario() {
+    void testActualizarDatosBasicosUsuario() {
         Usuario u = usuarioRepository.save(nuevoUsuario("carl"));
-        em.flush();
-        em.clear();
 
         Usuario fetched = usuarioRepository.findByUsername("carl");
         fetched.setEmail("nuevo@gmail.com");
         usuarioRepository.save(fetched);
-        em.flush();
-        em.clear();
 
         Usuario after = usuarioRepository.findByUsername("carl");
         assertThat(after.getEmail()).isEqualTo("nuevo@gmail.com");
@@ -136,7 +143,7 @@ class UsuarioRepositoryTests {
 
     @Test
     @Transactional
-    void navegarRelacionesDesdeUsuario() {
+    void testNavegarRelacionesDesdeUsuario() {
         Usuario u = usuarioRepository.save(nuevoUsuario("dora"));
 
         PrendaSuperior sup = prendaSuperiorRepository.save(nuevaSuperior(u, "Top Dora"));

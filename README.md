@@ -79,7 +79,80 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 
 ---
 
-## Instalación de la BD
+## Ejecución
 
-Esto toca rellenarlo
+Para ejecutar la aplicación es necesario tener instalado Docker y Docker Compose (ambos incluidos en Docker Desktop).
+
+1. Abre una terminal en la carpeta raíz del proyecto.
+2. Ejecuta:
+
+```bash
+docker compose up --build
+```
+
+Esto:
+- Construye la imagen de la aplicación usando el Dockerfile.
+- Levanta un contenedor de MySQL y otro de la aplicación.
+- Inicializa automáticamente la base de datos con datos de ejemplo.
+
+La aplicación estará disponible en:
+
+```bash
+http://localhost:8080
+```
+
+### Ejecuciones posteriores
+Si la imagen ya fue construida anteriormente, puedes iniciar la aplicación en segundo plano simplemente con:
+
+```bash
+docker compose up -d
+```
+
+### Detener contenedores
+Para detener los contenedores sin eliminarlos:
+
+```bash
+docker compose down
+```
+
+### Detener y borrar datos
+Para detener los contenedores y eliminar también los volúmenes (incluidos los datos de MySQL):
+
+```bash
+docker compose down -v
+```
+
+
+## Estructura del proyecto
+
+La aplicación utiliza diferentes configuraciones según el entorno de ejecución.
+
+### Entorno Docker (ejecución normal)
+
+- Se ejecuta mediante docker compose.
+- Utiliza una base de datos MySQL.
+- Carga datos iniciales automáticamente desde docker/data.sql
+
+- Archivos relevantes:
+    - Dockerfile → Construcción de la imagen de la aplicación.
+    - docker-compose.yml → Orquestación de contenedores.
+    - docker/data.sql → Datos iniciales para MySQL.
+
+### Entorno de Test (JUnit)
+
+- Los tests se ejecutan sobre H2 en memoria.
+- Utilizan el perfil test, definido en:
+
+```bash
+src/test/resources/application-test.yml
+```
+
+- Cargan datos iniciales desde:
+
+```bash
+src/test/resources/data.sql
+```
+
+- El esquema de la BD se genera dinámicamente mediante Hibernate (ddl-auto=create-drop).
+
 

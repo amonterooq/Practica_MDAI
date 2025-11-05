@@ -55,7 +55,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- H2 por si acaso -->
+        <!-- H2  -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -68,6 +68,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
