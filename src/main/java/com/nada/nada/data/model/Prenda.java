@@ -1,6 +1,7 @@
 package com.nada.nada.data.model;
 
 import jakarta.persistence.*;
+
 import java.util.Objects;
 
 @Entity
@@ -8,7 +9,7 @@ import java.util.Objects;
 @DiscriminatorColumn(name = "tipo_prenda", discriminatorType = DiscriminatorType.STRING)
 public abstract class Prenda {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
     protected String nombre;
     protected String color;

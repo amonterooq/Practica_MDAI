@@ -57,6 +57,7 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 - El usuario debe poder **eliminar o modificar** prendas y conjuntos de su armario digital.
 - El usuario debe poder **ver los conjuntos guardados y las prendas disponibles** en su armario.
 - La **persistencia de datos** debe garantizar que **cada usuario tenga su propio armario digital único**.
+- Al **eliminar una prenda** se eliminarán los conjuntos que la referencien.
 - Al **eliminar un usuario** se eliminarán todas sus prendas y conjuntos asociados.
 
 ---

@@ -15,12 +15,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 class RequisitosTests {
 
-    @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private PrendaRepository prendaRepository;
-    @Autowired private PrendaSuperiorRepository prendaSuperiorRepository;
-    @Autowired private PrendaInferiorRepository prendaInferiorRepository;
-    @Autowired private PrendaCalzadoRepository prendaCalzadoRepository;
-    @Autowired private ConjuntoRepository conjuntoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private PrendaRepository prendaRepository;
+    @Autowired
+    private PrendaSuperiorRepository prendaSuperiorRepository;
+    @Autowired
+    private PrendaInferiorRepository prendaInferiorRepository;
+    @Autowired
+    private PrendaCalzadoRepository prendaCalzadoRepository;
+    @Autowired
+    private ConjuntoRepository conjuntoRepository;
 
     private Usuario user(String username) {
         Usuario u = new Usuario();
@@ -98,15 +104,23 @@ class RequisitosTests {
     void testRequisitoBusquedaPorAtributosYCategorias() {
         Usuario u = user("search");
         PrendaSuperior ps = sup(u, "Camiseta Blanca");
-        ps.setColor("Blanco"); ps.setMarca("Zara"); ps.setTalla("M");
+        ps.setColor("Blanco");
+        ps.setMarca("Zara");
+        ps.setTalla("M");
         prendaSuperiorRepository.save(ps);
 
         PrendaInferior pi = inf(u, "Jean Azul");
-        pi.setColor("Azul"); pi.setMarca("Levis"); pi.setTalla("32"); pi.setCategoriaInferior(CategoriaInferior.JEAN);
+        pi.setColor("Azul");
+        pi.setMarca("Levis");
+        pi.setTalla("32");
+        pi.setCategoriaInferior(CategoriaInferior.JEAN);
         prendaInferiorRepository.save(pi);
 
         PrendaCalzado pc = cal(u, "Zapatilla Negra");
-        pc.setColor("Negro"); pc.setMarca("Nike"); pc.setTalla("42"); pc.setCategoria(CategoriaCalzado.DEPORTIVO);
+        pc.setColor("Negro");
+        pc.setMarca("Nike");
+        pc.setTalla("42");
+        pc.setCategoria(CategoriaCalzado.DEPORTIVO);
         prendaCalzadoRepository.save(pc);
 
         List<Prenda> porColor = prendaRepository.findAllByUsuario_IdAndColorContainingIgnoreCase(u.getId(), "blan");
@@ -199,10 +213,18 @@ class RequisitosTests {
         PrendaCalzado pc2 = cal(u2, "u2-c");
 
         Conjunto c1 = new Conjunto();
-        c1.setNombre("c1"); c1.setUsuario(u1); c1.setPrendaSuperior(ps1); c1.setPrendaInferior(pi1); c1.setPrendaCalzado(pc1);
+        c1.setNombre("c1");
+        c1.setUsuario(u1);
+        c1.setPrendaSuperior(ps1);
+        c1.setPrendaInferior(pi1);
+        c1.setPrendaCalzado(pc1);
         conjuntoRepository.save(c1);
         Conjunto c2 = new Conjunto();
-        c2.setNombre("c2"); c2.setUsuario(u2); c2.setPrendaSuperior(ps2); c2.setPrendaInferior(pi2); c2.setPrendaCalzado(pc2);
+        c2.setNombre("c2");
+        c2.setUsuario(u2);
+        c2.setPrendaSuperior(ps2);
+        c2.setPrendaInferior(pi2);
+        c2.setPrendaCalzado(pc2);
         conjuntoRepository.save(c2);
 
         assertEquals(3, prendaRepository.countByUsuario_Id(u1.getId()));
@@ -219,8 +241,12 @@ class RequisitosTests {
         PrendaInferior pi = inf(u, "Inf");
         PrendaCalzado pc = cal(u, "Cal");
         Conjunto c = new Conjunto();
-        c.setNombre("Set"); c.setDescripcion("full"); c.setUsuario(u);
-        c.setPrendaSuperior(ps); c.setPrendaInferior(pi); c.setPrendaCalzado(pc);
+        c.setNombre("Set");
+        c.setDescripcion("full");
+        c.setUsuario(u);
+        c.setPrendaSuperior(ps);
+        c.setPrendaInferior(pi);
+        c.setPrendaCalzado(pc);
         conjuntoRepository.save(c);
 
         Long uid = u.getId();
@@ -236,5 +262,59 @@ class RequisitosTests {
         assertTrue(prendaInferiorRepository.findById(piId).isEmpty());
         assertTrue(prendaCalzadoRepository.findById(pcId).isEmpty());
         assertTrue(conjuntoRepository.findById(cId).isEmpty());
+    }
+
+    // Requisito: eliminar prenda elimina conjuntos asociados
+    @Test
+    void testRequisitoEliminarPrendaEliminaConjuntosAsociados() {
+        Usuario u = user("paula");
+
+        // Prendas
+        PrendaSuperior ps1 = sup(u, "Camiseta Roja");
+        PrendaSuperior ps2 = sup(u, "Camiseta Azul");
+        PrendaInferior pi1 = inf(u, "Pantalón Negro");
+        PrendaInferior pi2 = inf(u, "Pantalón Gris");
+        PrendaCalzado pc1 = cal(u, "Zapatillas Negras");
+        PrendaCalzado pc2 = cal(u, "Botas Marrones");
+
+        // Conjuntos independientes por tipo de prenda objetivo
+        Conjunto cSup = new Conjunto();
+        cSup.setNombre("Look Superior");
+        cSup.setUsuario(u);
+        cSup.setPrendaSuperior(ps1);
+        cSup.setPrendaInferior(pi2);
+        cSup.setPrendaCalzado(pc2);
+        cSup = conjuntoRepository.save(cSup);
+
+        Conjunto cInf = new Conjunto();
+        cInf.setNombre("Look Inferior");
+        cInf.setUsuario(u);
+        cInf.setPrendaSuperior(ps2);
+        cInf.setPrendaInferior(pi1);
+        cInf.setPrendaCalzado(pc2);
+        cInf = conjuntoRepository.save(cInf);
+
+        Conjunto cCal = new Conjunto();
+        cCal.setNombre("Look Calzado");
+        cCal.setUsuario(u);
+        cCal.setPrendaSuperior(ps2);
+        cCal.setPrendaInferior(pi2);
+        cCal.setPrendaCalzado(pc1);
+        cCal = conjuntoRepository.save(cCal);
+
+        // Borrar superior -> solo cae cSup
+        prendaSuperiorRepository.deleteById(ps1.getId());
+        assertTrue(conjuntoRepository.findById(cSup.getId()).isEmpty());
+        assertTrue(conjuntoRepository.findById(cInf.getId()).isPresent());
+        assertTrue(conjuntoRepository.findById(cCal.getId()).isPresent());
+
+        // Borrar inferior -> solo cae cInf
+        prendaInferiorRepository.deleteById(pi1.getId());
+        assertTrue(conjuntoRepository.findById(cInf.getId()).isEmpty());
+        assertTrue(conjuntoRepository.findById(cCal.getId()).isPresent());
+
+        // Borrar calzado -> solo cae cCal
+        prendaCalzadoRepository.deleteById(pc1.getId());
+        assertTrue(conjuntoRepository.findById(cCal.getId()).isEmpty());
     }
 }
