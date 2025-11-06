@@ -87,7 +87,7 @@ Para ejecutar la aplicación es necesario tener instalado Docker y Docker Compos
 2. Ejecuta:
 
 ```bash
-docker compose up --build
+  docker compose up --build
 ```
 
 Esto:
@@ -98,28 +98,28 @@ Esto:
 La aplicación estará disponible en:
 
 ```bash
-http://localhost:8080
+  http://localhost:8080
 ```
 
 ### Ejecuciones posteriores
 Si la imagen ya fue construida anteriormente, puedes iniciar la aplicación en segundo plano simplemente con:
 
 ```bash
-docker compose up -d
+  docker compose up -d
 ```
 
 ### Detener contenedores
 Para detener los contenedores sin eliminarlos:
 
 ```bash
-docker compose down
+  docker compose down
 ```
 
 ### Detener y borrar datos
 Para detener los contenedores y eliminar también los volúmenes (incluidos los datos de MySQL):
 
 ```bash
-docker compose down -v
+  docker compose down -v
 ```
 
 
@@ -144,13 +144,13 @@ La aplicación utiliza diferentes configuraciones según el entorno de ejecució
 - Utilizan el perfil test, definido en:
 
 ```bash
-src/test/resources/application-test.yml
+  src/test/resources/application-test.yml
 ```
 
 - Cargan datos iniciales desde:
 
 ```bash
-src/test/resources/data.sql
+  src/test/resources/data.sql
 ```
 
 - El esquema de la BD se genera dinámicamente mediante Hibernate (ddl-auto=create-drop).
