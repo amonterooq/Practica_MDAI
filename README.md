@@ -75,7 +75,7 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 ---
 
 ## Diagrama E-R
-<img src="src/main/resources/images/DiagramaER.PNG" alt="DiagramaER"/>
+<img src="src/main/resources/images/DiagramaER.PNG" alt="DiagramaER" width="600"/>
 
 ---
 
