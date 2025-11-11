@@ -4,7 +4,13 @@ import com.nada.nada.data.model.Usuario;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
-    public Usuario findByUsername(String username);
+    Usuario findByUsername(String username);
+
+    // Añadidos para soporte en la capa servicio
+    boolean existsByEmail(String email);
+    Optional<Usuario> findByEmail(String email);
 }

@@ -1,12 +1,16 @@
 package com.nada.nada.data.services;
 
+import com.nada.nada.data.model.Conjunto;
+import com.nada.nada.data.model.Prenda;
 import com.nada.nada.data.model.Usuario;
 import com.nada.nada.data.repository.ConjuntoRepository;
 import com.nada.nada.data.repository.PrendaRepository;
 import com.nada.nada.data.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,35 +32,65 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     //En la capa servicios es donde se implementa la LOGICA de negocio
     @Override
-    public List<Usuario> findAllUsers() {
-        // TODO Asi no es recomendable: Comprobar si hay usuarios, si esta vacio ...
-        return (List<Usuario>) this.usuarioRepository.findAll();
+    public List<Usuario> buscarTodosUsuarios() {
+        List<Usuario> usuarios = (List<Usuario>) this.usuarioRepository.findAll();
+        if (usuarios.isEmpty()) {
+            return null;
+        }
+        return usuarios;
     }
 
     @Override
+    @Transactional
     public void crearUsuario(Usuario usuario) {
-        // TODO Logica...
+        if (usuario == null) {
+            throw new IllegalArgumentException("El usuario no puede ser nulo");
+        }
+        if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("El username es obligatorio");
+        }
+        if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("El email es obligatorio");
+        }
+
+        // Comprobar duplicado de email
+        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+            throw new IllegalArgumentException("Ya existe un usuario con ese email");
+        }
+
+        // Inicializar colecciones si vienen nulas
+        if (usuario.getPrendas() == null) usuario.setPrendas(new ArrayList<>());
+        if (usuario.getConjuntos() == null) usuario.setConjuntos(new ArrayList<>());
+
         usuarioRepository.save(usuario);
     }
 
     @Override
+    @Transactional
     public void actualizarUsuario(Usuario usuario) {
+        if (usuario == null || usuario.getId() == null) {
+            throw new IllegalArgumentException("El usuario y su ID no pueden ser nulos");
+        }
 
-        //Algo de logica de control, de como ha ido la operacion, no estaria mal.
-        //recordad el usuario viene sin direcciones, pero solo se van a actualizar los campos actualizados.
-        //Hibernate salida sql: Hibernate: update usuario set email=?,name=? where id=?
-        usuarioRepository.save(usuario);
+        Usuario usuarioExistente = usuarioRepository.findById(usuario.getId())
+                .orElseThrow(() -> new RuntimeException("Usuario con ID " + usuario.getId() + " no encontrado"));
 
-        // ---- otra opcion ---
-        //podemos pedir al repositorio el usuario existente que comparte ese usuario.id y actualizar sus campos, por si en algun caso es necesario:
-        // Obtener el usuario existente de la base de datos
-        //		Usuario usuarioExistente = usuarioRepository.findById(usuario.getId());
-        //
-        //		// Actualizar solo los campos que se pueden actualizar
-        //		usuarioExistente.setNombre(usuario.getNombre());
-        //		usuarioExistente.setEmail(usuario.getEmail());
-        //
-        //	   usuarioRepository.save(usuarioExistente);
+        // Actualizar solo campos permitidos
+        if (usuario.getUsername() != null && !usuario.getUsername().trim().isEmpty()) {
+            usuarioExistente.setUsername(usuario.getUsername());
+        }
+        if (usuario.getPassword() != null && !usuario.getPassword().trim().isEmpty()) {
+            usuarioExistente.setPassword(usuario.getPassword());
+        }
+        if (usuario.getEmail() != null && !usuario.getEmail().trim().isEmpty()) {
+            Optional<Usuario> porEmail = usuarioRepository.findByEmail(usuario.getEmail());
+            if (porEmail.isPresent() && !porEmail.get().getId().equals(usuario.getId())) {
+                throw new IllegalArgumentException("Ya existe otro usuario con ese email");
+            }
+            usuarioExistente.setEmail(usuario.getEmail());
+        }
+
+        usuarioRepository.save(usuarioExistente);
 
     }
 
@@ -66,10 +100,29 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
     public void deleteUsuarioById(Long usuarioId) {
-        //Algo de logica de control, de como ha ido la operacion, no estaria mal.
-        Usuario usuario= usuarioRepository.findById(usuarioId).get();//optional a lo bruto. Mejorarlo.
+        if (usuarioId == null) throw new IllegalArgumentException("El id no puede ser nulo");
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario con ID " + usuarioId + " no encontrado"));
+
+        // Eliminar conjuntos que requieren usuario no nulo (joinColumn nullable = false)
+        List<Conjunto> conjuntos = conjuntoRepository.findByUsuario_Id(usuarioId);
+        if (conjuntos != null && !conjuntos.isEmpty()) {
+            for (Conjunto c : conjuntos) {
+                conjuntoRepository.delete(c);
+            }
+        }
+
+        // Desvincular prendas: poner usuario = null para evitar violación FK
+        if (usuario.getPrendas() != null && !usuario.getPrendas().isEmpty()) {
+            for (Prenda p : new ArrayList<>(usuario.getPrendas())) {
+                p.setUsuario(null);
+                prendaRepository.save(p);
+            }
+        }
+
         usuarioRepository.deleteById(usuarioId);
     }
 }
-

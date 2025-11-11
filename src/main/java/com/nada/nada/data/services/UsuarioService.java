@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioService {
-    public List<Usuario> findAllUsers();
+    public List<Usuario> buscarTodosUsuarios();
 
     public void crearUsuario(Usuario usuario);
     public void actualizarUsuario(Usuario usuario);
