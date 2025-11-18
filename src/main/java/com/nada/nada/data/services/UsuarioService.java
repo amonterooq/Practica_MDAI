@@ -6,12 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioService {
-    public List<Usuario> buscarTodosUsuarios();
-
-    public void crearUsuario(Usuario usuario);
-    public void actualizarUsuario(Usuario usuario);
-
-    public Optional<Usuario> findUsuarioById(Long id);
-
-    public void deleteUsuarioById(Long id);
+    public List<Usuario> buscarTodos();
+    public Usuario crearUsuario(Usuario usuario);
+    public Optional<Usuario> encontrarPorId(Long id);
+    public void eliminarPorId(Long id);
 }

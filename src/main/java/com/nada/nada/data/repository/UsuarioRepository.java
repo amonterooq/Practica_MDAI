@@ -13,4 +13,5 @@ public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
     // Añadidos para soporte en la capa servicio
     boolean existsByEmail(String email);
     Optional<Usuario> findByEmail(String email);
+    boolean existsByUsername(String username);
 }
