@@ -59,7 +59,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("El email del usuario no puede estar vacío");
         }
-        if (!user.getEmail().contains("@") || !usuario.getEmail().contains(".")) {
+        if (!usuario.getEmail().contains("@") || !usuario.getEmail().contains(".")) {
             throw new IllegalArgumentException("Formato de email inválido");
         }
         // Comprobar duplicado

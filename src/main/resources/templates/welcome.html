@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NADA - Tu Armario Digital</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .hero {
+            padding: 60px 0;
+            text-align: center;
+            color: white;
+        }
+        .logo-container {
+            margin-bottom: 30px;
+        }
+        .logo-container img {
+            max-width: 180px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        }
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        .feature-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 40px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .btn-custom {
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+        .btn-primary-custom:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+        }
+        .slogan {
+            font-style: italic;
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <div class="logo-container">
+            <img th:src="@{/images/logo.png}" alt="Logo NADA">
+        </div>
+        <h1 class="display-3 fw-bold mb-3">NADA</h1>
+        <p class="slogan">¿No tienes NADA que ponerte?</p>
+        <p class="lead mb-4">Tu armario digital personal al alcance de un clic</p>
+    </div>
+
+    <div class="feature-section">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card text-center p-4">
+                    <div class="card-body">
+                        <i class="fas fa-tshirt card-icon"></i>
+                        <h5 class="card-title fw-bold mb-3">Gestiona tus Prendas</h5>
+                        <p class="card-text">Sube fotos de tu ropa, organízala por categorías, colores, marcas y tallas</p>
+                        <a href="/users" class="btn btn-primary-custom btn-custom mt-3">
+                            <i class="fas fa-users me-2"></i>Ver Usuarios
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-center p-4">
+                    <div class="card-body">
+                        <i class="fas fa-palette card-icon"></i>
+                        <h5 class="card-title fw-bold mb-3">Crea Conjuntos</h5>
+                        <p class="card-text">Combina tus prendas favoritas y guarda looks personalizados para cualquier ocasión</p>
+                        <a href="/users/new" class="btn btn-primary-custom btn-custom mt-3">
+                            <i class="fas fa-user-plus me-2"></i>Nuevo Usuario
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-center p-4">
+                    <div class="card-body">
+                        <i class="fas fa-search card-icon"></i>
+                        <h5 class="card-title fw-bold mb-3">Busca y Organiza</h5>
+                        <p class="card-text">Encuentra rápidamente cualquier prenda por tipo, color, marca o categoría</p>
+                        <a href="/" class="btn btn-primary-custom btn-custom mt-3">
+                            <i class="fas fa-home me-2"></i>Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <h3 class="mb-4">¿Listo para organizar tu armario?</h3>
+            <p class="text-muted mb-4">Diseñado para PC y móvil · Responsive · Fácil de usar</p>
+            <a href="/users" class="btn btn-primary-custom btn-custom btn-lg">
+                <i class="fas fa-rocket me-2"></i>Comenzar Ahora
+            </a>
+        </div>
+    </div>
+
+    <footer class="text-center text-white mt-5 pb-4">
+        <p class="mb-2">Creado por Francisco Montero Sánchez y Ana Montero Preciado</p>
+        <p class="small opacity-75">© 2025 NADA - Todos los derechos reservados</p>
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
