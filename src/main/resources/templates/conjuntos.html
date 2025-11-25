@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NADA - Mis Conjuntos</title>
+    <!-- Agrega aquí tus enlaces a CSS, por ejemplo, Bootstrap -->
+</head>
+<body>
+    <header>
+        <h1>Mis Conjuntos</h1>
+        <!-- Aquí puedes incluir una barra de navegación -->
+    </header>
+
+    <main>
+        <section id="crear-conjunto">
+            <h2>Crear Nuevo Conjunto</h2>
+            <!-- Formulario para crear un nuevo conjunto -->
+            <form th:action="@{/conjuntos/crear}" method="post">
+                <!-- Campos para el nombre del conjunto, notas, etc. -->
+                <div>
+                    <label for="nombre">Nombre del Conjunto:</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                <div>
+                    <label for="notas">Notas:</label>
+                    <textarea id="notas" name="notas" maxlength="256"></textarea>
+                </div>
+                <!-- Aquí iría la selección de prendas -->
+                <div>
+                    <h3>Selecciona las prendas</h3>
+                    <!-- Lógica para mostrar y seleccionar prendas -->
+                </div>
+                <button type="submit">Guardar Conjunto</button>
+            </form>
+        </section>
+
+        <section id="lista-conjuntos">
+            <h2>Conjuntos Guardados</h2>
+            <!-- Aquí se mostrará la lista de conjuntos del usuario -->
+            <div th:if="${conjuntos != null and !conjuntos.isEmpty()}">
+                <!-- Itera sobre la lista de conjuntos -->
+                <div th:each="conjunto : ${conjuntos}">
+                    <h3 th:text="${conjunto.nombre}">Nombre del Conjunto</h3>
+                    <p th:text="${conjunto.notas}">Notas del conjunto.</p>
+                    <!-- Lógica para mostrar las prendas del conjunto -->
+                    <div>
+                        <h4>Prendas:</h4>
+                        <!-- Itera sobre las prendas del conjunto -->
+                    </div>
+                    <div>
+                        <a th:href="@{/conjuntos/editar/{id}(id=${conjunto.id})}">Editar</a>
+                        <a th:href="@{/conjuntos/eliminar/{id}(id=${conjunto.id})}">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${conjuntos == null or conjuntos.isEmpty()}">
+                <p>Aún no tienes ningún conjunto guardado.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Pie de página -->
+    </footer>
+</body>
+</html>
+
