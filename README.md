@@ -4,7 +4,7 @@
 
 ## LOGO  
 <p align="center">
-  <img src="src/main/resources/images/logo.png" alt="Logo NADA" width="200"/>
+  <img src="src/main/resources/static/images/logo.png" alt="Logo NADA" width="200"/>
 </p>
 
 ---
@@ -76,7 +76,7 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 ---
 
 ## Diagrama E-R
-<img src="src/main/resources/images/DiagramaER.PNG" alt="DiagramaER" width="600"/>
+<img src="src/main/resources/static/images/DiagramaER.PNG" alt="DiagramaER" width="600"/>
 
 ---
 
