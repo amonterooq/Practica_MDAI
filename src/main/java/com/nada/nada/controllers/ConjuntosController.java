@@ -9,16 +9,14 @@ import com.nada.nada.data.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
+@RequestMapping("/conjuntos") // Dominio
 public class ConjuntosController {
 
     @Autowired
@@ -33,14 +31,14 @@ public class ConjuntosController {
     // Simulación de un ID de usuario logueado. En una aplicación real, esto se manejaría con Spring Security.
     private final Long USUARIO_ID_SIMULADO = 1L;
 
-    @GetMapping("/conjuntos")
+    @GetMapping("/")
     public String verConjuntos(Model model) {
         List<Conjunto> conjuntos = conjuntoService.buscarConjuntosPorUsuarioId(USUARIO_ID_SIMULADO);
         model.addAttribute("conjuntos", conjuntos);
         return "conjuntos";
     }
 
-    @GetMapping("/conjuntos/crear")
+    @GetMapping("/crear")
     public String mostrarFormularioCrear(Model model) {
         List<Prenda> prendas = prendaService.buscarPrendasPorUsuarioId(USUARIO_ID_SIMULADO);
         model.addAttribute("prendasSuperiores", prendas.stream().filter(p -> p instanceof com.nada.nada.data.model.PrendaSuperior).collect(Collectors.toList()));
@@ -50,7 +48,7 @@ public class ConjuntosController {
         return "formularioConjunto"; // Se usará una vista de formulario dedicada
     }
 
-    @PostMapping("/conjuntos/crear")
+    @PostMapping("/crear")
     public String crearConjunto(@RequestParam String nombre,
                                 @RequestParam String descripcion,
                                 @RequestParam Long prendaSuperiorId,
@@ -81,7 +79,7 @@ public class ConjuntosController {
         return "redirect:/conjuntos";
     }
 
-    @GetMapping("/conjuntos/eliminar/{id}")
+    @GetMapping("/eliminar/{id}")
     public String eliminarConjunto(@PathVariable Long id) {
         conjuntoService.borrarConjunto(id);
         return "redirect:/conjuntos";
