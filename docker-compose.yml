@@ -11,8 +11,8 @@ services:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_0900_ai_ci
     volumes:
+      # Este volumen es para la persistencia de los datos de MySQL
       - mysql_data:/var/lib/mysql
-      - ./docker/sql:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
     healthcheck:
@@ -37,6 +37,5 @@ services:
     ports:
       - "8080:8080"
     restart: unless-stopped
-
 volumes:
   mysql_data:

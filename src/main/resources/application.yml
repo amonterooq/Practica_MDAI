@@ -18,8 +18,15 @@ spring:
     url: jdbc:mysql://${MYSQL_HOST:db}:${MYSQL_PORT:3306}/${MYSQL_DB:nada}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
     username: ${MYSQL_USER:nada}
     password: ${MYSQL_PASSWORD:nada}
-    driver-class-name: com.mysql.cj.jdbc.Driver   # <-- explícito para evitar H2
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     open-in-view: false
     hibernate:
+      # 1. JPA creará/actualizará las tablas basado en tus @Entity
       ddl-auto: update
+    # 2. Esta propiedad le dice a Spring que espere a que JPA termine antes de ejecutar data.sql
+    defer-datasource-initialization: true
+  sql:
+    init:
+      # 3. Esto habilita la ejecución de data.sql
+      mode: always

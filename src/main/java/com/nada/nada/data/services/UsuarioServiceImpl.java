@@ -29,6 +29,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuarios.isEmpty()) {
             throw new RuntimeException("No hay usuarios en la base de datos");
         }
+
         return usuarios;
     }
 
