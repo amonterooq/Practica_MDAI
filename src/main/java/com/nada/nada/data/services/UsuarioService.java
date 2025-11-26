@@ -9,5 +9,6 @@ public interface UsuarioService {
     public List<Usuario> buscarTodos();
     public Usuario crearUsuario(Usuario usuario);
     public Optional<Usuario> encontrarPorId(Long id);
+    public Optional<Usuario> validarLogin(String username, String password);
     public void eliminarPorId(Long id);
 }

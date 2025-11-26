@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,8 +79,9 @@ class UsuarioRepositoryTests {
 
     @Test
     void testComprobarDatosIniciales() {
-        Usuario fran = usuarioRepository.findByUsername("fran");
-        assertNotNull(fran);
+        Optional<Usuario> franOpt = usuarioRepository.findByUsername("fran");
+        assertTrue(franOpt.isPresent());
+        Usuario fran = franOpt.get();
         assertEquals("fran", fran.getUsername());
     }
 
@@ -87,8 +90,9 @@ class UsuarioRepositoryTests {
         Usuario u = nuevoUsuario("anita");
         usuarioRepository.save(u);
 
-        Usuario encontrado = usuarioRepository.findByUsername("anita");
-        assertNotNull(encontrado);
+        Optional<Usuario> encontradoOpt = usuarioRepository.findByUsername("anita");
+        assertTrue(encontradoOpt.isPresent());
+        Usuario encontrado = encontradoOpt.get();
         assertEquals("anita", encontrado.getUsername());
         assertNotNull(encontrado.getId());
     }
@@ -117,27 +121,32 @@ class UsuarioRepositoryTests {
         u.addConjunto(c);
 
 
-        Usuario recargado = usuarioRepository.findByUsername("bobby");
-        assertNotNull(recargado);
+        Optional<Usuario> recargadoOpt = usuarioRepository.findByUsername("bobby");
+        assertTrue(recargadoOpt.isPresent());
+        Usuario recargado = recargadoOpt.get();
         assertEquals(3, recargado.getPrendas().size());
         assertEquals(1, recargado.getConjuntos().size());
     }
 
     @Test
     void testBuscarUsuarioNoExistenteDevuelveNull() {
-        Usuario inexistente = usuarioRepository.findByUsername("no-existe");
-        assertThat(inexistente).isNull();
+        Optional<Usuario> inexistente = usuarioRepository.findByUsername("no-existe");
+        assertThat(inexistente).isNotPresent();
     }
 
     @Test
     void testActualizarDatosBasicosUsuario() {
-        Usuario u = usuarioRepository.save(nuevoUsuario("carl"));
+        usuarioRepository.save(nuevoUsuario("carl"));
 
-        Usuario fetched = usuarioRepository.findByUsername("carl");
+        Optional<Usuario> fetchedOpt = usuarioRepository.findByUsername("carl");
+        assertTrue(fetchedOpt.isPresent());
+        Usuario fetched = fetchedOpt.get();
         fetched.setEmail("nuevo@gmail.com");
         usuarioRepository.save(fetched);
 
-        Usuario after = usuarioRepository.findByUsername("carl");
+        Optional<Usuario> afterOpt = usuarioRepository.findByUsername("carl");
+        assertTrue(afterOpt.isPresent());
+        Usuario after = afterOpt.get();
         assertThat(after.getEmail()).isEqualTo("nuevo@gmail.com");
     }
 

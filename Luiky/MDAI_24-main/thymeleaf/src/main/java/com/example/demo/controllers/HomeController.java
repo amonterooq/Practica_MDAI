@@ -16,7 +16,7 @@ public class HomeController {
 	public String index() {
 		System.out.println("\n\t Recogo la peticion a / (http://localhost:8080/)\n"
 				+ "\t Devuelvo la vista index\n"
-				+ "\t index.html esta en Templates");
+				+ "\t index_antiguo.html esta en Templates");
 		return "index";
 	}
 	

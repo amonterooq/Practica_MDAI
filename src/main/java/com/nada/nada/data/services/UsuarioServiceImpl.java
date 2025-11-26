@@ -94,4 +94,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         usuarioRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<Usuario> validarLogin(String username, String password) {
+        Optional<Usuario> u = usuarioRepository.findByUsername(username);
+
+        // Comprueba si el usuario existe y si la contraseña coincide
+        if (u.isPresent() && u.get().getPassword().equals(password)) {
+            return u;
+        }
+
+        return Optional.empty();
+    }
 }
