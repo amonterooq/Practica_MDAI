@@ -3,66 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NADA - Mis Conjuntos</title>
-    <!-- Agrega aquí tus enlaces a CSS, por ejemplo, Bootstrap -->
+    <title>NADA | Mis Conjuntos</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- VARIABLES Y RESET --- */
+        :root {
+            --bg-color: #fafafa;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #2c3e50; /* Azul oscuro elegante */
+            --accent-hover: #1a252f;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Lato', sans-serif;
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        img { display: block; max-width: 100%; }
+
+        /* --- NAVEGACIÓN --- */
+        .navbar {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        .logo .dot { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-primary); font-weight: 700; }
+
+        .btn-link {
+            background: none; border: none; font: inherit; cursor: pointer;
+            color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem;
+        }
+        .btn-link:hover { color: #d9534f; }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .main-container {
+            display: grid;
+            grid-template-columns: 380px 1fr; /* Panel fijo izquierda ancho, contenido derecha */
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            min-height: 85vh;
+            align-items: start; /* Importante para el sticky */
+        }
+
+        /* --- PANEL IZQUIERDO (CREADOR) --- */
+        .creator-panel {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 100px; /* Ajuste para que no choque con el navbar */
+            border: 1px solid var(--border-color);
+        }
+
+        .panel-header h2 { font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 0.5rem;}
+        .panel-header p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 2rem; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block; font-size: 0.75rem; font-weight: 700;
+            margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none; border-color: var(--accent); background: #fff;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        /* --- SELECTOR DE PRENDAS --- */
+        .garment-selector { margin: 2rem 0; border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
+        .garment-selector h3 { font-size: 1rem; margin-bottom: 1rem; font-family: var(--font-heading); }
+
+        .category-tabs {
+            display: flex; gap: 15px; margin-bottom: 15px; font-size: 0.8rem;
+            color: var(--text-secondary); cursor: pointer; border-bottom: 1px solid #eee; padding-bottom: 10px;
+        }
+        .category-tabs span:hover { color: var(--accent); }
+        .category-tabs span.active { color: var(--text-primary); font-weight: bold; border-bottom: 2px solid var(--accent); }
+
+        /* Grid de Scroll */
+        .garments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        /* Scrollbar personalizado */
+        .garments-grid::-webkit-scrollbar { width: 6px; }
+        .garments-grid::-webkit-scrollbar-track { background: #f1f1f1; }
+        .garments-grid::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+        /* Checkbox Oculto y Tarjeta Visual */
+        .garment-checkbox { position: relative; }
+        .garment-checkbox input { display: none; }
+
+        .garment-card-mini {
+            position: relative;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.2s;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+        }
+
+        .garment-card-mini img {
+            width: 100%; height: 100%; object-fit: cover; transition: 0.3s;
+        }
+
+        .garment-card-mini .placeholder-text {
+            font-size: 0.7rem; color: #ccc; text-align: center; padding: 5px;
+        }
+
+        /* Icono de Check */
+        .check-icon {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            color: white; background: var(--accent); border-radius: 50%; width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Estado Seleccionado */
+        .garment-checkbox input:checked + .garment-card-mini {
+            border: 2px solid var(--accent);
+        }
+        .garment-checkbox input:checked + .garment-card-mini img { opacity: 0.3; }
+        .garment-checkbox input:checked + .garment-card-mini .check-icon { transform: translate(-50%, -50%) scale(1); }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            font-size: 0.9rem;
+        }
+        .btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(44, 62, 80, 0.2); }
+
+        /* --- PANEL DERECHO (GALERÍA) --- */
+        .gallery-header {
+            display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;
+        }
+        .gallery-header h1 { font-family: var(--font-heading); font-size: 3rem; color: var(--text-primary); margin: 0; line-height: 1; }
+        .gallery-header .count { color: var(--text-secondary); font-family: var(--font-heading); font-style: italic; font-size: 1.2rem; }
+
+        .outfits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        /* --- TARJETAS DE CONJUNTO --- */
+        .outfit-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.4s ease;
+            display: flex; flex-direction: column;
+            border: 1px solid transparent;
+        }
+
+        .outfit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: #f0f0f0;
+        }
+
+        /* Collage de imágenes */
+        .card-image-collage {
+            height: 320px;
+            background-color: #f8f8f8;
+            padding: 8px;
+        }
+
+        .collage-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 4px;
+            height: 100%;
+            width: 100%;
+        }
+
+        .collage-item { overflow: hidden; position: relative; border-radius: 4px; background: #fff;}
+        .collage-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Lógica visual del collage: Si hay 1 foto, ocupa todo. Si hay 3, la 1ra es grande. */
+        .collage-item:first-child:nth-last-child(1) { grid-column: span 2; grid-row: span 2; }
+        .collage-item:first-child:nth-last-child(3) { grid-row: span 2; }
+
+        .card-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+
+        .card-meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem; }
+        .card-meta h3 { font-family: var(--font-heading); font-size: 1.4rem; margin: 0; color: var(--text-primary); }
+
+        /* Acciones (Editar/Borrar) */
+        .actions { display: flex; gap: 12px; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
+        .outfit-card:hover .actions { opacity: 1; transform: translateY(0); }
+
+        .icon-btn { color: #999; font-size: 1rem; transition: 0.2s; }
+        .icon-btn:hover { color: var(--accent); }
+        .icon-btn.delete:hover { color: #e74c3c; }
+
+        .card-desc { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.5rem; flex-grow: 1; line-height: 1.5; }
+
+        .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tags .tag {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;
+            background: #f0f0f0; padding: 6px 12px; border-radius: 20px; color: #555; font-weight: 700;
+        }
+
+        /* --- EMPTY STATE --- */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem;
+            background: #fff;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+        }
+        .empty-state h2 { font-family: var(--font-heading); margin-bottom: 1rem; }
+        .empty-state p { color: var(--text-secondary); }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center; padding: 3rem; color: var(--text-secondary); font-size: 0.8rem; margin-top: auto; border-top: 1px solid #eee;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 950px) {
+            .main-container { grid-template-columns: 1fr; gap: 2rem; }
+            .creator-panel { position: static; box-shadow: none; border: 1px solid var(--border-color); }
+            .navbar { padding: 1rem; }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Mis Conjuntos</h1>
-        <!-- Aquí puedes incluir una barra de navegación -->
-    </header>
 
-    <main>
-        <section id="crear-conjunto">
-            <h2>Crear Nuevo Conjunto</h2>
-            <!-- Formulario para crear un nuevo conjunto -->
-            <form th:action="@{/conjuntos/crear}" method="post">
-                <!-- Campos para el nombre del conjunto, notas, etc. -->
-                <div>
-                    <label for="nombre">Nombre del Conjunto:</label>
-                    <input type="text" id="nombre" name="nombre" required>
-                </div>
-                <div>
-                    <label for="notas">Notas:</label>
-                    <textarea id="notas" name="notas" maxlength="256"></textarea>
-                </div>
-                <!-- Aquí iría la selección de prendas -->
-                <div>
-                    <h3>Selecciona las prendas</h3>
-                    <!-- Lógica para mostrar y seleccionar prendas -->
-                </div>
-                <button type="submit">Guardar Conjunto</button>
-            </form>
-        </section>
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="logo">NADA<span class="dot">.</span></a>
+        <ul class="nav-links">
+            <li><a href="/armario">Mi Armario</a></li>
+            <li><a href="/conjuntos" class="active">Conjuntos</a></li>
+            <li><a href="/perfil">Perfil</a></li>
+            <li>
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="btn-link">Salir</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-        <section id="lista-conjuntos">
-            <h2>Conjuntos Guardados</h2>
-            <!-- Aquí se mostrará la lista de conjuntos del usuario -->
-            <div th:if="${conjuntos != null and !conjuntos.isEmpty()}">
-                <!-- Itera sobre la lista de conjuntos -->
-                <div th:each="conjunto : ${conjuntos}">
-                    <h3 th:text="${conjunto.nombre}">Nombre del Conjunto</h3>
-                    <p th:text="${conjunto.notas}">Notas del conjunto.</p>
-                    <!-- Lógica para mostrar las prendas del conjunto -->
-                    <div>
-                        <h4>Prendas:</h4>
-                        <!-- Itera sobre las prendas del conjunto -->
-                    </div>
-                    <div>
-                        <a th:href="@{/conjuntos/editar/{id}(id=${conjunto.id})}">Editar</a>
-                        <a th:href="@{/conjuntos/eliminar/{id}(id=${conjunto.id})}">Eliminar</a>
+<main class="main-container">
+
+    <aside class="creator-panel">
+        <div class="panel-header">
+            <h2>Diseñar Look</h2>
+            <p>Selecciona prendas y crea tu estilo.</p>
+        </div>
+
+        <form th:action="@{/conjuntos/crear}" method="post" class="create-form">
+            <div class="form-group">
+                <label for="nombre">Nombre del Look</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ej. Casual Friday" required>
+            </div>
+
+            <div class="form-group">
+                <label for="notas">Notas</label>
+                <textarea id="notas" name="notas" maxlength="256" placeholder="Añadir notas sobre la ocasión o el clima..."></textarea>
+            </div>
+
+            <div class="garment-selector">
+                <h3>Tu Armario</h3>
+
+                <div class="category-tabs">
+                    <span class="active">Todo</span>
+                    <span>Superior</span>
+                    <span>Inferior</span>
+                    <span>Calzado</span>
+                </div>
+
+                <div class="garments-grid">
+                    <th:block th:each="prenda : ${prendasDisponibles}">
+                        <label class="garment-checkbox">
+                            <input type="checkbox" name="prendasIds" th:value="${prenda.id}">
+
+                            <div class="garment-card-mini">
+                                <img th:if="${prenda.imagenUrl != null}" th:src="${prenda.imagenUrl}" alt="Prenda">
+                                <div th:if="${prenda.imagenUrl == null}" class="placeholder-text" th:text="${prenda.nombre}">Sin Foto</div>
+
+                                <span class="check-icon"><i class="fas fa-check"></i></span>
+                            </div>
+                        </label>
+                    </th:block>
+
+                    <div th:if="${prendasDisponibles == null or prendasDisponibles.isEmpty()}" style="grid-column: 1/-1; text-align: center; font-size: 0.8rem; color: #999; padding: 20px;">
+                        No tienes prendas disponibles. <a href="/armario" style="text-decoration: underline;">Ve a tu armario</a> para añadir ropa.
                     </div>
                 </div>
             </div>
-            <div th:if="${conjuntos == null or conjuntos.isEmpty()}">
-                <p>Aún no tienes ningún conjunto guardado.</p>
-            </div>
-        </section>
-    </main>
 
-    <footer>
-        <!-- Pie de página -->
-    </footer>
+            <button type="submit" class="btn-primary">Guardar Look</button>
+        </form>
+    </aside>
+
+    <section class="gallery-panel">
+        <div class="gallery-header">
+            <h1>Mis Conjuntos</h1>
+            <span class="count" th:text="${conjuntos != null ? conjuntos.size() + ' Looks' : '0 Looks'}">0 Looks</span>
+        </div>
+
+        <div class="outfits-grid" th:if="${conjuntos != null and !conjuntos.isEmpty()}">
+
+            <article class="outfit-card" th:each="conjunto : ${conjuntos}">
+                <div class="card-image-collage">
+                    <div class="collage-grid">
+                        <div th:each="prenda, iterStat : ${conjunto.prendas}"
+                             th:if="${iterStat.index < 4}"
+                             class="collage-item">
+                            <img th:src="${prenda.imagenUrl} ?: '/images/placeholder_cloth.png'" alt="Prenda">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-content">
+                    <div class="card-meta">
+                        <h3 th:text="${conjunto.nombre}">Nombre del Conjunto</h3>
+                        <div class="actions">
+                            <a th:href="@{/conjuntos/editar/{id}(id=${conjunto.id})}" class="icon-btn" title="Editar"><i class="fas fa-pen"></i></a>
+                            <a th:href="@{/conjuntos/eliminar/{id}(id=${conjunto.id})}" class="icon-btn delete" title="Eliminar"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                    <p class="card-desc" th:text="${conjunto.descripcion}">Descripción o notas del conjunto.</p>
+
+                    <div class="tags">
+                        <span class="tag">Temporada 2025</span>
+                        <span class="tag" th:text="${conjunto.prendas.size()} + ' prendas'">3 prendas</span>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+
+        <div class="empty-state" th:if="${conjuntos == null or conjuntos.isEmpty()}">
+            <div class="empty-content">
+                <i class="fas fa-layer-group" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+                <h2>Tu armario está esperando</h2>
+                <p>Aún no has creado ningún conjunto. Utiliza el panel de la izquierda para combinar tus prendas favoritas.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>&copy; 2025 NADA. Wardrobe Management System.</p>
+</footer>
+
 </body>
 </html>
-

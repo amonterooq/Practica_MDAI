@@ -1,158 +1,270 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NADA - Tu Armario Digital</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>NADA | The Digital Wardrobe</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
+        /* --- VARIABLES Y BASE (Igual que Conjuntos) --- */
+        :root {
+            --bg-color: #fafafa;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #555555;
+            --accent: #2c3e50;
+            --border-color: #e0e0e0;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Lato', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
         }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        img { display: block; max-width: 100%; height: auto; }
+
+        /* --- NAVEGACIÓN --- */
+        .navbar {
+            background: var(--card-bg);
+            padding: 1.2rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem; font-weight: 700; letter-spacing: 2px;
+        }
+
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a {
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* --- HERO SECTION (Portada) --- */
         .hero {
-            padding: 60px 0;
-            text-align: center;
-            color: white;
+            max-width: 1200px; margin: 4rem auto; padding: 0 2rem;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+            min-height: 60vh;
         }
-        .logo-container {
-            margin-bottom: 30px;
+
+        .hero-content h1 {
+            font-family: var(--font-heading);
+            font-size: 4rem; line-height: 1.1; margin-bottom: 1.5rem;
+            color: var(--text-primary);
         }
-        .logo-container img {
-            max-width: 180px;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+
+        .hero-content .slogan {
+            font-size: 1.2rem; font-style: italic; color: var(--text-secondary); margin-bottom: 2rem; display: block;
         }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 100%;
+
+        .hero-content p {
+            font-size: 1rem; color: var(--text-secondary); margin-bottom: 2.5rem; max-width: 450px;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+
+        .hero-image {
+            position: relative;
         }
-        .card-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            color: #667eea;
+
+        /* Marco decorativo para la imagen */
+        .hero-image img {
+            width: 100%; border-radius: 4px; filter: grayscale(20%); transition: 0.5s;
         }
-        .feature-section {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            margin-top: 40px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
-        .btn-custom {
-            border-radius: 25px;
-            padding: 12px 30px;
-            font-weight: 600;
+        .hero-image:hover img { filter: grayscale(0%); }
+
+        /* Botón estilo Editorial */
+        .btn-editorial {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--text-primary);
+            color: #fff;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid var(--text-primary);
         }
-        .btn-primary-custom {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
+        .btn-editorial:hover {
+            background: transparent; color: var(--text-primary);
         }
-        .btn-primary-custom:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+
+        /* --- FEATURES (Grid Minimalista) --- */
+        .features {
+            background: #fff; border-top: 1px solid var(--border-color);
+            padding: 6rem 2rem;
         }
-        .btn-outline-light {
-            border-color: white;
-            color: white;
+
+        .section-title {
+            text-align: center; margin-bottom: 4rem;
         }
-        .btn-outline-light:hover {
-            background-color: white;
-            color: #667eea;
+        .section-title h2 {
+            font-family: var(--font-heading); font-size: 2.5rem; margin-bottom: 1rem;
         }
-        .slogan {
-            font-style: italic;
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        .section-title span {
+            display: block; width: 60px; height: 3px; background: var(--accent); margin: 0 auto;
+        }
+
+        .features-grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem;
+        }
+
+        .feature-item {
+            padding: 2rem; border: 1px solid transparent; text-align: center; transition: 0.3s;
+        }
+        .feature-item:hover {
+            border-color: var(--border-color); background: #fafafa;
+        }
+
+        .feature-icon { font-size: 2rem; margin-bottom: 1.5rem; color: var(--accent); }
+        .feature-item h3 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
+        .feature-item p { font-size: 0.95rem; color: var(--text-secondary); }
+
+        /* --- TEAM SECTION (Integrantes) --- */
+        .team-section {
+            padding: 6rem 2rem; max-width: 1000px; margin: 0 auto; text-align: center;
+        }
+
+        .team-grid {
+            display: flex; justify-content: center; gap: 4rem; margin-top: 3rem; flex-wrap: wrap;
+        }
+
+        .member {
+            text-align: center;
+        }
+
+        .member-img-frame {
+            width: 150px; height: 150px; margin: 0 auto 1.5rem;
+            border-radius: 50%; overflow: hidden;
+            border: 3px solid #fff; box-shadow: 0 0 0 1px var(--border-color);
+        }
+        .member img { width: 100%; height: 100%; object-fit: cover; }
+
+        .member h4 { font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .member span { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #999; }
+
+        /* --- FOOTER --- */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem; text-align: center; font-size: 0.85rem; color: #888; background: #fff;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            .hero { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+            .hero-content p { margin: 0 auto 2rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .hero-content h1 { font-size: 3rem; }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="hero">
-        <div class="logo-container">
-            <!-- Asegúrate de que la ruta a tu logo sea correcta -->
-            <img th:src="@{/images/logo.png}" alt="Logo NADA">
-        </div>
-        <h1 class="display-3 fw-bold mb-3">NADA</h1>
-        <p class="slogan">¿No tienes NADA que ponerte?</p>
-        <p class="lead mb-4">Tu armario digital personal al alcance de un clic</p>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="logo">NADA<span style="color:var(--accent)">.</span></a>
+        <ul class="nav-links">
+            <li><a href="/armario">Armario</a></li>
+            <li><a href="/conjuntos">Conjuntos</a></li>
+            <li><a href="/login">Acceder</a></li>
+        </ul>
     </div>
+</nav>
 
-    <div class="feature-section">
-        <div class="row g-4">
-            <!-- Estos enlaces ahora apuntan a las páginas de login/registro -->
-            <div class="col-md-4">
-                <div class="card text-center p-4">
-                    <div class="card-body">
-                        <i class="fas fa-sign-in-alt card-icon"></i>
-                        <h5 class="card-title fw-bold mb-3">Inicia Sesión</h5>
-                        <p class="card-text">Accede a tu armario digital para ver tus prendas y conjuntos guardados.</p>
-                        <a th:href="@{/usuarios/login}" class="btn btn-primary-custom btn-custom mt-3">
-                            <i class="fas fa-users me-2"></i>Entrar
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card text-center p-4">
-                    <div class="card-body">
-                        <i class="fas fa-user-plus card-icon"></i>
-                        <h5 class="card-title fw-bold mb-3">Regístrate</h5>
-                        <p class="card-text">Crea una cuenta nueva para empezar a organizar tu ropa y crear tus looks.</p>
-                        <a th:href="@{/usuarios/registro}" class="btn btn-primary-custom btn-custom mt-3">
-                            <i class="fas fa-user-plus me-2"></i>Crear Cuenta
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card text-center p-4">
-                    <div class="card-body">
-                        <i class="fas fa-info-circle card-icon"></i>
-                        <h5 class="card-title fw-bold mb-3">Sobre Nosotros</h5>
-                        <p class="card-text">Descubre cómo NADA puede ayudarte a redescubrir tu armario y estilo.</p>
-                        <a href="#" class="btn btn-primary-custom btn-custom mt-3">
-                            <i class="fas fa-home me-2"></i>Saber Más
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-5">
-            <h3 class="mb-4">¿Listo para organizar tu armario?</h3>
-            <p class="text-muted mb-4">Inicia sesión para continuar o regístrate si eres nuevo.</p>
-            <a th:href="@{/usuarios/login}" class="btn btn-primary-custom btn-custom btn-lg me-2">
-                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-            </a>
-            <a th:href="@{/usuarios/registro}" class="btn btn-outline-light btn-custom btn-lg" style="border-color: #6c757d; color: #6c757d;">
-                <i class="fas fa-user-plus me-2"></i>Registrarse
-            </a>
+<header class="hero">
+    <div class="hero-content">
+        <span class="slogan">¿No tienes NADA que ponerte?</span>
+        <h1>Organiza tu estilo. <br>Simplifica tu vida.</h1>
+        <p>
+            NADA es tu armario digital personal. Sube tus prendas, organízalas por categorías y crea conjuntos perfectos para cada ocasión.
+        </p>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="/armario" class="btn-editorial">Mi Armario</a>
+            <a href="/conjuntos" class="btn-editorial" style="background: white; color: var(--text-primary);">Ver Conjuntos</a>
         </div>
     </div>
+    <div class="hero-image">
+        <img src="/images/logo.png" alt="NADA Logo" style="max-width: 300px; margin: 0 auto; display: block;">
+    </div>
+</header>
 
-    <footer class="text-center text-white mt-5 pb-4">
-        <p class="mb-2">Creado por Francisco Montero Sánchez y Ana Montero Preciado</p>
-        <p class="small opacity-75">© 2025 NADA - Todos los derechos reservados</p>
-    </footer>
-</div>
+<section class="features">
+    <div class="section-title">
+        <h2>La Experiencia</h2>
+        <span></span>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="features-grid">
+        <div class="feature-item">
+            <i class="fas fa-camera feature-icon"></i>
+            <h3>Digitaliza</h3>
+            <p>Sube fotos de tus prendas. Clasifícalas por tipo, color, marca y temporada para tener todo bajo control.</p>
+        </div>
+
+        <div class="feature-item">
+            <i class="fas fa-layer-group feature-icon"></i>
+            <h3>Combina</h3>
+            <p>Elige. Mezcla. Crea. Diseña conjuntos únicos seleccionando prendas de tu armario digital.</p>
+        </div>
+
+        <div class="feature-item">
+            <i class="fas fa-calendar-check feature-icon"></i>
+            <h3>Organiza</h3>
+            <p>Guarda tus outfits favoritos con notas personalizadas para recordar qué ponerte en cada evento.</p>
+        </div>
+    </div>
+</section>
+
+<section class="team-section">
+    <div class="section-title">
+        <h2>Creadores</h2>
+        <span></span>
+    </div>
+
+    <div class="team-grid">
+        <div class="member">
+            <div class="member-img-frame">
+                <img src="/images/francisco.jpg" alt="Francisco Montero" onerror="this.src='https://ui-avatars.com/api/?name=Francisco+Montero&background=2c3e50&color=fff'">
+            </div>
+            <h4>Francisco Montero</h4>
+            <span>Desarrollo Backend</span>
+        </div>
+
+        <div class="member">
+            <div class="member-img-frame">
+                <img src="/images/ana.jpg" alt="Ana Montero" onerror="this.src='https://ui-avatars.com/api/?name=Ana+Montero&background=2c3e50&color=fff'">
+            </div>
+            <h4>Ana Montero</h4>
+            <span>Diseño & Frontend</span>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2025 NADA. Wardrobe Management System.</p>
+    <p style="margin-top: 10px; font-style: italic;">"La moda se pasa de moda, el estilo jamás."</p>
+</footer>
+
 </body>
 </html>
