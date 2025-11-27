@@ -183,11 +183,21 @@
 
 <nav class="navbar">
     <div class="nav-container">
-        <a href="/" class="logo">NADA<span style="color:var(--accent)">.</span></a>
+        <a th:href="@{/}" class="logo">NADA<span style="color:var(--accent)">.</span></a>
         <ul class="nav-links">
-            <li><a href="/armario">Armario</a></li>
-            <li><a href="/conjuntos">Conjuntos</a></li>
-            <li><a href="/login">Acceder</a></li>
+            <li><a th:href="@{/armario}">Armario</a></li>
+            <li><a th:href="@{/conjuntos}">Conjuntos</a></li>
+            <!-- Si el usuario no está logueado, muestra "Acceder" -->
+            <li th:if="${session.usuarioLogueado == null}">
+                <a th:href="@{/usuarios/login}">Acceder</a>
+            </li>
+            <!-- Si el usuario está logueado, muestra su nombre y un enlace para salir -->
+            <li th:if="${session.usuarioLogueado != null}">
+                <a th:href="@{/perfil}" th:text="${session.usuarioLogueado.username}"></a>
+            </li>
+            <li th:if="${session.usuarioLogueado != null}">
+                <a th:href="@{/usuarios/logout}">Salir</a>
+            </li>
         </ul>
     </div>
 </nav>

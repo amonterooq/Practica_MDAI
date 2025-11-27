@@ -3,6 +3,7 @@ package com.nada.nada.controllers;
 import com.nada.nada.data.model.Usuario;
 import com.nada.nada.data.repository.UsuarioRepository;
 import com.nada.nada.data.services.UsuarioService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,12 +17,10 @@ import java.util.Optional;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
-    private final UsuarioRepository usuarioRepository;
 
     @Autowired
-    public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
+    public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
-        this.usuarioRepository = usuarioRepository;
     }
 
     @GetMapping("/")
@@ -37,11 +36,12 @@ public class UsuarioController {
     }
 
     @PostMapping("/registro")
-    public String procesarRegistro(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes) {
+    public String procesarRegistro(@ModelAttribute Usuario usuario, HttpSession session, RedirectAttributes redirectAttributes) {
         try {
-            usuarioService.crearUsuario(usuario);
-            redirectAttributes.addFlashAttribute("mensaje", "¡Registro exitoso! Ahora puedes iniciar sesión.");
-            return "redirect:/usuarios/login";
+            Usuario nuevoUsuario = usuarioService.crearUsuario(usuario);
+            session.setAttribute("usuarioLogueado", nuevoUsuario);
+            // Redirigir a la página de conjuntos
+            return "redirect:/conjuntos/";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/usuarios/registro";
@@ -54,15 +54,22 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public String procesarLogin(@RequestParam String username, @RequestParam String password, RedirectAttributes redirectAttributes) {
+    public String procesarLogin(@RequestParam String username, @RequestParam String password, HttpSession session, RedirectAttributes redirectAttributes) {
         Optional<Usuario> u = usuarioService.validarLogin(username, password);
 
         if (u.isPresent()) {
-            // Login exitoso
-            return "redirect:/usuarios/"; // Redirige a la lista de usuarios
+            session.setAttribute("usuarioLogueado", u.get());
+            // Redirigir a la página de conjuntos
+            return "redirect:/conjuntos/";
         } else {
             redirectAttributes.addFlashAttribute("error", "Nombre de usuario o contraseña incorrectos.");
             return "redirect:/usuarios/login";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // Invalida la sesión
+        return "redirect:/"; // Redirige a la página de inicio
     }
 }
