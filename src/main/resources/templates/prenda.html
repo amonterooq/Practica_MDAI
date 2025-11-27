@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NADA | Inventario</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- ESTILOS GENERALES (Misma identidad de marca) --- */
+        :root {
+            --bg-color: #fafafa;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #2c3e50;
+            --border-color: #e0e0e0;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Lato', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        img { display: block; max-width: 100%; }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .nav-container {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
+        .logo .dot { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-primary); font-weight: 700; }
+        .btn-link { background: none; border: none; font: inherit; cursor: pointer; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .main-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            align-items: start;
+        }
+
+        /* --- PANEL IZQUIERDO: AÑADIR PRENDA --- */
+        .upload-panel {
+            background: var(--card-bg);
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            position: sticky; top: 100px;
+        }
+
+        .panel-header h2 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .panel-header p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem; font-style: italic; border-bottom: 1px solid #eee; padding-bottom: 10px;}
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label {
+            display: block; font-size: 0.7rem; font-weight: 700;
+            margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);
+        }
+
+        /* Inputs de texto y Selects */
+        input[type="text"], select {
+            width: 100%; padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            background: #fafafa;
+            font-family: var(--font-body); font-size: 0.9rem;
+            border-radius: 0;
+        }
+        input:focus, select:focus { outline: none; border-color: var(--accent); background: #fff; }
+
+        /* Input de Archivo Personalizado (Estilo básico limpio) */
+        input[type="file"] {
+            width: 100%;
+            padding: 0.6rem;
+            background: #fafafa;
+            border: 1px dashed var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .hidden { display: none; }
+
+        .btn-black {
+            width: 100%; padding: 1rem;
+            background-color: var(--text-primary); color: white;
+            border: 1px solid var(--text-primary);
+            font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; transition: 0.3s; font-size: 0.8rem; margin-top: 1rem;
+        }
+        .btn-black:hover { background-color: white; color: var(--text-primary); }
+
+        /* --- PANEL DERECHO: CATÁLOGO --- */
+        .gallery-header {
+            display: flex; justify-content: space-between; align-items: baseline;
+            margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;
+        }
+        .gallery-header h1 { font-family: var(--font-heading); font-size: 2.5rem; margin: 0; color: var(--text-primary); }
+        .gallery-header .count { color: var(--text-secondary); font-family: var(--font-heading); font-style: italic; }
+
+        .wardrobe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Tarjeta */
+        .garment-card {
+            background: var(--card-bg);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex; flex-direction: column;
+        }
+
+        .garment-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .card-img {
+            height: 220px;
+            width: 100%;
+            background: #f9f9f9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .garment-card:hover .card-img img { transform: scale(1.05); }
+
+        .delete-btn {
+            position: absolute; top: 8px; right: 8px;
+            background: rgba(255,255,255,0.9); color: #e74c3c;
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.2s; cursor: pointer;
+            border: none;
+        }
+        .garment-card:hover .delete-btn { opacity: 1; }
+
+        .card-details { padding: 1rem; text-align: left; }
+        .card-details h3 { font-size: 0.95rem; margin: 0 0 0.3rem 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; }
+        .badge { font-size: 0.6rem; padding: 2px 6px; border: 1px solid #eee; color: #999; text-transform: uppercase; margin-top: 8px; display: inline-block; }
+
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem; border: 1px dashed var(--border-color); background: #fafafa; }
+
+        @media (max-width: 900px) {
+            .main-container { grid-template-columns: 1fr; }
+            .upload-panel { position: relative; top: 0; margin-bottom: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="logo">NADA<span class="dot">.</span></a>
+        <ul class="nav-links">
+            <li><a href="/armario" class="active">Mi Armario</a></li>
+            <li><a href="/conjuntos">Conjuntos</a></li>
+            <li><a href="/perfil">Perfil</a></li>
+            <li>
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="btn-link">Salir</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-container">
+
+    <aside class="upload-panel">
+        <div class="panel-header">
+            <h2>Nuevo Artículo</h2>
+            <p>Añade una prenda individual.</p>
+        </div>
+
+        <form th:action="@{/armario/crear}" method="post" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" name="nombre" placeholder="Ej. Camisa Blanca" required>
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de Prenda</label>
+                <select id="tipoPrendaSelect" name="tipoPrenda" onchange="mostrarCategorias()" required>
+                    <option value="" disabled selected>-- Seleccionar --</option>
+                    <option value="superior">Parte Superior</option>
+                    <option value="inferior">Parte Inferior</option>
+                    <option value="calzado">Calzado</option>
+                </select>
+            </div>
+
+            <div id="divCatSuperior" class="form-group hidden">
+                <label>Categoría (Superior)</label>
+                <select name="catSuperior">
+                    <option th:each="cat : ${categoriasSuperior}" th:value="${cat}" th:text="${cat}"></option>
+                </select>
+            </div>
+
+            <div id="divCatInferior" class="form-group hidden">
+                <label>Categoría (Inferior)</label>
+                <select name="catInferior">
+                    <option th:each="cat : ${categoriasInferior}" th:value="${cat}" th:text="${cat}"></option>
+                </select>
+            </div>
+
+            <div id="divCatCalzado" class="form-group hidden">
+                <label>Categoría (Calzado)</label>
+                <select name="catCalzado">
+                    <option th:each="cat : ${categoriasCalzado}" th:value="${cat}" th:text="${cat}"></option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Marca</label>
+                    <input type="text" name="marca" placeholder="Zara">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Talla</label>
+                    <input type="text" name="talla" placeholder="M">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Color</label>
+                <input type="text" name="color" placeholder="Negro, Azul...">
+            </div>
+
+            <div class="form-group">
+                <label>Subir Foto</label>
+                <input type="file" name="imagen" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn-black">Añadir al Armario</button>
+        </form>
+    </aside>
+
+    <section class="gallery-panel">
+        <div class="gallery-header">
+            <h1>Mis Prendas</h1>
+            <span class="count" th:text="${totalPrendas} + ' ARTÍCULOS'">0 ARTÍCULOS</span>
+        </div>
+
+        <div class="wardrobe-grid" th:if="${prendas != null and !prendas.isEmpty()}">
+
+            <article class="garment-card" th:each="prenda : ${prendas}">
+
+                <div class="card-img">
+                    <img th:src="${prenda.imagenUrl} ?: '/images/placeholder_cloth.png'" alt="Prenda" onerror="this.src='/images/placeholder_cloth.png'">
+
+                    <a th:href="@{/armario/eliminar/{id}(id=${prenda.id})}" class="delete-btn" title="Eliminar" onclick="return confirm('¿Eliminar prenda?');">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </div>
+
+                <div class="card-details">
+                    <h3 th:text="${prenda.nombre}">Nombre Prenda</h3>
+                    <div class="card-meta">
+                        <span th:text="${prenda.marca}">MARCA</span>
+                        <span th:text="${prenda.talla}">TALLA</span>
+                    </div>
+
+                    <div class="badge" th:if="${prenda instanceof T(com.nada.nada.data.model.PrendaSuperior)}" th:text="${prenda.categoria}"></div>
+                    <div class="badge" th:if="${prenda instanceof T(com.nada.nada.data.model.PrendaInferior)}" th:text="${prenda.categoriaInferior}"></div>
+                    <div class="badge" th:if="${prenda instanceof T(com.nada.nada.data.model.PrendaCalzado)}" th:text="${prenda.categoria}"></div>
+                </div>
+
+            </article>
+
+        </div>
+
+        <div class="empty-state" th:if="${prendas == null or prendas.isEmpty()}">
+            <p>Tu armario está vacío. Añade tu primera prenda desde el panel izquierdo.</p>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    function mostrarCategorias() {
+        document.getElementById('divCatSuperior').classList.add('hidden');
+        document.getElementById('divCatInferior').classList.add('hidden');
+        document.getElementById('divCatCalzado').classList.add('hidden');
+
+        const tipo = document.getElementById('tipoPrendaSelect').value;
+
+        if (tipo === 'superior') document.getElementById('divCatSuperior').classList.remove('hidden');
+        if (tipo === 'inferior') document.getElementById('divCatInferior').classList.remove('hidden');
+        if (tipo === 'calzado') document.getElementById('divCatCalzado').classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
