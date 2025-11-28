@@ -86,8 +86,8 @@ public abstract class Prenda {
         return dirImagen;
     }
 
-    public void setDirImagen(String urlImagen) {
-        this.dirImagen = urlImagen;
+    public void setDirImagen(String dirImagen) {
+        this.dirImagen = dirImagen;
     }
 
     @Override

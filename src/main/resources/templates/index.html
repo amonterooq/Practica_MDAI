@@ -185,15 +185,15 @@
     <div class="nav-container">
         <a th:href="@{/}" class="logo">NADA<span style="color:var(--accent)">.</span></a>
         <ul class="nav-links">
-            <li><a th:href="@{/armario}">Armario</a></li>
-            <li><a th:href="@{/conjuntos}">Conjuntos</a></li>
+            <li><a th:href="${session.usuarioLogueado == null} ? @{/usuarios/login} : @{/armario/}">Armario</a></li>
+            <li><a th:href="${session.usuarioLogueado == null} ? @{/usuarios/login} : @{/conjuntos/}">Conjuntos</a></li>
             <!-- Si el usuario no está logueado, muestra "Acceder" -->
             <li th:if="${session.usuarioLogueado == null}">
                 <a th:href="@{/usuarios/login}">Acceder</a>
             </li>
             <!-- Si el usuario está logueado, muestra su nombre y un enlace para salir -->
             <li th:if="${session.usuarioLogueado != null}">
-                <a th:href="@{/perfil}" th:text="${session.usuarioLogueado.username}"></a>
+                <a th:href="@{/usuarios/perfil}" th:text="${session.usuarioLogueado.username}"></a>
             </li>
             <li th:if="${session.usuarioLogueado != null}">
                 <a th:href="@{/usuarios/logout}">Salir</a>
@@ -210,8 +210,8 @@
             NADA es tu armario digital personal. Sube tus prendas, organízalas por categorías y crea conjuntos perfectos para cada ocasión.
         </p>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="/armario" class="btn-editorial">Mi Armario</a>
-            <a href="/conjuntos" class="btn-editorial" style="background: white; color: var(--text-primary);">Ver Conjuntos</a>
+            <a th:href="${session.usuarioLogueado == null} ? @{/usuarios/login} : @{/armario/}" class="btn-editorial">Mi Armario</a>
+            <a th:href="${session.usuarioLogueado == null} ? @{/usuarios/login} : @{/conjuntos/}" class="btn-editorial" style="background: white; color: var(--text-primary);">Ver Conjuntos</a>
         </div>
     </div>
     <div class="hero-image">

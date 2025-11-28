@@ -189,13 +189,11 @@
     <div class="nav-container">
         <a href="/" class="logo">NADA<span class="dot">.</span></a>
         <ul class="nav-links">
-            <li><a href="/armario" class="active">Mi Armario</a></li>
-            <li><a href="/conjuntos">Conjuntos</a></li>
-            <li><a href="/perfil">Perfil</a></li>
+            <li><a th:href="@{/armario/}" class="active">Mi Armario</a></li>
+            <li><a th:href="@{/conjuntos/}">Conjuntos</a></li>
+            <li><a th:href="@{/usuarios/perfil}">Perfil</a></li>
             <li>
-                <form th:action="@{/logout}" method="post" style="display:inline;">
-                    <button type="submit" class="btn-link">Salir</button>
-                </form>
+                <a th:href="@{/usuarios/logout}" class="btn-link">Salir</a>
             </li>
         </ul>
     </div>

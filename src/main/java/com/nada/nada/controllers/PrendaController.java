@@ -7,104 +7,120 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile; // Import necesario para el upload
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/armario") // La URL es /armario
+@RequestMapping("/armario")
 public class PrendaController {
 
-    @Autowired
-    private PrendaService prendaService;
+    private final PrendaService prendaService;
+    private final UsuarioService usuarioService;
+
+    // Directorio para guardar las imágenes subidas
+    private static final String UPLOAD_DIR = "src/main/resources/static/images/uploads/";
 
     @Autowired
-    private UsuarioService usuarioService;
+    public PrendaController(PrendaService prendaService, UsuarioService usuarioService) {
+        this.prendaService = prendaService;
+        this.usuarioService = usuarioService;
+    }
 
-    private final Long USUARIO_ID_SIMULADO = 1L;
-
-    @GetMapping("") // Atiende a /armario o /armario/
-    public String verArmario(Model model) {
-        List<Prenda> prendas = prendaService.buscarPrendasPorUsuarioId(USUARIO_ID_SIMULADO);
+    @GetMapping("/")
+    public String mostrarArmario(Model model) {
+        // Simulación de un ID de usuario logueado. Esto debería obtenerse de la sesión.
+        Long usuarioId = 1L;
+        List<Prenda> prendas = prendaService.buscarPrendasPorUsuarioId(usuarioId);
         model.addAttribute("prendas", prendas);
         model.addAttribute("totalPrendas", prendas.size());
 
-        // Enums para los desplegables
-        model.addAttribute("categoriasSuperior", CategoriaSuperior.values());
-        model.addAttribute("categoriasInferior", CategoriaInferior.values());
-        model.addAttribute("categoriasCalzado", CategoriaCalzado.values());
+        // Añadir categorías para los dropdowns del formulario
+        model.addAttribute("categoriasSuperior", Arrays.asList(CategoriaSuperior.values()));
+        model.addAttribute("categoriasInferior", Arrays.asList(CategoriaInferior.values()));
+        model.addAttribute("categoriasCalzado", Arrays.asList(CategoriaCalzado.values()));
 
-        return "armario"; // IMPORTANTE: Debe coincidir con el nombre de tu archivo HTML
+        return "prenda";
     }
 
     @PostMapping("/crear")
-    public String guardarPrenda(@RequestParam String nombre,
-                                @RequestParam String marca,
-                                @RequestParam String color,
-                                @RequestParam String talla,
-                                @RequestParam String tipoPrenda,
-                                // Cambiamos imagenUrl por MultipartFile si vas a implementar subida real,
-                                // pero para mantener tu logica actual usaremos un String simulado o lógica futura.
-                                // Aquí dejo la lógica original de URL para que no rompa, pero ajustada al formulario.
-                                @RequestParam(required = false) MultipartFile imagen,
-                                @RequestParam(required = false) CategoriaSuperior catSuperior,
-                                @RequestParam(required = false) CategoriaInferior catInferior,
-                                @RequestParam(required = false) CategoriaCalzado catCalzado) {
+    public String crearPrenda(@RequestParam("nombre") String nombre,
+                              @RequestParam("tipoPrenda") String tipoPrenda,
+                              @RequestParam(value = "catSuperior", required = false) CategoriaSuperior catSuperior,
+                              @RequestParam(value = "catInferior", required = false) CategoriaInferior catInferior,
+                              @RequestParam(value = "catCalzado", required = false) CategoriaCalzado catCalzado,
+                              @RequestParam("marca") String marca,
+                              @RequestParam("talla") String talla,
+                              @RequestParam("color") String color,
+                              @RequestParam("imagen") MultipartFile imagen) {
 
-        Optional<Usuario> usuarioOpt = usuarioService.encontrarPorId(USUARIO_ID_SIMULADO);
+        // Simulación de un usuario logueado
+        Long usuarioId = 1L;
+        Optional<Usuario> usuarioOpt = usuarioService.encontrarPorId(usuarioId);
+        if (!usuarioOpt.isPresent()) {
+            // Manejar el caso en que el usuario no se encuentra
+            return "redirect:/error";
+        }
+        Usuario usuario = usuarioOpt.get();
 
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
-            // Lógica temporal para la imagen hasta que implementes el servicio de almacenamiento
-            String urlFinal = "/images/placeholder_cloth.png";
-            if(imagen != null && !imagen.isEmpty()) {
-                // Aquí iría tu lógica de guardar archivo y obtener URL
-                // urlFinal = servicioDeArchivos.guardar(imagen);
-            }
-
-            switch (tipoPrenda) {
-                case "superior":
-                    if (catSuperior != null) {
-                        PrendaSuperior ps = new PrendaSuperior();
-                        configurarPrendaBase(ps, nombre, marca, color, talla, urlFinal, usuario);
-                        ps.setCategoria(catSuperior);
-                        prendaService.guardarPrendaSuperior(ps);
-                    }
-                    break;
-                case "inferior":
-                    if (catInferior != null) {
-                        PrendaInferior pi = new PrendaInferior();
-                        configurarPrendaBase(pi, nombre, marca, color, talla, urlFinal, usuario);
-                        pi.setCategoriaInferior(catInferior);
-                        prendaService.guardarPrendaInferior(pi);
-                    }
-                    break;
-                case "calzado":
-                    if (catCalzado != null) {
-                        PrendaCalzado pc = new PrendaCalzado();
-                        configurarPrendaBase(pc, nombre, marca, color, talla, urlFinal, usuario);
-                        pc.setCategoria(catCalzado);
-                        prendaService.guardarPrendaCalzado(pc);
-                    }
-                    break;
+        String imagenUrl = null;
+        if (!imagen.isEmpty()) {
+            try {
+                Path uploadPath = Paths.get(UPLOAD_DIR);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                String originalFilename = imagen.getOriginalFilename();
+                Path filePath = uploadPath.resolve(originalFilename);
+                Files.copy(imagen.getInputStream(), filePath);
+                imagenUrl = "/images/uploads/" + originalFilename;
+            } catch (IOException e) {
+                // Manejar error de subida de archivo
+                e.printStackTrace();
             }
         }
-        return "redirect:/armario";
+
+        Prenda nuevaPrenda = null;
+        switch (tipoPrenda) {
+            case "superior":
+                PrendaSuperior ps = new PrendaSuperior();
+                ps.setCategoria(catSuperior);
+                nuevaPrenda = ps;
+                break;
+            case "inferior":
+                PrendaInferior pi = new PrendaInferior();
+                pi.setCategoriaInferior(catInferior);
+                nuevaPrenda = pi;
+                break;
+            case "calzado":
+                PrendaCalzado pc = new PrendaCalzado();
+                pc.setCategoria(catCalzado);
+                nuevaPrenda = pc;
+                break;
+        }
+
+        if (nuevaPrenda != null) {
+            nuevaPrenda.setNombre(nombre);
+            nuevaPrenda.setMarca(marca);
+            nuevaPrenda.setTalla(talla);
+            nuevaPrenda.setColor(color);
+            nuevaPrenda.setUsuario(usuario);
+            nuevaPrenda.setDirImagen(imagenUrl); // Usamos dirImagen para la URL
+            prendaService.guardarPrenda(nuevaPrenda);
+        }
+
+        return "redirect:/armario/";
     }
 
     @GetMapping("/eliminar/{id}")
-    public String eliminarPrenda(@PathVariable Long id) {
+    public String eliminarPrenda(@PathVariable("id") Long id) {
         prendaService.borrarPrenda(id);
-        return "redirect:/armario";
-    }
-
-    private void configurarPrendaBase(Prenda prenda, String nombre, String marca, String color, String talla, String img, Usuario user) {
-        prenda.setNombre(nombre);
-        prenda.setMarca(marca);
-        prenda.setColor(color);
-        prenda.setTalla(talla);
-        prenda.setDirImagen(img); // Asegúrate que tu modelo Prenda tenga setImagenUrl o setDirImagen y sea consistente
-        prenda.setUsuario(user);
+        return "redirect:/armario/";
     }
 }

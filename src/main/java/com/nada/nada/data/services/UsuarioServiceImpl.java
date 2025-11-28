@@ -85,17 +85,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public void eliminarPorId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido: " + id);
-        }
-        if (!usuarioRepository.existsById(id)) {
-            throw new IllegalArgumentException("Usuario con ID " + id + " no encontrado");
-        }
-        usuarioRepository.deleteById(id);
-    }
-
-    @Override
     public Optional<Usuario> validarLogin(String username, String password) {
         Optional<Usuario> u = usuarioRepository.findByUsername(username);
 
@@ -105,5 +94,29 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public void cambiarPassword(Long usuarioId, String oldPassword, String newPassword) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+
+        // Comprobación de contraseña sin encriptar
+        if (!oldPassword.equals(usuario.getPassword())) {
+            throw new IllegalArgumentException("La contraseña actual es incorrecta.");
+        }
+
+        usuario.setPassword(newPassword);
+        usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public void eliminarUsuario(Long usuarioId) {
+        if (!usuarioRepository.existsById(usuarioId)) {
+            // Opcional: puedes lanzar una excepción si el usuario no existe
+            // throw new IllegalArgumentException("No se puede eliminar: Usuario no encontrado.");
+            return; // Simplemente no hace nada si el usuario no existe
+        }
+        usuarioRepository.deleteById(usuarioId);
     }
 }
