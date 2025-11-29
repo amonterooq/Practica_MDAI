@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +17,9 @@ import java.util.Optional;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+
+    // Misma carpeta base de imágenes que usa PrendaController dentro del contenedor Docker
+    private static final Path IMAGES_BASE_DIR = Paths.get("/app/static/images");
 
     @Autowired //no necesario, para recordar que nos inyecta y crea el IoC de Spring
     public UsuarioServiceImpl (UsuarioRepository usuarioRepository) {
@@ -72,9 +78,29 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuario.getPrendas() == null) usuario.setPrendas(new ArrayList<>());
         if (usuario.getConjuntos() == null) usuario.setConjuntos(new ArrayList<>());
 
-        return usuarioRepository.save(usuario);
+        // Guardar primero para obtener el ID
+        Usuario guardado = usuarioRepository.save(usuario);
+
+        // Crear carpeta de imágenes para este usuario (no lanzar excepción si falla)
+        crearCarpetaImagenesUsuario(guardado.getId());
+
+        return guardado;
     }
 
+    private void crearCarpetaImagenesUsuario(Long usuarioId) {
+        if (usuarioId == null) return;
+        try {
+            if (!Files.exists(IMAGES_BASE_DIR)) {
+                Files.createDirectories(IMAGES_BASE_DIR);
+            }
+            Path userDir = IMAGES_BASE_DIR.resolve(String.valueOf(usuarioId));
+            if (!Files.exists(userDir)) {
+                Files.createDirectories(userDir);
+            }
+        } catch (IOException e) {
+            System.err.println("No se pudo crear carpeta de imágenes para usuario " + usuarioId + ": " + e.getMessage());
+        }
+    }
 
     @Override
     public Optional<Usuario> encontrarPorId(Long id) {
@@ -111,12 +137,36 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
     public void eliminarUsuario(Long usuarioId) {
         if (!usuarioRepository.existsById(usuarioId)) {
-            // Opcional: puedes lanzar una excepción si el usuario no existe
-            // throw new IllegalArgumentException("No se puede eliminar: Usuario no encontrado.");
             return; // Simplemente no hace nada si el usuario no existe
         }
+
+        // Borrar primero la carpeta de imágenes asociada al usuario
+        borrarCarpetaImagenesUsuario(usuarioId);
+
+        // Después eliminar el usuario en BD
         usuarioRepository.deleteById(usuarioId);
+    }
+
+    private void borrarCarpetaImagenesUsuario(Long usuarioId) {
+        Path userDir = IMAGES_BASE_DIR.resolve(String.valueOf(usuarioId));
+        if (!Files.exists(userDir)) {
+            return;
+        }
+        try {
+            Files.walk(userDir)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(path -> {
+                        try {
+                            Files.deleteIfExists(path);
+                        } catch (IOException e) {
+                            System.err.println("No se pudo borrar " + path + ": " + e.getMessage());
+                        }
+                    });
+        } catch (IOException e) {
+            System.err.println("Error al recorrer carpeta de imágenes de usuario " + usuarioId + ": " + e.getMessage());
+        }
     }
 }

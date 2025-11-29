@@ -36,6 +36,9 @@ services:
       MYSQL_PASSWORD: nada
     ports:
       - "8080:8080"
+    volumes:
+      # Monta la carpeta local de imágenes estáticas en /app/static/images dentro del contenedor
+      - ./src/main/resources/static/images:/app/static/images
     restart: unless-stopped
 volumes:
   mysql_data:

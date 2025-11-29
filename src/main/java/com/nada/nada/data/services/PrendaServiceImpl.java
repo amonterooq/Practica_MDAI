@@ -430,6 +430,81 @@ public class PrendaServiceImpl implements PrendaService {
         }
     }
 
+    @Override
+    public List<Prenda> buscarPrendasFiltradas(Long usuarioId,
+                                               String nombreEmpiezaPor,
+                                               String tipoPrenda,
+                                               String categoria,
+                                               String color,
+                                               String marca,
+                                               String talla) {
+        // Partimos de todas las prendas del usuario y filtramos en memoria.
+        List<Prenda> base = buscarPrendasPorUsuarioId(usuarioId);
+
+        if (base.isEmpty()) {
+            return base;
+        }
+
+        return base.stream()
+                .filter(p -> {
+                    if (nombreEmpiezaPor != null && !nombreEmpiezaPor.isBlank()) {
+                        if (p.getNombre() == null || !p.getNombre().toLowerCase().startsWith(nombreEmpiezaPor.toLowerCase())) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .filter(p -> {
+                    if (color != null && !color.isBlank()) {
+                        if (p.getColor() == null || !p.getColor().toLowerCase().contains(color.toLowerCase())) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .filter(p -> {
+                    if (marca != null && !marca.isBlank()) {
+                        if (p.getMarca() == null || !p.getMarca().toLowerCase().contains(marca.toLowerCase())) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .filter(p -> {
+                    if (talla != null && !talla.isBlank()) {
+                        if (p.getTalla() == null || !p.getTalla().equalsIgnoreCase(talla.trim())) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .filter(p -> {
+                    if (tipoPrenda == null || tipoPrenda.isBlank() || "todos".equalsIgnoreCase(tipoPrenda)) {
+                        return true;
+                    }
+                    return switch (tipoPrenda) {
+                        case "superior" -> p instanceof PrendaSuperior;
+                        case "inferior" -> p instanceof PrendaInferior;
+                        case "calzado" -> p instanceof PrendaCalzado;
+                        default -> true;
+                    };
+                })
+                .filter(p -> {
+                    if (categoria == null || categoria.isBlank()) {
+                        return true;
+                    }
+                    if (p instanceof PrendaSuperior sup) {
+                        return sup.getCategoria() != null && sup.getCategoria().name().equalsIgnoreCase(categoria);
+                    } else if (p instanceof PrendaInferior inf) {
+                        return inf.getCategoriaInferior() != null && inf.getCategoriaInferior().name().equalsIgnoreCase(categoria);
+                    } else if (p instanceof PrendaCalzado cal) {
+                        return cal.getCategoria() != null && cal.getCategoria().name().equalsIgnoreCase(categoria);
+                    }
+                    return true;
+                })
+                .toList();
+    }
+
     /**
      * Método auxiliar para validar campos básicos comunes de cualquier prenda.
      * Lanza IllegalArgumentException si encuentra datos inválidos.

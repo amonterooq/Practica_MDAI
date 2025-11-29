@@ -1,7 +1,6 @@
 package com.nada.nada.controllers;
 
 import com.nada.nada.data.model.Usuario;
-import com.nada.nada.data.repository.UsuarioRepository;
 import com.nada.nada.data.services.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +35,14 @@ public class UsuarioController {
     }
 
     @PostMapping("/registro")
-    public String procesarRegistro(@ModelAttribute Usuario usuario, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String procesarRegistro(@ModelAttribute Usuario usuario,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
         try {
             Usuario nuevoUsuario = usuarioService.crearUsuario(usuario);
             session.setAttribute("usuarioLogueado", nuevoUsuario);
-            return "redirect:/conjuntos/";
+            // Si quieres ir al armario tras registrarse:
+            return "redirect:/armario/";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/usuarios/registro";
@@ -53,12 +55,16 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public String procesarLogin(@RequestParam String username, @RequestParam String password, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String procesarLogin(@RequestParam String username,
+                                @RequestParam String password,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
         Optional<Usuario> u = usuarioService.validarLogin(username, password);
 
         if (u.isPresent()) {
             session.setAttribute("usuarioLogueado", u.get());
-            return "redirect:/conjuntos/";
+            // Igual, lo envío al armario
+            return "redirect:/armario/";
         } else {
             redirectAttributes.addFlashAttribute("error", "Nombre de usuario o contraseña incorrectos.");
             return "redirect:/usuarios/login";
@@ -72,7 +78,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/perfil")
-    public String mostrarPerfil(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String mostrarPerfil(HttpSession session,
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuarioLogueado == null) {
             return "redirect:/usuarios/login";
@@ -82,7 +90,11 @@ public class UsuarioController {
     }
 
     @PostMapping("/perfil/password")
-    public String cambiarPassword(@RequestParam String oldPassword, @RequestParam String newPassword, @RequestParam String confirmPassword, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String cambiarPassword(@RequestParam String oldPassword,
+                                  @RequestParam String newPassword,
+                                  @RequestParam String confirmPassword,
+                                  HttpSession session,
+                                  RedirectAttributes redirectAttributes) {
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuarioLogueado == null) {
             return "redirect:/usuarios/login";
@@ -103,7 +115,8 @@ public class UsuarioController {
     }
 
     @PostMapping("/perfil/delete")
-    public String eliminarCuenta(HttpSession session, RedirectAttributes redirectAttributes) {
+    public String eliminarCuenta(HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuarioLogueado == null) {
             return "redirect:/usuarios/login";

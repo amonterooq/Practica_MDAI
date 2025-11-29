@@ -35,4 +35,13 @@ public interface PrendaService {
 
     // Verificar existencia
     boolean existePrendaPorId(Long id);
+
+    // Búsqueda combinada por usuario con filtros opcionales
+    List<Prenda> buscarPrendasFiltradas(Long usuarioId,
+                                        String nombreEmpiezaPor,
+                                        String tipoPrenda,
+                                        String categoria,
+                                        String color,
+                                        String marca,
+                                        String talla);
 }

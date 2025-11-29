@@ -177,6 +177,35 @@
 
         .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem; border: 1px dashed var(--border-color); background: #fafafa; }
 
+        /* --- NUEVOS ESTILOS PARA BARRA DE FILTROS Y BUSQUEDA --- */
+        .filters-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+        .search-wrapper {
+            position: relative;
+            flex: 1 1 220px;
+        }
+        .search-wrapper input[type="text"] {
+            width: 100%;
+            padding-left: 2.2rem;
+        }
+        .search-wrapper .icon {
+            position: absolute;
+            left: 0.6rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        .filters-bar select,
+        .filters-bar input[type="text"] {
+            font-size: 0.8rem;
+        }
+
         @media (max-width: 900px) {
             .main-container { grid-template-columns: 1fr; }
             .upload-panel { position: relative; top: 0; margin-bottom: 2rem; }
@@ -227,6 +256,7 @@
             <div id="divCatSuperior" class="form-group hidden">
                 <label>Categoría (Superior)</label>
                 <select name="catSuperior">
+                    <option value="" disabled selected>-- Seleccionar --</option>
                     <option th:each="cat : ${categoriasSuperior}" th:value="${cat}" th:text="${cat}"></option>
                 </select>
             </div>
@@ -234,6 +264,7 @@
             <div id="divCatInferior" class="form-group hidden">
                 <label>Categoría (Inferior)</label>
                 <select name="catInferior">
+                    <option value="" disabled selected>-- Seleccionar --</option>
                     <option th:each="cat : ${categoriasInferior}" th:value="${cat}" th:text="${cat}"></option>
                 </select>
             </div>
@@ -241,6 +272,7 @@
             <div id="divCatCalzado" class="form-group hidden">
                 <label>Categoría (Calzado)</label>
                 <select name="catCalzado">
+                    <option value="" disabled selected>-- Seleccionar --</option>
                     <option th:each="cat : ${categoriasCalzado}" th:value="${cat}" th:text="${cat}"></option>
                 </select>
             </div>
@@ -263,7 +295,8 @@
 
             <div class="form-group">
                 <label>Subir Foto</label>
-                <input type="file" name="imagen" accept="image/*">
+                <input type="file" id="fileInput" name="imagenOriginal" accept="image/*">
+                <input type="hidden" id="imagenRecortada" name="imagenRecortada">
             </div>
 
             <button type="submit" class="btn-black">Añadir al Armario</button>
@@ -276,12 +309,83 @@
             <span class="count" th:text="${totalPrendas} + ' ARTÍCULOS'">0 ARTÍCULOS</span>
         </div>
 
+        <!-- Barra de búsqueda y filtros -->
+        <form th:action="@{/armario/}" method="get" class="filters-bar">
+            <div class="search-wrapper">
+                <span class="icon"><i class="fas fa-search"></i></span>
+                <input type="text" name="q" placeholder="Buscar por nombre (ej. Cami)"
+                       th:value="${filtroNombre}">
+            </div>
+
+            <div>
+                <select name="tipo">
+                    <option value="">Tipo</option>
+                    <option value="superior" th:selected="${filtroTipo == 'superior'}">Parte superior</option>
+                    <option value="inferior" th:selected="${filtroTipo == 'inferior'}">Parte inferior</option>
+                    <option value="calzado" th:selected="${filtroTipo == 'calzado'}">Calzado</option>
+                </select>
+            </div>
+
+            <div>
+                <select name="categoria">
+                    <option value="">Categoría</option>
+                    <optgroup label="Superior">
+                        <option th:each="cat : ${categoriasSuperior}"
+                                th:value="${cat.name()}"
+                                th:text="${cat}"
+                                th:selected="${filtroCategoria == cat.name()}">
+                        </option>
+                    </optgroup>
+                    <optgroup label="Inferior">
+                        <option th:each="cat : ${categoriasInferior}"
+                                th:value="${cat.name()}"
+                                th:text="${cat}"
+                                th:selected="${filtroCategoria == cat.name()}">
+                        </option>
+                    </optgroup>
+                    <optgroup label="Calzado">
+                        <option th:each="cat : ${categoriasCalzado}"
+                                th:value="${cat.name()}"
+                                th:text="${cat}"
+                                th:selected="${filtroCategoria == cat.name()}">
+                        </option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div>
+                <input type="text" name="color" placeholder="Color"
+                       th:value="${filtroColor}">
+            </div>
+
+            <div>
+                <input type="text" name="marca" placeholder="Marca"
+                       th:value="${filtroMarca}">
+            </div>
+
+            <div>
+                <input type="text" name="talla" placeholder="Talla"
+                       th:value="${filtroTalla}">
+            </div>
+
+            <div>
+                <button type="submit" class="btn-black" style="padding:0.7rem 1.2rem; width:auto;">Filtrar</button>
+            </div>
+        </form>
+
         <div class="wardrobe-grid" th:if="${prendas != null and !prendas.isEmpty()}">
 
             <article class="garment-card" th:each="prenda : ${prendas}">
 
                 <div class="card-img">
-                    <img th:src="${prenda.imagenUrl} ?: '/images/placeholder_cloth.png'" alt="Prenda" onerror="this.src='/images/placeholder_cloth.png'">
+                    <img th:src="${prenda.dirImagen != null and !#strings.isEmpty(prenda.dirImagen)} ? ${prenda.dirImagen} : '/images/placeholder_cloth.png'"
+                         alt="Prenda"
+                         onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
+
+                    <div style="position:absolute; bottom:6px; left:6px; background:rgba(0,0,0,0.6); color:#fff; font-size:0.65rem; padding:2px 6px; border-radius:2px;"
+                         th:if="${prenda.dirImagen == null or #strings.isEmpty(prenda.dirImagen)}">
+                        Sin imagen
+                    </div>
 
                     <a th:href="@{/armario/eliminar/{id}(id=${prenda.id})}" class="delete-btn" title="Eliminar" onclick="return confirm('¿Eliminar prenda?');">
                         <i class="fas fa-times"></i>
@@ -311,6 +415,23 @@
 
 </main>
 
+<!-- Modal/popup para recorte -->
+<div id="cropModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:1rem; max-width:700px; width:90%; max-height:90%; display:flex; flex-direction:column;">
+        <h3 style="margin-bottom:0.5rem;">Ajusta el recorte (800x800)</h3>
+        <p style="font-size:0.8rem; color:#666; margin-bottom:0.5rem;">
+            Mueve el cuadro para elegir el área a recortar. Se guardará a 800x800px.
+        </p>
+        <div style="flex:1; overflow:auto; border:1px solid #ccc; margin-bottom:0.5rem; display:flex; justify-content:center; align-items:center;">
+            <canvas id="cropCanvas" style="border:1px solid #999; max-width:100%; height:auto;"></canvas>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button type="button" id="cancelCropBtn">Cancelar</button>
+            <button type="button" id="confirmCropBtn">Aplicar recorte</button>
+        </div>
+    </div>
+</div>
+
 <script>
     function mostrarCategorias() {
         document.getElementById('divCatSuperior').classList.add('hidden');
@@ -322,6 +443,231 @@
         if (tipo === 'superior') document.getElementById('divCatSuperior').classList.remove('hidden');
         if (tipo === 'inferior') document.getElementById('divCatInferior').classList.remove('hidden');
         if (tipo === 'calzado') document.getElementById('divCatCalzado').classList.remove('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        mostrarCategorias();
+    });
+
+    // --- Lógica de recorte con cuadro fijo de 800x800 ---
+    let originalImage = null;
+    let imgLoaded = false;
+    let cropCenter = null; // centro del cuadrado EN COORDENADAS ORIGINAL (no canvas)
+
+    const fileInput = document.getElementById('fileInput');
+    const cropModal = document.getElementById('cropModal');
+    const cropCanvas = document.getElementById('cropCanvas');
+    const ctx = cropCanvas.getContext('2d');
+    const imagenRecortadaInput = document.getElementById('imagenRecortada');
+    const cancelCropBtn = document.getElementById('cancelCropBtn');
+    const confirmCropBtn = document.getElementById('confirmCropBtn');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                originalImage = new Image();
+                originalImage.onload = function () {
+                    imgLoaded = true;
+
+                    const ow = originalImage.width;
+                    const oh = originalImage.height;
+
+                    // Si la imagen original es menor o igual a 800x800, no pedimos recorte manual
+                    if (ow <= 800 && oh <= 800) {
+                        generarImagen800(originalImage, null);
+                        cropModal.style.display = 'none';
+                    } else {
+                        prepararCanvasConCuadroFijo(originalImage);
+                        cropModal.style.display = 'flex';
+                    }
+                };
+                originalImage.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function prepararCanvasConCuadroFijo(img) {
+        const maxCanvasSize = 600;
+        let iw = img.width;
+        let ih = img.height;
+        let scale = 1;
+
+        if (iw > maxCanvasSize || ih > maxCanvasSize) {
+            scale = Math.min(maxCanvasSize / iw, maxCanvasSize / ih);
+            iw = iw * scale;
+            ih = ih * scale;
+        }
+
+        cropCanvas.width = iw;
+        cropCanvas.height = ih;
+
+        ctx.clearRect(0, 0, iw, ih);
+        ctx.drawImage(img, 0, 0, iw, ih);
+
+        // El cuadro rojo representa SIEMPRE un recorte de 800x800
+        // en coordenadas originales, escalado al canvas.
+        const scaleX = iw / img.width;
+        const scaleY = ih / img.height;
+        const sideCanvasX = 800 * scaleX;
+        const sideCanvasY = 800 * scaleY;
+        const sideCanvas = Math.min(sideCanvasX, sideCanvasY);
+
+        // Guardamos el centro en coordenadas originales
+        cropCenter = {
+            x: img.width / 2,
+            y: img.height / 2,
+            side: 800 // en coordenadas originales SIEMPRE 800
+        };
+
+        dibujarCuadroFijo();
+    }
+
+    cropCanvas.addEventListener('mousedown', function (e) {
+        if (!imgLoaded || !cropCenter || !originalImage) return;
+        const rect = cropCanvas.getBoundingClientRect();
+        const cx = e.clientX - rect.left;
+        const cy = e.clientY - rect.top;
+
+        const iw = cropCanvas.width;
+        const ih = cropCanvas.height;
+        const scaleX = iw / originalImage.width;
+        const scaleY = ih / originalImage.height;
+
+        const halfSideCanvas = (cropCenter.side * Math.min(scaleX, scaleY)) / 2;
+        const centerCanvasX = cropCenter.x * scaleX;
+        const centerCanvasY = cropCenter.y * scaleY;
+
+        const withinX = cx >= centerCanvasX - halfSideCanvas && cx <= centerCanvasX + halfSideCanvas;
+        const withinY = cy >= centerCanvasY - halfSideCanvas && cy <= centerCanvasY + halfSideCanvas;
+
+        if (withinX && withinY) {
+            cropCanvas.isDragging = true;
+            cropCanvas.dragOffsetX = cx - centerCanvasX;
+            cropCanvas.dragOffsetY = cy - centerCanvasY;
+        }
+    });
+
+    cropCanvas.addEventListener('mousemove', function (e) {
+        if (!imgLoaded || !cropCenter || !cropCanvas.isDragging || !originalImage) return;
+        const rect = cropCanvas.getBoundingClientRect();
+        const cx = e.clientX - rect.left;
+        const cy = e.clientY - rect.top;
+
+        const iw = cropCanvas.width;
+        const ih = cropCanvas.height;
+        const scaleX = iw / originalImage.width;
+        const scaleY = ih / originalImage.height;
+        const scaleMin = Math.min(scaleX, scaleY);
+
+        const halfSideCanvas = (cropCenter.side * scaleMin) / 2;
+
+        // Nuevo centro en canvas
+        let newCenterCanvasX = cx - cropCanvas.dragOffsetX;
+        let newCenterCanvasY = cy - cropCanvas.dragOffsetY;
+
+        // Limitar dentro del canvas en coordenadas canvas
+        newCenterCanvasX = Math.max(halfSideCanvas, Math.min(iw - halfSideCanvas, newCenterCanvasX));
+        newCenterCanvasY = Math.max(halfSideCanvas, Math.min(ih - halfSideCanvas, newCenterCanvasY));
+
+        // Convertir de vuelta a coordenadas originales
+        cropCenter.x = newCenterCanvasX / scaleX;
+        cropCenter.y = newCenterCanvasY / scaleY;
+
+        dibujarCuadroFijo();
+    });
+
+    cropCanvas.addEventListener('mouseup', function () {
+        cropCanvas.isDragging = false;
+    });
+
+    cropCanvas.addEventListener('mouseleave', function () {
+        cropCanvas.isDragging = false;
+    });
+
+    function dibujarCuadroFijo() {
+        if (!imgLoaded || !originalImage || !cropCenter) return;
+        const iw = cropCanvas.width;
+        const ih = cropCanvas.height;
+
+        ctx.clearRect(0, 0, iw, ih);
+        ctx.drawImage(originalImage, 0, 0, iw, ih);
+
+        const scaleX = iw / originalImage.width;
+        const scaleY = ih / originalImage.height;
+        const scaleMin = Math.min(scaleX, scaleY);
+
+        const sideCanvas = cropCenter.side * scaleMin; // 800 * escala
+        const halfSideCanvas = sideCanvas / 2;
+
+        const centerCanvasX = cropCenter.x * scaleX;
+        const centerCanvasY = cropCenter.y * scaleY;
+
+        const x = centerCanvasX - halfSideCanvas;
+        const y = centerCanvasY - halfSideCanvas;
+
+        ctx.save();
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, sideCanvas, sideCanvas);
+        ctx.restore();
+    }
+
+    cancelCropBtn.addEventListener('click', function () {
+        imagenRecortadaInput.value = '';
+        if (fileInput) fileInput.value = '';
+        cropModal.style.display = 'none';
+    });
+
+    confirmCropBtn.addEventListener('click', function () {
+        if (!imgLoaded || !originalImage) {
+            cropModal.style.display = 'none';
+            return;
+        }
+        const recorte = {
+            x: cropCenter.x - cropCenter.side / 2,
+            y: cropCenter.y - cropCenter.side / 2,
+            w: cropCenter.side,
+            h: cropCenter.side
+        };
+        generarImagen800(originalImage, recorte);
+        cropModal.style.display = 'none';
+    });
+
+    function generarImagen800(img, recorte) {
+        const outCanvas = document.createElement('canvas');
+        const outCtx = outCanvas.getContext('2d');
+        outCanvas.width = 800;
+        outCanvas.height = 800;
+
+        // Fondo blanco siempre, para rellenar zonas vacías
+        outCtx.fillStyle = '#ffffff';
+        outCtx.fillRect(0, 0, 800, 800);
+
+        let sx = 0, sy = 0, sw = img.width, sh = img.height;
+
+        if (recorte) {
+            sx = Math.max(0, recorte.x);
+            sy = Math.max(0, recorte.y);
+            sw = Math.min(recorte.w, img.width - sx);
+            sh = Math.min(recorte.h, img.height - sy);
+        }
+
+        // Escalamos el recorte para que llene lo máximo posible el 800x800 conservando proporciones
+        const scale = Math.min(800 / sw, 800 / sh);
+        const dw = sw * scale;
+        const dh = sh * scale;
+        const dx = (800 - dw) / 2;
+        const dy = (800 - dh) / 2;
+
+        outCtx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+
+        const dataUrl = outCanvas.toDataURL('image/jpeg', 0.9);
+        imagenRecortadaInput.value = dataUrl;
     }
 </script>
 </body>

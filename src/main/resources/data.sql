@@ -75,14 +75,14 @@ VALUES (33, 'Blusa flores', 'multicolor', 'Zara', 'M', NULL, 5, 'SUPERIOR'),
 
 -- Usuario 6: fran
 INSERT INTO prenda (id, nombre, color, marca, talla, dir_imagen, usuario_id, tipo_prenda)
-VALUES (41, 'Camisa blanca', 'blanco', 'Hugo Boss', 'M', NULL, 6, 'SUPERIOR'),
-       (42, 'Chaqueta softshell', 'azul', 'The North Face', 'M', NULL, 6, 'SUPERIOR'),
-       (43, 'Suéter azul', 'azul', 'GAP', 'M', NULL, 6, 'SUPERIOR'),
-       (44, 'Pantalón jogger', 'gris', 'Nike', '36', NULL, 6, 'INFERIOR'),
-       (45, 'Jeans slim', 'azul', 'Pepe Jeans', '36', NULL, 6, 'INFERIOR'),
-       (46, 'Short deporte', 'negro', 'Adidas', '36', NULL, 6, 'INFERIOR'),
-       (47, 'Zapatillas trail', 'naranja', 'Salomon', '40', NULL, 6, 'CALZADO'),
-       (48, 'Zapatos derby', 'marrón', 'Clarks', '40', NULL, 6, 'CALZADO');
+VALUES (41, 'Camisa blanca', 'blanco', 'Hugo Boss', 'M', '/images/6/prenda_1.jpg', 6, 'SUPERIOR'),
+       (42, 'Chaqueta softshell', 'azul', 'The North Face', 'M', '/images/6/prenda_2.jpg', 6, 'SUPERIOR'),
+       (43, 'Suéter azul', 'azul', 'GAP', 'M', '/images/6/prenda_3.jpg', 6, 'SUPERIOR'),
+       (44, 'Pantalón jogger', 'gris', 'Nike', '36', '/images/6/prenda_4.jpg', 6, 'INFERIOR'),
+       (45, 'Jeans slim', 'azul', 'Pepe Jeans', '36', '/images/6/prenda_5.jpg', 6, 'INFERIOR'),
+       (46, 'Short deporte', 'negro', 'Adidas', '36', '/images/6/prenda_6.jpg', 6, 'INFERIOR'),
+       (47, 'Zapatillas trail', 'naranja', 'Salomon', '40', '/images/6/prenda_7.jpg', 6, 'CALZADO'),
+       (48, 'Zapatos derby', 'marrón', 'Clarks', '40', '/images/6/prenda_8.jpg', 6, 'CALZADO');
 
 -- =========================================================
 -- SUBTABLAS (JOINED)
