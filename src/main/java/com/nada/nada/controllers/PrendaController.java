@@ -104,10 +104,18 @@ public class PrendaController {
         }
 
         Long usuarioId = usuarioLogueado.getId();
-        String dirImagen = null;
 
+        // Validación centralizada de campos obligatorios
         try {
-            // si viene base64 del \`input hidden\`, la guardamos en disco
+            prendaService.validarDatosNuevaPrenda(nombre, tipoPrenda, catSuperior, catInferior, catCalzado, marca, talla, color);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/armario/";
+        }
+
+        String dirImagen = null;
+        try {
+            // si viene base64 del `input hidden`, la guardamos en disco
             if (imagenRecortada != null && !imagenRecortada.trim().isEmpty()) {
                 dirImagen = guardarImagenBase64EnDisco(imagenRecortada, usuarioId);
             }
@@ -120,11 +128,7 @@ public class PrendaController {
         Prenda prenda;
 
         switch (tipoPrenda) {
-            case "superior":
-                if (catSuperior == null) {
-                    redirectAttributes.addFlashAttribute("error", "Debes seleccionar una categoría para la prenda superior.");
-                    return "redirect:/armario/";
-                }
+            case "superior" -> {
                 PrendaSuperior superior = new PrendaSuperior();
                 superior.setNombre(nombre);
                 superior.setColor(color);
@@ -134,13 +138,8 @@ public class PrendaController {
                 superior.setCategoria(catSuperior);
                 superior.setDirImagen(dirImagen);
                 prenda = prendaService.guardarPrendaSuperior(superior);
-                break;
-
-            case "inferior":
-                if (catInferior == null) {
-                    redirectAttributes.addFlashAttribute("error", "Debes seleccionar una categoría para la prenda inferior.");
-                    return "redirect:/armario/";
-                }
+            }
+            case "inferior" -> {
                 PrendaInferior inferior = new PrendaInferior();
                 inferior.setNombre(nombre);
                 inferior.setColor(color);
@@ -150,13 +149,8 @@ public class PrendaController {
                 inferior.setCategoriaInferior(catInferior);
                 inferior.setDirImagen(dirImagen);
                 prenda = prendaService.guardarPrendaInferior(inferior);
-                break;
-
-            case "calzado":
-                if (catCalzado == null) {
-                    redirectAttributes.addFlashAttribute("error", "Debes seleccionar una categoría para el calzado.");
-                    return "redirect:/armario/";
-                }
+            }
+            case "calzado" -> {
                 PrendaCalzado calzado = new PrendaCalzado();
                 calzado.setNombre(nombre);
                 calzado.setColor(color);
@@ -166,11 +160,11 @@ public class PrendaController {
                 calzado.setCategoria(catCalzado);
                 calzado.setDirImagen(dirImagen);
                 prenda = prendaService.guardarPrendaCalzado(calzado);
-                break;
-
-            default:
+            }
+            default -> {
                 redirectAttributes.addFlashAttribute("error", "Tipo de prenda no válido.");
                 return "redirect:/armario/";
+            }
         }
 
         logger.info("Prenda creada id={} tipo={} usuarioId={}",

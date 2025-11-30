@@ -236,6 +236,13 @@
             <p>Añade una prenda individual.</p>
         </div>
 
+        <div th:if="${error != null}" style="margin-bottom:0.8rem; color:#c0392b; font-size:0.8rem;">
+            <span th:text="${error}">Error</span>
+        </div>
+        <div th:if="${success != null}" style="margin-bottom:0.8rem; color:#27ae60; font-size:0.8rem;">
+            <span th:text="${success}">OK</span>
+        </div>
+
         <form th:action="@{/armario/crear}" method="post" enctype="multipart/form-data">
 
             <div class="form-group">
@@ -387,7 +394,9 @@
                         Sin imagen
                     </div>
 
-                    <a th:href="@{/armario/eliminar/{id}(id=${prenda.id})}" class="delete-btn" title="Eliminar" onclick="return confirm('¿Eliminar prenda?');">
+                    <a th:href="@{/armario/eliminar(id=${prenda.id})}"
+                       class="delete-btn" title="Eliminar"
+                       onclick="return confirm('¿Eliminar prenda?');">
                         <i class="fas fa-times"></i>
                     </a>
                 </div>

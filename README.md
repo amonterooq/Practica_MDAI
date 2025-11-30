@@ -40,6 +40,7 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 ## Funcionalidades, Requisitos, “Pliego de condiciones”  
 - El usuario debe poder **crear una cuenta** y poder **acceder** a ella con un usuario y contraseña.
 - El usuario debe poder **subir fotos de sus prendas** y almacenarlas en su armario virtual.
+- Cuando el usuario **suba una foto demasiado grande** debe poder recortarla en la propia aplicación.
 - El usuario debe poder **organizar las prendas** por:
     - Tipo de prenda (Parte superior, parte inferior o calzado)
     - Categorías (Dentro de la parte superior hay camisetas, sudaderas, chaquetas...)
@@ -49,9 +50,9 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 - El usuario puede **buscar prendas** introduciendo información en una barra de búsqueda.
     - La búsqueda puede ser por **tipo, categoría, color, marca o talla**.
     - Los resultados de la búsqueda se mostrarán **agrupados primero por tipo de prenda y luego por características**.
-- La interacción con los resultados de la búsqueda contempla dos casos:
+- Una vez el usuario ha añadido prendas a su armario digital, pueden darse dos casos:
     - Si el usuario selecciona una prenda: puede **ver sus detalles y editar la información**.
-    - Si el usuario selecciona varias prendas: puede **crear un conjunto personalizado**.
+    - El usuario puede **crear un conjunto personalizado** a partir de 3 prendas.
 - La aplicación web debe ser **usable desde PC y móvil** (diseño responsive y adaptable al dispositivo).
 - El usuario puede **añadir notas o comentarios** a cada conjunto creado (hasta **256 caracteres**).
 - El usuario debe poder **eliminar o modificar** prendas y conjuntos de su armario digital.
@@ -137,7 +138,7 @@ La aplicación utiliza diferentes configuraciones según el entorno de ejecució
 - Archivos relevantes:
     - Dockerfile → Construcción de la imagen de la aplicación.
     - docker-compose.yml → Orquestación de contenedores.
-    - docker/data.sql → Datos iniciales para MySQL.
+    - src/main/resources/data.sql → Datos iniciales para MySQL.
 
 ### Entorno de Test (JUnit)
 

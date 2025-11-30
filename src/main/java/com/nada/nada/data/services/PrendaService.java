@@ -44,4 +44,18 @@ public interface PrendaService {
                                         String color,
                                         String marca,
                                         String talla);
+
+    /**
+     * Valida los datos introducidos en el formulario de creación de prenda.
+     * Si algo obligatorio está vacío o es inválido lanza IllegalArgumentException
+     * con un mensaje descriptivo para mostrar al usuario.
+     */
+    void validarDatosNuevaPrenda(String nombre,
+                                 String tipoPrenda,
+                                 CategoriaSuperior catSuperior,
+                                 CategoriaInferior catInferior,
+                                 CategoriaCalzado catCalzado,
+                                 String marca,
+                                 String talla,
+                                 String color);
 }

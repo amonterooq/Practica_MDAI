@@ -299,7 +299,15 @@
                              th:src="${conjunto.prendaSuperior.dirImagen}"
                              alt="Superior"
                              onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
-                        <span class="placeholder" th:if="${conjunto.prendaSuperior == null or conjunto.prendaSuperior.dirImagen == null}">Sin superior</span>
+                        <span class="placeholder"
+                              th:if="${conjunto.prendaSuperior != null and conjunto.prendaSuperior.dirImagen == null}"
+                              th:text="${conjunto.prendaSuperior.nombre}">
+                            Superior sin imagen
+                        </span>
+                        <span class="placeholder"
+                              th:if="${conjunto.prendaSuperior == null}">
+                            Sin superior
+                        </span>
                     </div>
                     <!-- Slot inferior -->
                     <div class="outfit-slot">
@@ -307,7 +315,15 @@
                              th:src="${conjunto.prendaInferior.dirImagen}"
                              alt="Inferior"
                              onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
-                        <span class="placeholder" th:if="${conjunto.prendaInferior == null or conjunto.prendaInferior.dirImagen == null}">Sin inferior</span>
+                        <span class="placeholder"
+                              th:if="${conjunto.prendaInferior != null and conjunto.prendaInferior.dirImagen == null}"
+                              th:text="${conjunto.prendaInferior.nombre}">
+                            Inferior sin imagen
+                        </span>
+                        <span class="placeholder"
+                              th:if="${conjunto.prendaInferior == null}">
+                            Sin inferior
+                        </span>
                     </div>
                     <!-- Slot calzado -->
                     <div class="outfit-slot">
@@ -315,7 +331,15 @@
                              th:src="${conjunto.prendaCalzado.dirImagen}"
                              alt="Calzado"
                              onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
-                        <span class="placeholder" th:if="${conjunto.prendaCalzado == null or conjunto.prendaCalzado.dirImagen == null}">Sin calzado</span>
+                        <span class="placeholder"
+                              th:if="${conjunto.prendaCalzado != null and conjunto.prendaCalzado.dirImagen == null}"
+                              th:text="${conjunto.prendaCalzado.nombre}">
+                            Calzado sin imagen
+                        </span>
+                        <span class="placeholder"
+                              th:if="${conjunto.prendaCalzado == null}">
+                            Sin calzado
+                        </span>
                     </div>
                 </div>
 

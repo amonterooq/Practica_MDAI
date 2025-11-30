@@ -54,9 +54,9 @@ public class ConjuntoServiceImpl implements ConjuntoService {
         try {
             return conjuntoRepository.save(conjunto);
         } catch (DataIntegrityViolationException dive) {
-            throw new ServiceException("Error de integridad al guardar el conjunto: " + dive.getMessage(), dive);
+            throw new RuntimeException("Error de integridad al guardar el conjunto: " + dive.getMessage(), dive);
         } catch (Exception e) {
-            throw new ServiceException("Error inesperado al guardar el conjunto", e);
+            throw new RuntimeException("Error inesperado al guardar el conjunto", e);
         }
     }
 
@@ -94,9 +94,9 @@ public class ConjuntoServiceImpl implements ConjuntoService {
             // Ya fue eliminado o no existía
             return false;
         } catch (DataIntegrityViolationException dive) {
-            throw new ServiceException("No se pudo eliminar el conjunto por violación de integridad: " + dive.getMessage(), dive);
+            throw new RuntimeException("No se pudo eliminar el conjunto por violación de integridad: " + dive.getMessage(), dive);
         } catch (Exception e) {
-            throw new ServiceException("Error inesperado al eliminar el conjunto", e);
+            throw new RuntimeException("Error inesperado al eliminar el conjunto", e);
         }
     }
 
@@ -119,9 +119,9 @@ public class ConjuntoServiceImpl implements ConjuntoService {
         try {
             return conjuntoRepository.save(conjunto);
         } catch (DataIntegrityViolationException dive) {
-            throw new ServiceException("Error de integridad al actualizar el conjunto: " + dive.getMessage(), dive);
+            throw new RuntimeException("Error de integridad al actualizar el conjunto: " + dive.getMessage(), dive);
         } catch (Exception e) {
-            throw new ServiceException("Error inesperado al actualizar el conjunto", e);
+            throw new RuntimeException("Error inesperado al actualizar el conjunto", e);
         }
     }
 

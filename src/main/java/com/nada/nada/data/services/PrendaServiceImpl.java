@@ -19,6 +19,7 @@ import java.util.Optional;
 @Transactional
 public class PrendaServiceImpl implements PrendaService {
     private static final Logger logger = LoggerFactory.getLogger(PrendaServiceImpl.class);
+    private static final java.nio.file.Path IMAGES_BASE_DIR = java.nio.file.Paths.get("/app/static/images");
 
     private final PrendaRepository prendaRepository;
     private final PrendaSuperiorRepository prendaSuperiorRepository;
@@ -110,16 +111,35 @@ public class PrendaServiceImpl implements PrendaService {
             return false;
         }
         try {
-            if (!prendaRepository.existsById(id)) {
+            Optional<Prenda> optPrenda = prendaRepository.findById(id);
+            if (optPrenda.isEmpty()) {
                 logger.info("borrarPrenda: no existe prenda con id={}", id);
                 return false;
             }
+
+            Prenda prenda = optPrenda.get();
+            String dirImagen = prenda.getDirImagen();
+
             prendaRepository.deleteById(id);
             boolean stillExists = prendaRepository.existsById(id);
             if (stillExists) {
                 logger.error("borrarPrenda: fallo al borrar prenda id={}", id);
                 return false;
             }
+
+            // Si la prenda tenía imagen asociada, intentamos borrar solo ese fichero
+            if (dirImagen != null && !dirImagen.isBlank()) {
+                try {
+                    // dirImagen tiene formato "/images/{usuarioId}/fichero.jpg"
+                    String relativePath = dirImagen.startsWith("/images/") ? dirImagen.substring("/images/".length()) : dirImagen;
+                    java.nio.file.Path imagePath = IMAGES_BASE_DIR.resolve(relativePath.replace("/", java.io.File.separator));
+                    java.nio.file.Files.deleteIfExists(imagePath);
+                    logger.info("borrarPrenda: imagen borrada {}", imagePath.toAbsolutePath());
+                } catch (Exception e) {
+                    logger.warn("borrarPrenda: no se pudo borrar la imagen asociada a la prenda id={}: {}", id, e.getMessage());
+                }
+            }
+
             logger.info("borrarPrenda: prenda borrada id={}", id);
             return true;
         } catch (Exception e) {
@@ -502,7 +522,44 @@ public class PrendaServiceImpl implements PrendaService {
                     }
                     return true;
                 })
+                .sorted((p1, p2) -> {
+                    int t1 = tipoOrden(p1);
+                    int t2 = tipoOrden(p2);
+                    int cmpTipo = Integer.compare(t1, t2);
+                    if (cmpTipo != 0) return cmpTipo;
+
+                    String c1 = categoriaDe(p1);
+                    String c2 = categoriaDe(p2);
+                    int cmpCat = c1.compareToIgnoreCase(c2);
+                    if (cmpCat != 0) return cmpCat;
+
+                    String n1 = p1.getNombre() != null ? p1.getNombre() : "";
+                    String n2 = p2.getNombre() != null ? p2.getNombre() : "";
+                    return n1.compareToIgnoreCase(n2);
+                })
                 .toList();
+    }
+
+    // Orden de tipos: superior (0), inferior (1), calzado (2), resto (99)
+    private int tipoOrden(Prenda p) {
+        if (p instanceof PrendaSuperior) return 0;
+        if (p instanceof PrendaInferior) return 1;
+        if (p instanceof PrendaCalzado)  return 2;
+        return 99;
+    }
+
+    // Devuelve la categoría como String (según el tipo de prenda)
+    private String categoriaDe(Prenda p) {
+        if (p instanceof PrendaSuperior sup && sup.getCategoria() != null) {
+            return sup.getCategoria().name();
+        }
+        if (p instanceof PrendaInferior inf && inf.getCategoriaInferior() != null) {
+            return inf.getCategoriaInferior().name();
+        }
+        if (p instanceof PrendaCalzado cal && cal.getCategoria() != null) {
+            return cal.getCategoria().name();
+        }
+        return "";
     }
 
     /**
@@ -566,6 +623,53 @@ public class PrendaServiceImpl implements PrendaService {
                 logger.warn("validacionPrendaBasic: nombre demasiado largo (len={})", nombre.length());
                 throw new IllegalArgumentException("El nombre no puede tener más de 100 caracteres");
             }
+        }
+    }
+
+    @Override
+    public void validarDatosNuevaPrenda(String nombre,
+                                        String tipoPrenda,
+                                        CategoriaSuperior catSuperior,
+                                        CategoriaInferior catInferior,
+                                        CategoriaCalzado catCalzado,
+                                        String marca,
+                                        String talla,
+                                        String color) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de la prenda es obligatorio.");
+        }
+        if (tipoPrenda == null || tipoPrenda.trim().isEmpty()) {
+            throw new IllegalArgumentException("Debes seleccionar un tipo de prenda.");
+        }
+
+        // Validar categoría según tipo
+        switch (tipoPrenda) {
+            case "superior" -> {
+                if (catSuperior == null) {
+                    throw new IllegalArgumentException("Debes seleccionar una categoría para la prenda superior.");
+                }
+            }
+            case "inferior" -> {
+                if (catInferior == null) {
+                    throw new IllegalArgumentException("Debes seleccionar una categoría para la prenda inferior.");
+                }
+            }
+            case "calzado" -> {
+                if (catCalzado == null) {
+                    throw new IllegalArgumentException("Debes seleccionar una categoría para el calzado.");
+                }
+            }
+            default -> throw new IllegalArgumentException("Tipo de prenda no válido.");
+        }
+
+        if (marca == null || marca.trim().isEmpty()) {
+            throw new IllegalArgumentException("La marca es obligatoria.");
+        }
+        if (talla == null || talla.trim().isEmpty()) {
+            throw new IllegalArgumentException("La talla es obligatoria.");
+        }
+        if (color == null || color.trim().isEmpty()) {
+            throw new IllegalArgumentException("El color es obligatorio.");
         }
     }
 }
