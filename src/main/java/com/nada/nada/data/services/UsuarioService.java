@@ -8,7 +8,6 @@ import java.util.Optional;
 public interface UsuarioService {
     public List<Usuario> buscarTodos();
     public Usuario crearUsuario(Usuario usuario);
-    public Optional<Usuario> encontrarPorId(Long id);
     public Optional<Usuario> validarLogin(String username, String password);
     public void cambiarPassword(Long usuarioId, String oldPassword, String newPassword);
     public void eliminarUsuario(Long usuarioId);

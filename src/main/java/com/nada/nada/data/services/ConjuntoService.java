@@ -7,16 +7,7 @@ import java.util.Optional;
 
 public interface ConjuntoService {
     Conjunto guardarConjunto(Conjunto conjunto);
-
     Optional<Conjunto> buscarConjuntoPorId(Long id);
-
     List<Conjunto> buscarConjuntosPorUsuarioId(Long usuarioId);
-
-    Conjunto buscarConjuntoPorNombre(String nombre);
-
     boolean borrarConjunto(Long id);
-
-    Conjunto actualizarConjunto(Conjunto conjunto);
-
-    long contarConjuntosPorUsuario(Long usuarioId);
 }

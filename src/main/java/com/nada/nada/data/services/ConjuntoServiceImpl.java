@@ -29,11 +29,8 @@ public class ConjuntoServiceImpl implements ConjuntoService {
     private final UsuarioRepository usuarioRepository;
 
     @Autowired
-    public ConjuntoServiceImpl(ConjuntoRepository conjuntoRepository,
-                               PrendaSuperiorRepository prendaSuperiorRepository,
-                               PrendaInferiorRepository prendaInferiorRepository,
-                               PrendaCalzadoRepository prendaCalzadoRepository,
-                               UsuarioRepository usuarioRepository) {
+    public ConjuntoServiceImpl(ConjuntoRepository conjuntoRepository, PrendaSuperiorRepository prendaSuperiorRepository, PrendaInferiorRepository prendaInferiorRepository,
+                               PrendaCalzadoRepository prendaCalzadoRepository, UsuarioRepository usuarioRepository) {
         this.conjuntoRepository = conjuntoRepository;
         this.prendaSuperiorRepository = prendaSuperiorRepository;
         this.prendaInferiorRepository = prendaInferiorRepository;
@@ -44,6 +41,7 @@ public class ConjuntoServiceImpl implements ConjuntoService {
     @Override
     public Conjunto guardarConjunto(Conjunto conjunto) {
         validacionConjuntoBasico(conjunto);
+
         // comprobar que usuario existe en BD
         Long usuarioId = conjunto.getUsuario().getId();
         if (usuarioId == null || !usuarioRepository.existsById(usuarioId)) {
@@ -77,12 +75,6 @@ public class ConjuntoServiceImpl implements ConjuntoService {
     }
 
     @Override
-    public Conjunto buscarConjuntoPorNombre(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) return null;
-        return conjuntoRepository.findByNombre(nombre);
-    }
-
-    @Override
     public boolean borrarConjunto(Long id) {
         if (id == null) {
             return false;
@@ -100,47 +92,17 @@ public class ConjuntoServiceImpl implements ConjuntoService {
         }
     }
 
-    @Override
-    public Conjunto actualizarConjunto(Conjunto conjunto) {
-        if (conjunto == null || conjunto.getId() == null) {
-            throw new IllegalArgumentException("El conjunto y su ID no pueden ser nulos");
-        }
-        if (!conjuntoRepository.existsById(conjunto.getId())) {
-            throw new IllegalArgumentException("No existe un conjunto con el ID: " + conjunto.getId());
-        }
-
-        validacionConjuntoBasico(conjunto);
-        Long usuarioId = conjunto.getUsuario() != null ? conjunto.getUsuario().getId() : null;
-        if (usuarioId == null || !usuarioRepository.existsById(usuarioId)) {
-            throw new IllegalArgumentException("El usuario asociado al conjunto no existe o no tiene ID");
-        }
-        validacionPrendasPertenencia(conjunto, usuarioId);
-
-        try {
-            return conjuntoRepository.save(conjunto);
-        } catch (DataIntegrityViolationException dive) {
-            throw new RuntimeException("Error de integridad al actualizar el conjunto: " + dive.getMessage(), dive);
-        } catch (Exception e) {
-            throw new RuntimeException("Error inesperado al actualizar el conjunto", e);
-        }
-    }
-
-    @Override
-    public long contarConjuntosPorUsuario(Long usuarioId) {
-        if (usuarioId == null) {
-            throw new IllegalArgumentException("El id de usuario no puede ser nulo");
-        }
-        return conjuntoRepository.countByUsuario_Id(usuarioId);
-    }
-
     // Validaciones auxiliares
     private void validacionConjuntoBasico(Conjunto conjunto) {
-        if (conjunto == null) throw new IllegalArgumentException("El conjunto no puede ser nulo");
-        if (conjunto.getUsuario() == null) throw new IllegalArgumentException("El conjunto debe pertenecer a un usuario");
-        if (conjunto.getNombre() == null || conjunto.getNombre().trim().isEmpty())
+        if (conjunto == null){
+            throw new IllegalArgumentException("El conjunto no puede ser nulo");
+        } else if (conjunto.getUsuario() == null){
+            throw new IllegalArgumentException("El conjunto debe pertenecer a un usuario");
+        } else if (conjunto.getNombre() == null || conjunto.getNombre().trim().isEmpty()){
             throw new IllegalArgumentException("El nombre del conjunto no puede estar vacío");
-        if (conjunto.getDescripcion() != null && conjunto.getDescripcion().length() > 256)
+        } else if (conjunto.getDescripcion() != null && conjunto.getDescripcion().length() > 256){
             throw new IllegalArgumentException("La descripción no puede superar los 256 caracteres");
+        }
     }
 
     private void validacionPrendasPertenencia(Conjunto conjunto, Long usuarioId) {

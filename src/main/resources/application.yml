@@ -22,11 +22,8 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      # 1. JPA creará/actualizará las tablas basado en tus @Entity
       ddl-auto: update
-    # 2. Esta propiedad le dice a Spring que espere a que JPA termine antes de ejecutar data.sql
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
   sql:
     init:
-      # 3. Esto habilita la ejecución de data.sql
-      mode: always
+      mode: never

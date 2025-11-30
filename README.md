@@ -85,17 +85,30 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 
 Para ejecutar la aplicación es necesario tener instalado Docker y Docker Compose (ambos incluidos en Docker Desktop).
 
+### Primera ejecución (construir imagen e importar datos iniciales)
+
 1. Abre una terminal en la carpeta raíz del proyecto.
-2. Ejecuta:
+2. Construye y levanta los contenedores en segundo plano:
 
 ```bash
-  docker compose up --build
+  docker compose up -d --build
 ```
 
 Esto:
 - Construye la imagen de la aplicación usando el Dockerfile.
 - Levanta un contenedor de MySQL y otro de la aplicación.
-- Inicializa automáticamente la base de datos con datos de ejemplo.
+- Crea/actualiza el esquema de base de datos, **pero no importa aún los datos de ejemplo**.
+
+3. Una vez MySQL esté levantado, importa manualmente los datos iniciales desde `src/main/resources/data.sql` dentro del contenedor de la base de datos:
+
+```bash
+  docker exec -i mysql_db mysql -unada -pnada --default-character-set=utf8mb4 nada < src/main/resources/data.sql
+```
+
+Nota: Si se van a introducir datos iniciales, es importante que no se creen otros usuarios antes de la
+inserción, 
+
+Nota2: El único usuario con prendas con imagenes para hacer las pruebas es el usuario 6 -> fran fran123.
 
 La aplicación estará disponible en:
 
@@ -104,7 +117,7 @@ La aplicación estará disponible en:
 ```
 
 ### Ejecuciones posteriores
-Si la imagen ya fue construida anteriormente, puedes iniciar la aplicación en segundo plano simplemente con:
+Si la imagen ya fue construida anteriormente y los datos ya han sido importados, puedes iniciar la aplicación en segundo plano simplemente con:
 
 ```bash
   docker compose up -d
@@ -124,6 +137,11 @@ Para detener los contenedores y eliminar también los volúmenes (incluidos los 
   docker compose down -v
 ```
 
+En este caso, al volver a levantar con `docker compose up -d --build` la base de datos estará vacía y será necesario volver a importar los datos con el comando:
+
+```bash
+  docker exec -i mysql_db mysql -unada -pnada --default-character-set=utf8mb4 nada < src/main/resources/data.sql
+```
 
 ## Estructura del proyecto
 
@@ -133,7 +151,7 @@ La aplicación utiliza diferentes configuraciones según el entorno de ejecució
 
 - Se ejecuta mediante docker compose.
 - Utiliza una base de datos MySQL.
-- Carga datos iniciales automáticamente desde docker/data.sql
+- Los datos iniciales se pueden cargar manualmente desde `src/main/resources/data.sql` usando `docker exec`.
 
 - Archivos relevantes:
     - Dockerfile → Construcción de la imagen de la aplicación.
@@ -152,9 +170,7 @@ La aplicación utiliza diferentes configuraciones según el entorno de ejecució
 - Cargan datos iniciales desde:
 
 ```bash
-  src/test/resources/data.sql
+  src/main/resources/data.sql
 ```
 
 - El esquema de la BD se genera dinámicamente mediante Hibernate (ddl-auto=create-drop).
-
-

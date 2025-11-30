@@ -3,7 +3,6 @@ package com.nada.nada.controllers;
 
 import com.nada.nada.data.model.*;
 import com.nada.nada.data.services.PrendaService;
-import com.nada.nada.data.services.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,54 +23,45 @@ import java.util.List;
 @RequestMapping("/armario")
 public class PrendaController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PrendaController.class);
-    // Carpeta base dentro del contenedor Docker. Debe coincidir con el volumen /app/static/images
-    private static final String UPLOAD_BASE_DIR = "/app/static/images";
+    // Logger para información y errores
+    private Logger logger = LoggerFactory.getLogger(PrendaController.class);
 
-    private final PrendaService prendaService;
-    private final UsuarioService usuarioService;
+    // Carpeta base dentro del contenedor Docker donde se guardan las imágenes
+    private String UPLOAD_BASE_DIR = "/app/static/images";
+
+    private PrendaService prendaService;
 
     @Autowired
-    public PrendaController(PrendaService prendaService, UsuarioService usuarioService) {
+    public PrendaController(PrendaService prendaService) {
         this.prendaService = prendaService;
-        this.usuarioService = usuarioService;
     }
 
+    // Nota: La clase se dejara asi de momento porque funciona, falta perfeccionarla y mejorar el codigo.
     @GetMapping("/")
-    public String verArmario(HttpSession session,
-                             Model model,
-                             RedirectAttributes redirectAttributes,
-                             @RequestParam(value = "q", required = false) String nombreEmpiezaPor,
-                             @RequestParam(value = "tipo", required = false) String tipoPrenda,
-                             @RequestParam(value = "categoria", required = false) String categoria,
-                             @RequestParam(value = "color", required = false) String color,
-                             @RequestParam(value = "marca", required = false) String marca,
+    public String verArmario(HttpSession session, Model model, @RequestParam(value = "q", required = false) String nombreEmpiezaPor, @RequestParam(value = "tipo", required = false) String tipoPrenda,
+                             @RequestParam(value = "categoria", required = false) String categoria, @RequestParam(value = "color", required = false) String color, @RequestParam(value = "marca", required = false) String marca,
                              @RequestParam(value = "talla", required = false) String talla) {
+
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuarioLogueado == null) {
             return "redirect:/usuarios/login";
         }
 
+        // Obtener id de usuario para filtrar prendas
         Long usuarioId = usuarioLogueado.getId();
 
-        List<Prenda> prendas = prendaService.buscarPrendasFiltradas(
-                usuarioId,
-                nombreEmpiezaPor,
-                tipoPrenda,
-                categoria,
-                color,
-                marca,
-                talla
-        );
+        // Llamada al servicio para obtener las prendas filtradas por los parámetros recibidos
+        List<Prenda> prendas = prendaService.buscarPrendasFiltradas(usuarioId, nombreEmpiezaPor, tipoPrenda, categoria, color, marca, talla);
         long totalPrendas = prendaService.contarPrendasPorUsuario(usuarioId);
 
+        // Preparar atributos del modelo para la vista Thymeleaf
         model.addAttribute("prendas", prendas);
         model.addAttribute("totalPrendas", totalPrendas);
         model.addAttribute("categoriasSuperior", CategoriaSuperior.values());
         model.addAttribute("categoriasInferior", CategoriaInferior.values());
         model.addAttribute("categoriasCalzado", CategoriaCalzado.values());
 
-        // Volver a pintar los filtros seleccionados en el formulario
+        // Volver a pintar los valores de filtro en la UI
         model.addAttribute("filtroNombre", nombreEmpiezaPor);
         model.addAttribute("filtroTipo", tipoPrenda);
         model.addAttribute("filtroCategoria", categoria);
@@ -79,12 +69,12 @@ public class PrendaController {
         model.addAttribute("filtroMarca", marca);
         model.addAttribute("filtroTalla", talla);
 
+        // Devolver la plantilla que muestra el armario
         return "prenda";
     }
 
     @PostMapping("/crear")
-    public String crearPrenda(@RequestParam("nombre") String nombre,
-                              @RequestParam("tipoPrenda") String tipoPrenda,
+    public String crearPrenda(@RequestParam("nombre") String nombre, @RequestParam("tipoPrenda") String tipoPrenda,
                               @RequestParam(value = "catSuperior", required = false) CategoriaSuperior catSuperior,
                               @RequestParam(value = "catInferior", required = false) CategoriaInferior catInferior,
                               @RequestParam(value = "catCalzado", required = false) CategoriaCalzado catCalzado,
@@ -95,6 +85,7 @@ public class PrendaController {
                               HttpSession session,
                               RedirectAttributes redirectAttributes) {
 
+        // Verificar sesión
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuarioLogueado == null) {
             return "redirect:/usuarios/login";
@@ -102,21 +93,23 @@ public class PrendaController {
 
         Long usuarioId = usuarioLogueado.getId();
 
-        // Validación centralizada de campos obligatorios
+        // Validación de campos obligatorios delegada al servicio
         try {
             prendaService.validarDatosNuevaPrenda(nombre, tipoPrenda, catSuperior, catInferior, catCalzado, marca, talla, color);
         } catch (IllegalArgumentException e) {
+            // Si hay un error de validación, añadimos un flash y redirigimos
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/armario/";
         }
 
         String dirImagen = null;
         try {
-            // si viene base64 del `input hidden`, la guardamos en disco
+            // Si el formulario envía una imagen en base64 la guardamos en disco
             if (imagenRecortada != null && !imagenRecortada.trim().isEmpty()) {
                 dirImagen = guardarImagenBase64EnDisco(imagenRecortada, usuarioId);
             }
         } catch (IOException e) {
+            // En caso de fallo al escribir la imagen, lo registramos y permitimos guardar la prenda sin imagen
             logger.error("Error guardando imagen en disco para usuarioId={}", usuarioId, e);
             redirectAttributes.addFlashAttribute("error", "No se pudo guardar la imagen. La prenda se guardará sin imagen.");
             dirImagen = null;
@@ -124,6 +117,7 @@ public class PrendaController {
 
         Prenda prenda;
 
+        // Según el tipo de prenda, creamos la subclase correspondiente y la persistimos mediante el servicio
         switch (tipoPrenda) {
             case "superior" -> {
                 PrendaSuperior superior = new PrendaSuperior();
@@ -164,48 +158,10 @@ public class PrendaController {
             }
         }
 
-        logger.info("Prenda creada id={} tipo={} usuarioId={}",
-                prenda.getId(), tipoPrenda, usuarioId);
+        logger.info("Prenda creada id={} tipo={} usuarioId={}", prenda.getId(), tipoPrenda, usuarioId);
 
         redirectAttributes.addFlashAttribute("success", "Prenda añadida correctamente.");
         return "redirect:/armario/";
-    }
-
-    @GetMapping("/editar/{id}")
-    public String mostrarFormularioEdicion(@PathVariable("id") Long id,
-                                           HttpSession session,
-                                           Model model,
-                                           RedirectAttributes redirectAttributes) {
-        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null) {
-            return "redirect:/usuarios/login";
-        }
-
-        Prenda prenda = prendaService.buscarPrendaPorId(id).orElse(null);
-        if (prenda == null || prenda.getUsuario() == null ||
-                !prenda.getUsuario().getId().equals(usuarioLogueado.getId())) {
-            redirectAttributes.addFlashAttribute("error", "No se ha encontrado la prenda o no tienes permisos.");
-            return "redirect:/armario/";
-        }
-
-        model.addAttribute("prenda", prenda);
-        model.addAttribute("categoriasSuperior", CategoriaSuperior.values());
-        model.addAttribute("categoriasInferior", CategoriaInferior.values());
-        model.addAttribute("categoriasCalzado", CategoriaCalzado.values());
-
-        String tipoPrenda;
-        if (prenda instanceof PrendaSuperior) {
-            tipoPrenda = "superior";
-        } else if (prenda instanceof PrendaInferior) {
-            tipoPrenda = "inferior";
-        } else if (prenda instanceof PrendaCalzado) {
-            tipoPrenda = "calzado";
-        } else {
-            tipoPrenda = "";
-        }
-        model.addAttribute("tipoPrenda", tipoPrenda);
-
-        return "prenda-editar";
     }
 
     @PostMapping("/actualizar")
@@ -220,12 +176,15 @@ public class PrendaController {
                                    @RequestParam(value = "color", required = false) String color,
                                    HttpSession session,
                                    RedirectAttributes redirectAttributes) {
+        // Procesa la actualización de una prenda existente
+
+        // Comprobar sesión
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuarioLogueado == null) {
             return "redirect:/usuarios/login";
         }
 
-        // Para actualización relajamos la validación: solo nombre obligatorio
+        // Validación ligera: solo nombre obligatorio en la edición
         if (nombre == null || nombre.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "El nombre de la prenda es obligatorio.");
             return "redirect:/armario/";
@@ -234,6 +193,7 @@ public class PrendaController {
         logger.info("Actualizando prenda id={} nombre='{}' marca='{}' talla='{}' color='{}' tipo={}",
                 id, nombre, marca, talla, color, tipoPrenda);
 
+        // Cargar la prenda y comprobar permisos
         Prenda prendaExistente = prendaService.buscarPrendaPorId(id).orElse(null);
         if (prendaExistente == null) {
             redirectAttributes.addFlashAttribute("error", "La prenda que intentas editar no existe.");
@@ -246,11 +206,13 @@ public class PrendaController {
             return "redirect:/armario/";
         }
 
+        // Actualizar campos básicos
         prendaExistente.setNombre(nombre);
         prendaExistente.setMarca(marca);
         prendaExistente.setTalla(talla);
         prendaExistente.setColor(color);
 
+        // Actualizar categoría específica según la subclase
         if (prendaExistente instanceof PrendaSuperior superior) {
             if (catSuperior != null) {
                 superior.setCategoria(catSuperior);
@@ -266,6 +228,7 @@ public class PrendaController {
         }
 
         try {
+            // Delegar persistencia al servicio
             prendaService.actualizarPrenda(prendaExistente);
             redirectAttributes.addFlashAttribute("success", "Prenda actualizada correctamente.");
         } catch (Exception e) {
@@ -281,6 +244,8 @@ public class PrendaController {
     public String eliminarPrenda(@RequestParam("id") Long id,
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
+        // Elimina una prenda si pertenece al usuario logueado
+
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuarioLogueado == null) {
             return "redirect:/usuarios/login";
@@ -301,12 +266,9 @@ public class PrendaController {
         return "redirect:/armario/";
     }
 
-    /**
-     * Recibe un data URL en base64 (por ejemplo: `data:image/jpeg;base64,...`)
-     * escribe la imagen en `/app/static/images/{usuarioId}/`
-     * y devuelve la ruta accesible desde el navegador `/images/{usuarioId}/fichero.jpg`.
-     */
     private String guardarImagenBase64EnDisco(String dataUrl, Long usuarioId) throws IOException {
+        // Convierte un data URL (base64) en archivo en disco y devuelve la ruta pública relativa
+
         if (dataUrl == null || dataUrl.trim().isEmpty()) {
             return null;
         }
@@ -317,6 +279,7 @@ public class PrendaController {
             return null;
         }
 
+        // metadata contiene algo como: data:image/jpeg;base64
         String metadata = dataUrl.substring(0, commaIndex);      // ej: data:image/jpeg;base64
         String base64Part = dataUrl.substring(commaIndex + 1);   // solo la parte base64
 
@@ -324,18 +287,21 @@ public class PrendaController {
 
         byte[] imageBytes = Base64.getDecoder().decode(base64Part);
 
+        // Crear carpeta del usuario dentro del directorio base si no existe
         Path userDir = Paths.get(UPLOAD_BASE_DIR, String.valueOf(usuarioId));
         if (!Files.exists(userDir)) {
             Files.createDirectories(userDir);
             logger.info("Directorio de imágenes creado: {}", userDir.toAbsolutePath());
         }
 
+        // Generar nombre único por timestamp y escribir fichero
         String fileName = "prenda_" + System.currentTimeMillis() + ".jpg";
         Path filePath = userDir.resolve(fileName);
 
         Files.write(filePath, imageBytes);
         logger.info("Imagen escrita en disco: {}", filePath.toAbsolutePath());
 
+        // Devolvemos la ruta relativa que usará la vista para mostrar la imagen
         return "/images/" + usuarioId + "/" + fileName;
     }
 }

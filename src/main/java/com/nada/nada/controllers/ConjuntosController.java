@@ -3,7 +3,6 @@ package com.nada.nada.controllers;
 import com.nada.nada.data.model.*;
 import com.nada.nada.data.services.ConjuntoService;
 import com.nada.nada.data.services.PrendaService;
-import com.nada.nada.data.services.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,14 +17,15 @@ import java.util.stream.Collectors;
 @RequestMapping("/conjuntos")
 public class ConjuntosController {
 
-    @Autowired
-    private ConjuntoService conjuntoService;
 
-    @Autowired
+    private ConjuntoService conjuntoService;
     private PrendaService prendaService;
 
     @Autowired
-    private UsuarioService usuarioService;
+    public ConjuntosController(ConjuntoService conjuntoService, PrendaService prendaService) {
+        this.conjuntoService = conjuntoService;
+        this.prendaService = prendaService;
+    }
 
     @GetMapping("/")
     public String verConjuntos(Model model, HttpSession session) {
@@ -36,7 +36,7 @@ public class ConjuntosController {
 
         Long usuarioId = usuarioLogueado.getId();
 
-        // Cargar todas las prendas del usuario y separarlas por tipo
+        // Cargar todas las prendas del usuario y separarlas por tipo para pasar a la vista
         List<Prenda> prendasUsuario = prendaService.buscarPrendasPorUsuarioId(usuarioId);
         List<PrendaSuperior> prendasSuperiores = prendasUsuario.stream()
                 .filter(p -> p instanceof PrendaSuperior)
@@ -53,12 +53,13 @@ public class ConjuntosController {
 
         List<Conjunto> conjuntos = conjuntoService.buscarConjuntosPorUsuarioId(usuarioId);
 
+        // Pasar datos al modelo para que la plantilla `conjuntos.html` los muestre
         model.addAttribute("conjuntos", conjuntos);
         model.addAttribute("prendasSuperiores", prendasSuperiores);
         model.addAttribute("prendasInferiores", prendasInferiores);
         model.addAttribute("prendasCalzados", prendasCalzados);
 
-        // Flags para mostrar mensajes si falta algún tipo de prenda
+        // Flags que indican si falta algún tipo de prenda (para mostrar mensajes en la UI)
         model.addAttribute("faltaSuperior", prendasSuperiores.isEmpty());
         model.addAttribute("faltaInferior", prendasInferiores.isEmpty());
         model.addAttribute("faltaCalzado", prendasCalzados.isEmpty());
@@ -67,13 +68,10 @@ public class ConjuntosController {
     }
 
     @PostMapping("/crear")
-    public String crearConjunto(@RequestParam("nombre") String nombre,
-                                @RequestParam(value = "descripcion", required = false) String descripcion,
-                                @RequestParam("prendaSuperiorId") Long prendaSuperiorId,
-                                @RequestParam("prendaInferiorId") Long prendaInferiorId,
-                                @RequestParam("prendaCalzadoId") Long prendaCalzadoId,
-                                HttpSession session,
-                                RedirectAttributes redirectAttributes) {
+    public String crearConjunto(@RequestParam("nombre") String nombre, @RequestParam(value = "descripcion", required = false) String descripcion, @RequestParam("prendaSuperiorId") Long prendaSuperiorId,
+                                @RequestParam("prendaInferiorId") Long prendaInferiorId, @RequestParam("prendaCalzadoId") Long prendaCalzadoId,
+                                HttpSession session, RedirectAttributes redirectAttributes) {
+
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuario == null) {
             return "redirect:/usuarios/login";
@@ -85,10 +83,12 @@ public class ConjuntosController {
             return "redirect:/conjuntos/";
         }
 
+        // Recuperar las prendas por id
         Prenda prendaSuperiorPrenda = prendaService.buscarPrendaPorId(prendaSuperiorId).orElse(null);
         Prenda prendaInferiorPrenda = prendaService.buscarPrendaPorId(prendaInferiorId).orElse(null);
         Prenda prendaCalzadoPrenda = prendaService.buscarPrendaPorId(prendaCalzadoId).orElse(null);
 
+        // Comprobar que las prendas son del tipo esperado
         if (!(prendaSuperiorPrenda instanceof PrendaSuperior) ||
                 !(prendaInferiorPrenda instanceof PrendaInferior) ||
                 !(prendaCalzadoPrenda instanceof PrendaCalzado)) {
@@ -108,8 +108,12 @@ public class ConjuntosController {
         PrendaInferior prendaInferior = (PrendaInferior) prendaInferiorPrenda;
         PrendaCalzado prendaCalzado = (PrendaCalzado) prendaCalzadoPrenda;
 
-        Conjunto nuevoConjunto = new Conjunto(nombre, usuario, descripcion, prendaSuperior, prendaInferior, prendaCalzado);
-        conjuntoService.guardarConjunto(nuevoConjunto);
+        try{
+            conjuntoService.guardarConjunto(new Conjunto(nombre, usuario, descripcion, prendaSuperior, prendaInferior, prendaCalzado));
+        } catch (Exception e){
+            redirectAttributes.addFlashAttribute("error", "Error al crear el conjunto: " + e.getMessage());
+            return "redirect:/conjuntos/";
+        }
 
         redirectAttributes.addFlashAttribute("success", "Conjunto creado correctamente.");
         return "redirect:/conjuntos/";

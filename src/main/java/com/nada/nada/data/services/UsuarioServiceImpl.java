@@ -18,10 +18,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-    // Misma carpeta base de imágenes que usa PrendaController dentro del contenedor Docker
-    private static final Path IMAGES_BASE_DIR = Paths.get("/app/static/images");
+    // Ruta del contenedor (Compartida mediante volumen)
+    private final Path IMAGES_BASE_DIR = Paths.get("/app/static/images");
 
-    @Autowired //no necesario, para recordar que nos inyecta y crea el IoC de Spring
+    @Autowired
     public UsuarioServiceImpl (UsuarioRepository usuarioRepository) {
         System.out.println("\t UsuarioServiceImpl constructor ");
         this.usuarioRepository=usuarioRepository;
@@ -100,14 +100,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         } catch (IOException e) {
             System.err.println("No se pudo crear carpeta de imágenes para usuario " + usuarioId + ": " + e.getMessage());
         }
-    }
-
-    @Override
-    public Optional<Usuario> encontrarPorId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido: " + id);
-        }
-        return usuarioRepository.findById(id);
     }
 
     @Override
