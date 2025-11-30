@@ -11,10 +11,10 @@
 
 ## Integrantes
 - **Francisco Montero Sánchez** — 07256309Q  
-  <img src="src/main/resources/images/francisco.jpg" alt="Foto Francisco" width="120"/>
+  <img src="src/main/resources/static/francisco.jpg" alt="Foto Francisco" width="120"/>
 
 - **Ana Montero Preciado** — 09213540Q  
-  <img src="src/main/resources/images/ana.jpg" alt="Foto Ana" width="120"/>
+  <img src="src/main/resources/static/ana.jpg" alt="Foto Ana" width="120"/>
 ---
 
 ## Eslogan    
