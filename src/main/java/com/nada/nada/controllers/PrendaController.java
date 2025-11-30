@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
@@ -174,7 +171,113 @@ public class PrendaController {
         return "redirect:/armario/";
     }
 
-    @GetMapping("/eliminar")
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEdicion(@PathVariable("id") Long id,
+                                           HttpSession session,
+                                           Model model,
+                                           RedirectAttributes redirectAttributes) {
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuarioLogueado == null) {
+            return "redirect:/usuarios/login";
+        }
+
+        Prenda prenda = prendaService.buscarPrendaPorId(id).orElse(null);
+        if (prenda == null || prenda.getUsuario() == null ||
+                !prenda.getUsuario().getId().equals(usuarioLogueado.getId())) {
+            redirectAttributes.addFlashAttribute("error", "No se ha encontrado la prenda o no tienes permisos.");
+            return "redirect:/armario/";
+        }
+
+        model.addAttribute("prenda", prenda);
+        model.addAttribute("categoriasSuperior", CategoriaSuperior.values());
+        model.addAttribute("categoriasInferior", CategoriaInferior.values());
+        model.addAttribute("categoriasCalzado", CategoriaCalzado.values());
+
+        String tipoPrenda;
+        if (prenda instanceof PrendaSuperior) {
+            tipoPrenda = "superior";
+        } else if (prenda instanceof PrendaInferior) {
+            tipoPrenda = "inferior";
+        } else if (prenda instanceof PrendaCalzado) {
+            tipoPrenda = "calzado";
+        } else {
+            tipoPrenda = "";
+        }
+        model.addAttribute("tipoPrenda", tipoPrenda);
+
+        return "prenda-editar";
+    }
+
+    @PostMapping("/actualizar")
+    public String actualizarPrenda(@RequestParam("id") Long id,
+                                   @RequestParam("nombre") String nombre,
+                                   @RequestParam("tipoPrenda") String tipoPrenda,
+                                   @RequestParam(value = "catSuperior", required = false) CategoriaSuperior catSuperior,
+                                   @RequestParam(value = "catInferior", required = false) CategoriaInferior catInferior,
+                                   @RequestParam(value = "catCalzado", required = false) CategoriaCalzado catCalzado,
+                                   @RequestParam(value = "marca", required = false) String marca,
+                                   @RequestParam(value = "talla", required = false) String talla,
+                                   @RequestParam(value = "color", required = false) String color,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuarioLogueado == null) {
+            return "redirect:/usuarios/login";
+        }
+
+        // Para actualización relajamos la validación: solo nombre obligatorio
+        if (nombre == null || nombre.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "El nombre de la prenda es obligatorio.");
+            return "redirect:/armario/";
+        }
+
+        logger.info("Actualizando prenda id={} nombre='{}' marca='{}' talla='{}' color='{}' tipo={}",
+                id, nombre, marca, talla, color, tipoPrenda);
+
+        Prenda prendaExistente = prendaService.buscarPrendaPorId(id).orElse(null);
+        if (prendaExistente == null) {
+            redirectAttributes.addFlashAttribute("error", "La prenda que intentas editar no existe.");
+            return "redirect:/armario/";
+        }
+
+        if (prendaExistente.getUsuario() == null ||
+                !prendaExistente.getUsuario().getId().equals(usuarioLogueado.getId())) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permisos para editar esta prenda.");
+            return "redirect:/armario/";
+        }
+
+        prendaExistente.setNombre(nombre);
+        prendaExistente.setMarca(marca);
+        prendaExistente.setTalla(talla);
+        prendaExistente.setColor(color);
+
+        if (prendaExistente instanceof PrendaSuperior superior) {
+            if (catSuperior != null) {
+                superior.setCategoria(catSuperior);
+            }
+        } else if (prendaExistente instanceof PrendaInferior inferior) {
+            if (catInferior != null) {
+                inferior.setCategoriaInferior(catInferior);
+            }
+        } else if (prendaExistente instanceof PrendaCalzado calzado) {
+            if (catCalzado != null) {
+                calzado.setCategoria(catCalzado);
+            }
+        }
+
+        try {
+            prendaService.actualizarPrenda(prendaExistente);
+            redirectAttributes.addFlashAttribute("success", "Prenda actualizada correctamente.");
+        } catch (Exception e) {
+            logger.error("Error al actualizar prenda id={}", id, e);
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar la prenda.");
+            return "redirect:/armario/";
+        }
+
+        return "redirect:/armario/";
+    }
+
+    @PostMapping("/eliminar")
     public String eliminarPrenda(@RequestParam("id") Long id,
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {

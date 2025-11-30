@@ -158,20 +158,12 @@ public class PrendaServiceImpl implements PrendaService {
             logger.warn("actualizarPrenda: id no válido id={}", prenda.getId());
             throw new IllegalArgumentException("El ID debe ser un número positivo");
         }
+
         try {
-            if (!prendaRepository.existsById(prenda.getId())) {
-                logger.warn("actualizarPrenda: no existe prenda id={}", prenda.getId());
-                throw new IllegalArgumentException("No existe una prenda con el ID: " + prenda.getId());
-            }
-
-            // Validaciones básicas antes de actualizar
-            validacionPrendaBasic(prenda);
-
+            // Aquí asumimos que 'prenda' ya es una entidad gestionada con los cambios aplicados
             Prenda updated = prendaRepository.save(prenda);
-            logger.info("Prenda actualizada id={}", updated.getId());
+            logger.info("Prenda actualizada (simple) id={}", updated.getId());
             return updated;
-        } catch (IllegalArgumentException e) {
-            throw e;
         } catch (Exception e) {
             logger.error("actualizarPrenda: error al actualizar prenda id={}", prenda.getId(), e);
             throw new RuntimeException("Error al actualizar la prenda: " + e.getMessage(), e);

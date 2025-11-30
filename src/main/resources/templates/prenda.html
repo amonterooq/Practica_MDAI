@@ -137,6 +137,7 @@
             transition: all 0.3s ease;
             position: relative;
             display: flex; flex-direction: column;
+            cursor: pointer; /* para indicar que se puede clicar para editar */
         }
 
         .garment-card:hover {
@@ -206,9 +207,94 @@
             font-size: 0.8rem;
         }
 
+        /* --- MODAL EDICIÓN PRENDA --- */
+        .edit-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .edit-modal {
+            background: #ffffff;
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 1.5rem;
+            padding: 1.8rem;
+            border-radius: 4px;
+            box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+        }
+
+        .edit-modal-image {
+            border-radius: 2px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .edit-modal-content h2 {
+            font-family: var(--font-heading);
+            margin-bottom: 0.75rem;
+        }
+
+        .edit-modal-content .form-group-inline {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .edit-modal-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .btn-outline {
+            padding: 0.7rem 1.4rem;
+            border-radius: 0;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-primary {
+            padding: 0.7rem 1.6rem;
+            border-radius: 0;
+            border: 1px solid var(--text-primary);
+            background: var(--text-primary);
+            color: #fff;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #fff;
+            color: var(--text-primary);
+        }
+
         @media (max-width: 900px) {
             .main-container { grid-template-columns: 1fr; }
             .upload-panel { position: relative; top: 0; margin-bottom: 2rem; }
+            .edit-modal {
+                grid-template-columns: 1fr;
+                max-width: 95%;
+            }
         }
     </style>
 </head>
@@ -383,7 +469,6 @@
         <div class="wardrobe-grid" th:if="${prendas != null and !prendas.isEmpty()}">
 
             <article class="garment-card" th:each="prenda : ${prendas}">
-
                 <div class="card-img">
                     <img th:src="${prenda.dirImagen != null and !#strings.isEmpty(prenda.dirImagen)} ? ${prenda.dirImagen} : '/images/placeholder_cloth.png'"
                          alt="Prenda"
@@ -394,25 +479,35 @@
                         Sin imagen
                     </div>
 
-                    <a th:href="@{/armario/eliminar(id=${prenda.id})}"
-                       class="delete-btn" title="Eliminar"
-                       onclick="return confirm('¿Eliminar prenda?');">
-                        <i class="fas fa-times"></i>
-                    </a>
+                    <form th:action="@{/armario/eliminar}" method="post" style="position:absolute; top:8px; right:8px; margin:0;">
+                        <input type="hidden" name="id" th:value="${prenda.id}">
+                        <button type="submit" class="delete-btn" title="Eliminar"
+                                onclick="event.stopPropagation(); return confirm('¿Eliminar prenda?');">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </form>
                 </div>
 
                 <div class="card-details">
-                    <h3 th:text="${prenda.nombre}">Nombre Prenda</h3>
+                    <h3 class="card-nombre" th:text="${prenda.nombre}">Nombre Prenda</h3>
                     <div class="card-meta">
-                        <span th:text="${prenda.marca}">MARCA</span>
-                        <span th:text="${prenda.talla}">TALLA</span>
+                        <span class="card-marca" th:text="${prenda.marca}">MARCA</span>
+                        <span class="card-talla" th:text="${prenda.talla}">TALLA</span>
                     </div>
 
-                    <div class="badge" th:if="${prenda instanceof T(com.nada.nada.data.model.PrendaSuperior)}" th:text="${prenda.categoria}"></div>
-                    <div class="badge" th:if="${prenda instanceof T(com.nada.nada.data.model.PrendaInferior)}" th:text="${prenda.categoriaInferior}"></div>
-                    <div class="badge" th:if="${prenda instanceof T(com.nada.nada.data.model.PrendaCalzado)}" th:text="${prenda.categoria}"></div>
-                </div>
+                    <div class="badge card-badge-superior"
+                         th:if="${prenda instanceof T(com.nada.nada.data.model.PrendaSuperior)}"
+                         th:text="${prenda.categoria}"></div>
+                    <div class="badge card-badge-inferior"
+                         th:if="${prenda instanceof T(com.nada.nada.data.model.PrendaInferior)}"
+                         th:text="${prenda.categoriaInferior}"></div>
+                    <div class="badge card-badge-calzado"
+                         th:if="${prenda instanceof T(com.nada.nada.data.model.PrendaCalzado)}"
+                         th:text="${prenda.categoria}"></div>
 
+                    <span class="card-id" th:text="${prenda.id}" style="display:none;"></span>
+                    <span class="card-color" th:text="${prenda.color}" style="display:none;"></span>
+                </div>
             </article>
 
         </div>
@@ -423,6 +518,50 @@
     </section>
 
 </main>
+
+<!-- Modal edición prenda -->
+<div id="editModalOverlay" class="edit-modal-overlay">
+    <div class="edit-modal">
+        <div class="edit-modal-image">
+            <img id="editModalImage" src="" alt="Prenda" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div class="edit-modal-content">
+            <h2>Editar prenda</h2>
+            <form id="editPrendaForm" th:action="@{/armario/actualizar}" method="post">
+                <input type="hidden" name="id" id="editId">
+                <input type="hidden" name="tipoPrenda" id="editTipoPrenda">
+
+                <div class="form-group">
+                    <label for="editNombre">Nombre</label>
+                    <input type="text" id="editNombre" name="nombre" required>
+                </div>
+
+                <div class="form-group form-group-inline">
+                    <div class="form-group" style="flex:1;">
+                        <label for="editMarca">Marca</label>
+                        <input type="text" id="editMarca" name="marca">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="editTalla">Talla</label>
+                        <input type="text" id="editTalla" name="talla">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editColor">Color</label>
+                    <input type="text" id="editColor" name="color" required>
+                </div>
+
+                <div id="editModalError" style="display:none; color:#c0392b; font-size:0.8rem; margin-top:0.5rem;"></div>
+
+                <div class="edit-modal-actions">
+                    <button type="button" class="btn-outline" id="closeEditModalBtn">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- Modal/popup para recorte -->
 <div id="cropModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center;">
@@ -457,6 +596,98 @@
     document.addEventListener('DOMContentLoaded', function () {
         mostrarCategorias();
     });
+
+    // --- Lógica modal edición prendas ---
+    const editModalOverlay = document.getElementById('editModalOverlay');
+    const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+    const editModalImage = document.getElementById('editModalImage');
+    const editIdInput = document.getElementById('editId');
+    const editTipoPrendaInput = document.getElementById('editTipoPrenda');
+    const editNombreInput = document.getElementById('editNombre');
+    const editMarcaInput = document.getElementById('editMarca');
+    const editTallaInput = document.getElementById('editTalla');
+    const editColorInput = document.getElementById('editColor');
+    const editModalError = document.getElementById('editModalError');
+    const editPrendaForm = document.getElementById('editPrendaForm');
+
+    function abrirModalEdicion(card) {
+        const id = card.querySelector('.card-id')?.textContent?.trim() || '';
+        const nombre = card.querySelector('.card-nombre')?.textContent?.trim() || '';
+        const marca = card.querySelector('.card-marca')?.textContent?.trim() || '';
+        const talla = card.querySelector('.card-talla')?.textContent?.trim() || '';
+        const color = card.querySelector('.card-color')?.textContent?.trim() || '';
+        const badgeSuperior = card.querySelector('.card-badge-superior');
+        const badgeInferior = card.querySelector('.card-badge-inferior');
+        const badgeCalzado = card.querySelector('.card-badge-calzado');
+        const imgEl = card.querySelector('img');
+
+        editIdInput.value = id;
+        editNombreInput.value = nombre;
+        editMarcaInput.value = marca;
+        editTallaInput.value = talla;
+        editColorInput.value = color || '';
+
+        if (editModalError) {
+            editModalError.style.display = 'none';
+            editModalError.textContent = '';
+        }
+
+        if (badgeSuperior) {
+            editTipoPrendaInput.value = 'superior';
+        } else if (badgeInferior) {
+            editTipoPrendaInput.value = 'inferior';
+        } else if (badgeCalzado) {
+            editTipoPrendaInput.value = 'calzado';
+        } else {
+            editTipoPrendaInput.value = '';
+        }
+
+        if (imgEl && imgEl.src) {
+            editModalImage.src = imgEl.src;
+        } else {
+            editModalImage.src = '/images/placeholder_cloth.png';
+        }
+
+        editModalOverlay.style.display = 'flex';
+    }
+
+    function cerrarModalEdicion() {
+        editModalOverlay.style.display = 'none';
+    }
+
+    document.addEventListener('click', function (e) {
+        const card = e.target.closest('.garment-card');
+        if (!card) return;
+        if (e.target.closest('.delete-btn')) return;
+        abrirModalEdicion(card);
+    });
+
+    if (closeEditModalBtn && editModalOverlay) {
+        closeEditModalBtn.addEventListener('click', cerrarModalEdicion);
+        editModalOverlay.addEventListener('click', function (e) {
+            if (e.target === editModalOverlay) {
+                cerrarModalEdicion();
+            }
+        });
+    }
+
+    if (editPrendaForm) {
+        editPrendaForm.addEventListener('submit', function (e) {
+            const nombre = editNombreInput.value.trim();
+            const marca = editMarcaInput.value.trim();
+            const talla = editTallaInput.value.trim();
+            const color = editColorInput.value.trim();
+
+            if (!nombre || !marca || !talla || !color) {
+                e.preventDefault();
+                if (editModalError) {
+                    editModalError.textContent = 'No se puede dejar ningún campo vacío.';
+                    editModalError.style.display = 'block';
+                }
+                return false;
+            }
+        });
+    }
 
     // --- Lógica de recorte con cuadro fijo de 800x800 ---
     let originalImage = null;
