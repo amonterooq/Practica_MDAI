@@ -446,6 +446,31 @@ public class PrendaServiceImpl implements PrendaService {
         if (talla == null || talla.trim().isEmpty()) {
             throw new IllegalArgumentException("La talla es obligatoria.");
         }
+
+        // Validar que la talla sea una de las permitidas según el tipo de prenda
+        String tallaNormalizada = talla.trim();
+        switch (tipoPrenda) {
+            case "superior" -> {
+                if (!TallaSuperior.esValida(tallaNormalizada)) {
+                    throw new IllegalArgumentException("La talla seleccionada no es válida para prendas superiores.");
+                }
+            }
+            case "inferior" -> {
+                if (!TallaInferior.esValida(tallaNormalizada)) {
+                    throw new IllegalArgumentException("La talla seleccionada no es válida para prendas inferiores.");
+                }
+            }
+            case "calzado" -> {
+                if (!TallaCalzado.esValida(tallaNormalizada)) {
+                    throw new IllegalArgumentException("La talla seleccionada no es válida para calzado.");
+                }
+            }
+            default -> {
+                // ya controlado antes, pero por seguridad
+                throw new IllegalArgumentException("Tipo de prenda no válido.");
+            }
+        }
+
         if (color == null || color.trim().isEmpty()) {
             throw new IllegalArgumentException("El color es obligatorio.");
         }

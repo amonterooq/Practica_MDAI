@@ -182,4 +182,52 @@ class ConjuntoServiceTests {
 
         assertThrows(IllegalArgumentException.class, () -> conjuntoService.guardarConjunto(c));
     }
+
+    @Test
+    void testGuardarConjuntoSinPrendaSuperiorLanzaExcepcion() {
+        Usuario u = nuevoUsuario("usuarioSinSup");
+        PrendaInferior pi = inf(u);
+        PrendaCalzado pc = cal(u);
+
+        Conjunto c = new Conjunto();
+        c.setNombre("Conjunto incompleto");
+        c.setUsuario(u);
+        // c.setPrendaSuperior(null); // faltante
+        c.setPrendaInferior(pi);
+        c.setPrendaCalzado(pc);
+
+        assertThrows(IllegalArgumentException.class, () -> conjuntoService.guardarConjunto(c));
+    }
+
+    @Test
+    void testGuardarConjuntoSinPrendaInferiorLanzaExcepcion() {
+        Usuario u = nuevoUsuario("usuarioSinInf");
+        PrendaSuperior ps = sup(u);
+        PrendaCalzado pc = cal(u);
+
+        Conjunto c = new Conjunto();
+        c.setNombre("Conjunto incompleto");
+        c.setUsuario(u);
+        c.setPrendaSuperior(ps);
+        // c.setPrendaInferior(null); // faltante
+        c.setPrendaCalzado(pc);
+
+        assertThrows(IllegalArgumentException.class, () -> conjuntoService.guardarConjunto(c));
+    }
+
+    @Test
+    void testGuardarConjuntoSinPrendaCalzadoLanzaExcepcion() {
+        Usuario u = nuevoUsuario("usuarioSinCalzado");
+        PrendaSuperior ps = sup(u);
+        PrendaInferior pi = inf(u);
+
+        Conjunto c = new Conjunto();
+        c.setNombre("Conjunto incompleto");
+        c.setUsuario(u);
+        c.setPrendaSuperior(ps);
+        c.setPrendaInferior(pi);
+        // c.setPrendaCalzado(null); // faltante
+
+        assertThrows(IllegalArgumentException.class, () -> conjuntoService.guardarConjunto(c));
+    }
 }

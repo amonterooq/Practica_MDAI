@@ -103,6 +103,13 @@ public class ConjuntoServiceImpl implements ConjuntoService {
         } else if (conjunto.getDescripcion() != null && conjunto.getDescripcion().length() > 256){
             throw new IllegalArgumentException("La descripción no puede superar los 256 caracteres");
         }
+
+        // Validar que el conjunto tiene exactamente las tres prendas necesarias
+        if (conjunto.getPrendaSuperior() == null ||
+                conjunto.getPrendaInferior() == null ||
+                conjunto.getPrendaCalzado() == null) {
+            throw new IllegalArgumentException("El conjunto debe tener una prenda superior, una inferior y un calzado");
+        }
     }
 
     private void validacionPrendasPertenencia(Conjunto conjunto, Long usuarioId) {

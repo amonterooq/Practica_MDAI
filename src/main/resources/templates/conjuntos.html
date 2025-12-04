@@ -85,10 +85,12 @@
         }
 
         input[type="text"], select, textarea {
-            width: 100%; padding: 0.8rem;
+            width: 100%;
+            padding: 0.9rem 1rem;     /* más alto y ancho */
             border: 1px solid var(--border-color);
             background: #fafafa;
-            font-family: var(--font-body); font-size: 0.9rem;
+            font-family: var(--font-body);
+            font-size: 0.95rem;       /* letra un poco más grande */
             border-radius: 0;
         }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
@@ -225,13 +227,6 @@
 
         <div th:if="${error != null}" class="alert-msg" th:text="${error}"></div>
         <div th:if="${success != null}" class="info-msg" th:text="${success}"></div>
-
-        <div th:if="${faltaSuperior or faltaInferior or faltaCalzado}" class="alert-msg">
-            <span th:if="${faltaSuperior}">Faltan prendas superiores. </span>
-            <span th:if="${faltaInferior}">Faltan prendas inferiores. </span>
-            <span th:if="${faltaCalzado}">Faltan calzados. </span>
-            Completa tu armario en la sección "Mi Armario" para poder crear conjuntos.
-        </div>
 
         <form th:action="@{/conjuntos/crear}" method="post">
 

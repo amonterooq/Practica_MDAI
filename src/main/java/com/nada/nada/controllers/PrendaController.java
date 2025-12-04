@@ -38,8 +38,12 @@ public class PrendaController {
 
     // Nota: La clase se dejara asi de momento porque funciona, falta perfeccionarla y mejorar el codigo.
     @GetMapping("/")
-    public String verArmario(HttpSession session, Model model, @RequestParam(value = "q", required = false) String nombreEmpiezaPor, @RequestParam(value = "tipo", required = false) String tipoPrenda,
-                             @RequestParam(value = "categoria", required = false) String categoria, @RequestParam(value = "color", required = false) String color, @RequestParam(value = "marca", required = false) String marca,
+    public String verArmario(HttpSession session, Model model,
+                             @RequestParam(value = "q", required = false) String nombreEmpiezaPor,
+                             @RequestParam(value = "tipo", required = false) String tipoPrenda,
+                             @RequestParam(value = "categoria", required = false) String categoria,
+                             @RequestParam(value = "color", required = false) String color,
+                             @RequestParam(value = "marca", required = false) String marca,
                              @RequestParam(value = "talla", required = false) String talla) {
 
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
@@ -60,6 +64,10 @@ public class PrendaController {
         model.addAttribute("categoriasSuperior", CategoriaSuperior.values());
         model.addAttribute("categoriasInferior", CategoriaInferior.values());
         model.addAttribute("categoriasCalzado", CategoriaCalzado.values());
+        // Listas de tallas predefinidas
+        model.addAttribute("tallasSuperior", TallaSuperior.values());
+        model.addAttribute("tallasInferior", TallaInferior.values());
+        model.addAttribute("tallasCalzado", TallaCalzado.values());
 
         // Volver a pintar los valores de filtro en la UI
         model.addAttribute("filtroNombre", nombreEmpiezaPor);

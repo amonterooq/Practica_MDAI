@@ -86,13 +86,25 @@
 
         /* Inputs de texto y Selects */
         input[type="text"], select {
-            width: 100%; padding: 0.8rem;
+            width: 100%;
+            padding: 0.9rem 1rem; /* algo más alto y ancho */
             border: 1px solid var(--border-color);
             background: #fafafa;
-            font-family: var(--font-body); font-size: 0.9rem;
+            font-family: var(--font-body);
+            font-size: 0.95rem;   /* letra un poco más grande */
             border-radius: 0;
         }
-        input:focus, select:focus { outline: none; border-color: var(--accent); background: #fff; }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #fff;
+        }
+
+        /* Para que el desplegable no quede estrecho en tallas */
+        select#tallaSelect,
+        select[name="talla"] {
+            min-width: 160px;
+        }
 
         /* Input de Archivo Personalizado (Estilo básico limpio) */
         input[type="file"] {
@@ -377,7 +389,10 @@
                 </div>
                 <div class="form-group" style="flex: 1;">
                     <label>Talla</label>
-                    <input type="text" name="talla" placeholder="M">
+                    <!-- Un único select de talla que se rellena según el tipo -->
+                    <select id="tallaSelect" name="talla" required>
+                        <option value="" disabled selected>-- Seleccionar --</option>
+                    </select>
                 </div>
             </div>
 
@@ -457,8 +472,30 @@
             </div>
 
             <div>
-                <input type="text" name="talla" placeholder="Talla"
-                       th:value="${filtroTalla}">
+                <select name="talla">
+                    <option value="">Talla</option>
+                    <optgroup label="Superior">
+                        <option th:each="t : ${tallasSuperior}"
+                                th:value="${t.name()}"
+                                th:text="${t.name()}"
+                                th:selected="${filtroTalla == t.name()}">
+                        </option>
+                    </optgroup>
+                    <optgroup label="Inferior">
+                        <option th:each="t : ${tallasInferior}"
+                                th:value="${t.etiqueta}"
+                                th:text="${t.etiqueta}"
+                                th:selected="${filtroTalla == t.etiqueta}">
+                        </option>
+                    </optgroup>
+                    <optgroup label="Calzado">
+                        <option th:each="t : ${tallasCalzado}"
+                                th:value="${t.etiqueta}"
+                                th:text="${t.etiqueta}"
+                                th:selected="${filtroTalla == t.etiqueta}">
+                        </option>
+                    </optgroup>
+                </select>
             </div>
 
             <div>
@@ -543,7 +580,10 @@
                     </div>
                     <div class="form-group" style="flex:1;">
                         <label for="editTalla">Talla</label>
-                        <input type="text" id="editTalla" name="talla">
+                        <!-- Select de talla en el modal, se rellena por JS según tipo -->
+                        <select id="editTalla" name="talla" required>
+                            <option value="" disabled selected>-- Seleccionar --</option>
+                        </select>
                     </div>
                 </div>
 
@@ -588,9 +628,94 @@
 
         const tipo = document.getElementById('tipoPrendaSelect').value;
 
-        if (tipo === 'superior') document.getElementById('divCatSuperior').classList.remove('hidden');
-        if (tipo === 'inferior') document.getElementById('divCatInferior').classList.remove('hidden');
-        if (tipo === 'calzado') document.getElementById('divCatCalzado').classList.remove('hidden');
+        if (tipo === 'superior') {
+            document.getElementById('divCatSuperior').classList.remove('hidden');
+        }
+        if (tipo === 'inferior') {
+            document.getElementById('divCatInferior').classList.remove('hidden');
+        }
+        if (tipo === 'calzado') {
+            document.getElementById('divCatCalzado').classList.remove('hidden');
+        }
+
+        // Rellenar la lista de tallas en función del tipo
+        rellenarTallas(tipo);
+    }
+
+    function rellenarTallas(tipo) {
+        const select = document.getElementById('tallaSelect');
+        if (!select) return;
+
+        // Limpiar todas las opciones actuales
+        while (select.firstChild) {
+            select.removeChild(select.firstChild);
+        }
+
+        // Opción por defecto
+        const optDefault = document.createElement('option');
+        optDefault.value = '';
+        optDefault.disabled = true;
+        optDefault.selected = true;
+        optDefault.textContent = '-- Seleccionar --';
+        select.appendChild(optDefault);
+
+        // Listas de tallas según tipo (mismas que en enums)
+        let tallas = [];
+        if (tipo === 'superior') {
+            tallas = ['XS', 'S', 'M', 'L', 'XL'];
+        } else if (tipo === 'inferior') {
+            tallas = ['36', '38', '40', '42'];
+        } else if (tipo === 'calzado') {
+            tallas = ['36', '37', '38', '39', '40', '41', '42', '43', '44'];
+        }
+
+        tallas.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            select.appendChild(opt);
+        });
+    }
+
+    // NUEVA función para rellenar tallas en el modal de edición
+    function rellenarTallasEdicion(tipo, tallaActual) {
+        const select = document.getElementById('editTalla');
+        if (!select) return;
+
+        // limpiar opciones
+        while (select.firstChild) {
+            select.removeChild(select.firstChild);
+        }
+
+        const optDefault = document.createElement('option');
+        optDefault.value = '';
+        optDefault.disabled = true;
+        optDefault.textContent = '-- Seleccionar --';
+        select.appendChild(optDefault);
+
+        let tallas = [];
+        if (tipo === 'superior') {
+            tallas = ['XS', 'S', 'M', 'L', 'XL'];
+        } else if (tipo === 'inferior') {
+            tallas = ['36', '38', '40', '42'];
+        } else if (tipo === 'calzado') {
+            tallas = ['36', '37', '38', '39', '40', '41', '42', '43', '44'];
+        }
+
+        tallas.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            if (tallaActual && tallaActual === t) {
+                opt.selected = true;
+            }
+            select.appendChild(opt);
+        });
+
+        // si no hay tallaActual válida, dejamos la opción por defecto seleccionada
+        if (!tallaActual || !tallas.includes(tallaActual)) {
+            optDefault.selected = true;
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -605,7 +730,7 @@
     const editTipoPrendaInput = document.getElementById('editTipoPrenda');
     const editNombreInput = document.getElementById('editNombre');
     const editMarcaInput = document.getElementById('editMarca');
-    const editTallaInput = document.getElementById('editTalla');
+    const editTallaSelect = document.getElementById('editTalla');
     const editColorInput = document.getElementById('editColor');
     const editModalError = document.getElementById('editModalError');
     const editPrendaForm = document.getElementById('editPrendaForm');
@@ -624,13 +749,7 @@
         editIdInput.value = id;
         editNombreInput.value = nombre;
         editMarcaInput.value = marca;
-        editTallaInput.value = talla;
         editColorInput.value = color || '';
-
-        if (editModalError) {
-            editModalError.style.display = 'none';
-            editModalError.textContent = '';
-        }
 
         if (badgeSuperior) {
             editTipoPrendaInput.value = 'superior';
@@ -640,6 +759,14 @@
             editTipoPrendaInput.value = 'calzado';
         } else {
             editTipoPrendaInput.value = '';
+        }
+
+        // rellenar tallas del modal según tipo y seleccionar la actual
+        rellenarTallasEdicion(editTipoPrendaInput.value, talla);
+
+        if (editModalError) {
+            editModalError.style.display = 'none';
+            editModalError.textContent = '';
         }
 
         if (imgEl && imgEl.src) {
@@ -675,7 +802,7 @@
         editPrendaForm.addEventListener('submit', function (e) {
             const nombre = editNombreInput.value.trim();
             const marca = editMarcaInput.value.trim();
-            const talla = editTallaInput.value.trim();
+            const talla = editTallaSelect.value.trim();
             const color = editColorInput.value.trim();
 
             if (!nombre || !marca || !talla || !color) {

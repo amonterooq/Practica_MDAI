@@ -68,9 +68,14 @@ public class ConjuntosController {
     }
 
     @PostMapping("/crear")
-    public String crearConjunto(@RequestParam("nombre") String nombre, @RequestParam(value = "descripcion", required = false) String descripcion, @RequestParam("prendaSuperiorId") Long prendaSuperiorId,
-                                @RequestParam("prendaInferiorId") Long prendaInferiorId, @RequestParam("prendaCalzadoId") Long prendaCalzadoId,
-                                HttpSession session, RedirectAttributes redirectAttributes) {
+    public String crearConjunto(
+            @RequestParam("nombre") String nombre,
+            @RequestParam(value = "descripcion", required = false) String descripcion,
+            @RequestParam(value = "prendaSuperiorId", required = false) Long prendaSuperiorId,
+            @RequestParam(value = "prendaInferiorId", required = false) Long prendaInferiorId,
+            @RequestParam(value = "prendaCalzadoId", required = false) Long prendaCalzadoId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuario == null) {
@@ -108,9 +113,9 @@ public class ConjuntosController {
         PrendaInferior prendaInferior = (PrendaInferior) prendaInferiorPrenda;
         PrendaCalzado prendaCalzado = (PrendaCalzado) prendaCalzadoPrenda;
 
-        try{
+        try {
             conjuntoService.guardarConjunto(new Conjunto(nombre, usuario, descripcion, prendaSuperior, prendaInferior, prendaCalzado));
-        } catch (Exception e){
+        } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al crear el conjunto: " + e.getMessage());
             return "redirect:/conjuntos/";
         }
