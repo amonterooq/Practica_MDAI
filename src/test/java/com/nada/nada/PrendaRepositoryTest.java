@@ -97,7 +97,7 @@ public class PrendaRepositoryTest {
         cal.setUsuario(u);
         cal.setTalla("42");
         cal.setDirImagen("u3");
-        cal.setCategoria(CategoriaCalzado.FORMAL);
+        cal.setCategoria(CategoriaCalzado.ZAPATO_FORMAL);
 
         prendaSuperiorRepository.save(sup);
         prendaInferiorRepository.save(inf);
@@ -160,7 +160,7 @@ public class PrendaRepositoryTest {
         calz.setUsuario(u);
         calz.setTalla("42");
         calz.setDirImagen("url-calz");
-        calz.setCategoria(CategoriaCalzado.FORMAL);
+        calz.setCategoria(CategoriaCalzado.ZAPATO_FORMAL);
 
         prendaRepository.save(sup);
         prendaRepository.save(inf);
