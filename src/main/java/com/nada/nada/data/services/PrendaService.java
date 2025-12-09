@@ -33,4 +33,11 @@ public interface PrendaService {
                                  String marca,
                                  String talla,
                                  String color);
+
+    /**
+     * Normaliza una marca introducida por el usuario: si coincide (ignorando mayúsculas/minúsculas)
+     * con alguna marca predefinida, devuelve exactamente el nombre estándar (por ejemplo, "Zara");
+     * si no coincide, devuelve la cadena tal cual con el primer carácter en mayúscula.
+     */
+    String normalizarMarca(String marcaIntroducida);
 }

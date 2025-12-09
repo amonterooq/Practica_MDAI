@@ -1,6 +1,8 @@
 package com.nada.nada.data.model;
 
 public enum TallaCalzado {
+    N34("34"),
+    N35("35"),
     N36("36"),
     N37("37"),
     N38("38"),
@@ -9,7 +11,9 @@ public enum TallaCalzado {
     N41("41"),
     N42("42"),
     N43("43"),
-    N44("44");
+    N44("44"),
+    N45("45"),
+    N46("46");
 
     private final String etiqueta;
 

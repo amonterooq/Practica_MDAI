@@ -1,12 +1,16 @@
 package com.nada.nada.data.model;
 
 public enum TallaInferior {
+    T32("32"),
+    T34("34"),
     T36("36"),
     T38("38"),
     T40("40"),
     T42("42"),
     T44("44"),
-    T46("46");
+    T46("46"),
+    T48("48"),
+    T50("50");
 
     private final String etiqueta;
 

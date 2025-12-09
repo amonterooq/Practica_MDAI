@@ -101,9 +101,12 @@ public class PrendaController {
 
         Long usuarioId = usuarioLogueado.getId();
 
+        // Normalizar la marca (mapea zAra -> Zara si existe en la lista)
+        String marcaNormalizada = prendaService.normalizarMarca(marca);
+
         // Validación de campos obligatorios delegada al servicio
         try {
-            prendaService.validarDatosNuevaPrenda(nombre, tipoPrenda, catSuperior, catInferior, catCalzado, marca, talla, color);
+            prendaService.validarDatosNuevaPrenda(nombre, tipoPrenda, catSuperior, catInferior, catCalzado, marcaNormalizada, talla, color);
         } catch (IllegalArgumentException e) {
             // Si hay un error de validación, añadimos un flash y redirigimos
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -131,7 +134,7 @@ public class PrendaController {
                 PrendaSuperior superior = new PrendaSuperior();
                 superior.setNombre(nombre);
                 superior.setColor(color);
-                superior.setMarca(marca);
+                superior.setMarca(marcaNormalizada);
                 superior.setTalla(talla);
                 superior.setUsuario(usuarioLogueado);
                 superior.setCategoria(catSuperior);
@@ -142,7 +145,7 @@ public class PrendaController {
                 PrendaInferior inferior = new PrendaInferior();
                 inferior.setNombre(nombre);
                 inferior.setColor(color);
-                inferior.setMarca(marca);
+                inferior.setMarca(marcaNormalizada);
                 inferior.setTalla(talla);
                 inferior.setUsuario(usuarioLogueado);
                 inferior.setCategoriaInferior(catInferior);
@@ -153,7 +156,7 @@ public class PrendaController {
                 PrendaCalzado calzado = new PrendaCalzado();
                 calzado.setNombre(nombre);
                 calzado.setColor(color);
-                calzado.setMarca(marca);
+                calzado.setMarca(marcaNormalizada);
                 calzado.setTalla(talla);
                 calzado.setUsuario(usuarioLogueado);
                 calzado.setCategoria(catCalzado);

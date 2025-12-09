@@ -385,7 +385,67 @@
             <div style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex: 1;">
                     <label>Marca</label>
-                    <input type="text" name="marca" placeholder="Zara">
+                    <!-- Select de marca con opción 'OTRA' y campo de texto opcional -->
+                    <select id="marcaSelect" name="marcaSeleccionada">
+                        <option value="" disabled selected>-- Seleccionar --</option>
+                        <option value="Zara">Zara</option>
+                        <option value="Mango">Mango</option>
+                        <option value="H&M">H&amp;M</option>
+                        <option value="Pull&Bear">Pull&Bear</option>
+                        <option value="Bershka">Bershka</option>
+                        <option value="Stradivarius">Stradivarius</option>
+                        <option value="Massimo Dutti">Massimo Dutti</option>
+                        <option value="Primark">Primark</option>
+                        <option value="Springfield">Springfield</option>
+                        <option value="Cortefiel">Cortefiel</option>
+                        <option value="Lefties">Lefties</option>
+                        <option value="Oysho">Oysho</option>
+                        <option value="Women'Secret">Women'Secret</option>
+                        <option value="Intimissimi">Intimissimi</option>
+                        <option value="Calzedonia">Calzedonia</option>
+                        <option value="Nike">Nike</option>
+                        <option value="Adidas">Adidas</option>
+                        <option value="Reebok">Reebok</option>
+                        <option value="Puma">Puma</option>
+                        <option value="New Balance">New Balance</option>
+                        <option value="Converse">Converse</option>
+                        <option value="Vans">Vans</option>
+                        <option value="Fila">Fila</option>
+                        <option value="Asics">Asics</option>
+                        <option value="Under Armour">Under Armour</option>
+                        <option value="Levi's">Levi's</option>
+                        <option value="Pepe Jeans">Pepe Jeans</option>
+                        <option value="Tommy Hilfiger">Tommy Hilfiger</option>
+                        <option value="Calvin Klein">Calvin Klein</option>
+                        <option value="Guess">Guess</option>
+                        <option value="Ralph Lauren">Ralph Lauren</option>
+                        <option value="Lacoste">Lacoste</option>
+                        <option value="Desigual">Desigual</option>
+                        <option value="Sfera">Sfera</option>
+                        <option value="Only">Only</option>
+                        <option value="Jack&Jones">Jack&Jones</option>
+                        <option value="Uniqlo">Uniqlo</option>
+                        <option value="Benetton">Benetton</option>
+                        <option value="El Corte Inglés">El Corte Inglés</option>
+                        <option value="Dolce &amp; Gabbana">Dolce &amp; Gabbana</option>
+                        <option value="Gucci">Gucci</option>
+                        <option value="Balenciaga">Balenciaga</option>
+                        <option value="Valentino">Valentino</option>
+                        <option value="Armani">Armani</option>
+                        <option value="Chanel">Chanel</option>
+                        <option value="Dior">Dior</option>
+                        <option value="Prada">Prada</option>
+                        <option value="Zalando">Zalando</option>
+                        <option value="Shein">Shein</option>
+                        <option value="Asos">Asos</option>
+                        <option value="Bimba y Lola">Bimba y Lola</option>
+                        <option value="Paco Martínez">Paco Martínez</option>
+                        <option value="Pedro del Hierro">Pedro del Hierro</option>
+                        <option value="Otro">Otra</option>
+                    </select>
+                    <input type="text" id="marcaOtraInput" placeholder="Escribe la marca" style="margin-top:0.5rem; display:none;">
+                    <!-- Campo oculto real que se envía al backend -->
+                    <input type="hidden" id="marcaFinal" name="marca">
                 </div>
                 <div class="form-group" style="flex: 1;">
                     <label>Talla</label>
@@ -398,7 +458,61 @@
 
             <div class="form-group">
                 <label>Color</label>
-                <input type="text" name="color" placeholder="Negro, Azul...">
+                <!-- Select de color con opción 'OTRO' y campo de texto opcional -->
+                <select id="colorSelect" name="colorSeleccionado" required>
+                    <option value="" disabled selected>-- Seleccionar --</option>
+                    <option value="Negro">Negro</option>
+                    <option value="Blanco">Blanco</option>
+                    <option value="Gris">Gris</option>
+                    <option value="Gris claro">Gris claro</option>
+                    <option value="Gris oscuro">Gris oscuro</option>
+                    <option value="Beige">Beige</option>
+                    <option value="Marrón">Marrón</option>
+                    <option value="Camel">Camel</option>
+                    <option value="Chocolate">Chocolate</option>
+                    <option value="Azul marino">Azul marino</option>
+                    <option value="Azul oscuro">Azul oscuro</option>
+                    <option value="Azul claro">Azul claro</option>
+                    <option value="Azul cielo">Azul cielo</option>
+                    <option value="Azul eléctrico">Azul eléctrico</option>
+                    <option value="Rojo">Rojo</option>
+                    <option value="Granate">Granate</option>
+                    <option value="Burdeos">Burdeos</option>
+                    <option value="Rosa">Rosa</option>
+                    <option value="Rosa palo">Rosa palo</option>
+                    <option value="Fucsia">Fucsia</option>
+                    <option value="Verde oscuro">Verde oscuro</option>
+                    <option value="Verde botella">Verde botella</option>
+                    <option value="Verde militar">Verde militar</option>
+                    <option value="Verde claro">Verde claro</option>
+                    <option value="Verde menta">Verde menta</option>
+                    <option value="Caqui">Caqui</option>
+                    <option value="Mostaza">Mostaza</option>
+                    <option value="Amarillo">Amarillo</option>
+                    <option value="Naranja">Naranja</option>
+                    <option value="Coral">Coral</option>
+                    <option value="Morado">Morado</option>
+                    <option value="Lila">Lila</option>
+                    <option value="Lavanda">Lavanda</option>
+                    <option value="Crudo">Crudo</option>
+                    <option value="Marfil">Marfil</option>
+                    <option value="Crema">Crema</option>
+                    <option value="Plateado">Plateado</option>
+                    <option value="Dorado">Dorado</option>
+                    <option value="Cobrizo">Cobrizo</option>
+                    <option value="Bronce">Bronce</option>
+                    <option value="Turquesa">Turquesa</option>
+                    <option value="Teal">Teal</option>
+                    <option value="Beige rosado">Beige rosado</option>
+                    <option value="Estampado">Estampado</option>
+                    <option value="Animal print">Animal print</option>
+                    <option value="A cuadros">A cuadros</option>
+                    <option value="A rayas">A rayas</option>
+                    <option value="Floral">Floral</option>
+                    <option value="Otro">OTRO</option>
+                </select>
+                <input type="text" id="colorOtroInput" placeholder="Escribe el color" style="margin-top:0.5rem; display:none;">
+                <input type="hidden" id="colorFinal" name="color">
             </div>
 
             <div class="form-group">
@@ -576,7 +690,66 @@
                 <div class="form-group form-group-inline">
                     <div class="form-group" style="flex:1;">
                         <label for="editMarca">Marca</label>
-                        <input type="text" id="editMarca" name="marca">
+                        <!-- Mismo patrón que en alta: select + OTRA + campo oculto -->
+                        <select id="editMarcaSelect">
+                            <option value="" disabled selected>-- Seleccionar --</option>
+                            <option value="Zara">Zara</option>
+                            <option value="Mango">Mango</option>
+                            <option value="H&M">H&amp;M</option>
+                            <option value="Pull&Bear">Pull&Bear</option>
+                            <option value="Bershka">Bershka</option>
+                            <option value="Stradivarius">Stradivarius</option>
+                            <option value="Massimo Dutti">Massimo Dutti</option>
+                            <option value="Primark">Primark</option>
+                            <option value="Springfield">Springfield</option>
+                            <option value="Cortefiel">Cortefiel</option>
+                            <option value="Lefties">Lefties</option>
+                            <option value="Oysho">Oysho</option>
+                            <option value="Women'Secret">Women'Secret</option>
+                            <option value="Intimissimi">Intimissimi</option>
+                            <option value="Calzedonia">Calzedonia</option>
+                            <option value="Nike">Nike</option>
+                            <option value="Adidas">Adidas</option>
+                            <option value="Reebok">Reebok</option>
+                            <option value="Puma">Puma</option>
+                            <option value="New Balance">New Balance</option>
+                            <option value="Converse">Converse</option>
+                            <option value="Vans">Vans</option>
+                            <option value="Fila">Fila</option>
+                            <option value="Asics">Asics</option>
+                            <option value="Under Armour">Under Armour</option>
+                            <option value="Levi's">Levi's</option>
+                            <option value="Pepe Jeans">Pepe Jeans</option>
+                            <option value="Tommy Hilfiger">Tommy Hilfiger</option>
+                            <option value="Calvin Klein">Calvin Klein</option>
+                            <option value="Guess">Guess</option>
+                            <option value="Ralph Lauren">Ralph Lauren</option>
+                            <option value="Lacoste">Lacoste</option>
+                            <option value="Desigual">Desigual</option>
+                            <option value="Sfera">Sfera</option>
+                            <option value="Only">Only</option>
+                            <option value="Jack&Jones">Jack&Jones</option>
+                            <option value="Uniqlo">Uniqlo</option>
+                            <option value="Benetton">Benetton</option>
+                            <option value="El Corte Inglés">El Corte Inglés</option>
+                            <option value="Dolce &amp; Gabbana">Dolce &amp; Gabbana</option>
+                            <option value="Gucci">Gucci</option>
+                            <option value="Balenciaga">Balenciaga</option>
+                            <option value="Valentino">Valentino</option>
+                            <option value="Armani">Armani</option>
+                            <option value="Chanel">Chanel</option>
+                            <option value="Dior">Dior</option>
+                            <option value="Prada">Prada</option>
+                            <option value="Zalando">Zalando</option>
+                            <option value="Shein">Shein</option>
+                            <option value="Asos">Asos</option>
+                            <option value="Bimba y Lola">Bimba y Lola</option>
+                            <option value="Paco Martínez">Paco Martínez</option>
+                            <option value="Pedro del Hierro">Pedro del Hierro</option>
+                            <option value="Otro">Otra</option>
+                        </select>
+                        <input type="text" id="editMarcaOtraInput" placeholder="Escribe la marca" style="margin-top:0.5rem; display:none;">
+                        <input type="hidden" id="editMarca" name="marca">
                     </div>
                     <div class="form-group" style="flex:1;">
                         <label for="editTalla">Talla</label>
@@ -589,7 +762,61 @@
 
                 <div class="form-group">
                     <label for="editColor">Color</label>
-                    <input type="text" id="editColor" name="color" required>
+                    <!-- Select de color en edición -->
+                    <select id="editColorSelect">
+                        <option value="" disabled selected>-- Seleccionar --</option>
+                        <option value="Negro">Negro</option>
+                        <option value="Blanco">Blanco</option>
+                        <option value="Gris">Gris</option>
+                        <option value="Gris claro">Gris claro</option>
+                        <option value="Gris oscuro">Gris oscuro</option>
+                        <option value="Beige">Beige</option>
+                        <option value="Marrón">Marrón</option>
+                        <option value="Camel">Camel</option>
+                        <option value="Chocolate">Chocolate</option>
+                        <option value="Azul marino">Azul marino</option>
+                        <option value="Azul oscuro">Azul oscuro</option>
+                        <option value="Azul claro">Azul claro</option>
+                        <option value="Azul cielo">Azul cielo</option>
+                        <option value="Azul eléctrico">Azul eléctrico</option>
+                        <option value="Rojo">Rojo</option>
+                        <option value="Granate">Granate</option>
+                        <option value="Burdeos">Burdeos</option>
+                        <option value="Rosa">Rosa</option>
+                        <option value="Rosa palo">Rosa palo</option>
+                        <option value="Fucsia">Fucsia</option>
+                        <option value="Verde oscuro">Verde oscuro</option>
+                        <option value="Verde botella">Verde botella</option>
+                        <option value="Verde militar">Verde militar</option>
+                        <option value="Verde claro">Verde claro</option>
+                        <option value="Verde menta">Verde menta</option>
+                        <option value="Caqui">Caqui</option>
+                        <option value="Mostaza">Mostaza</option>
+                        <option value="Amarillo">Amarillo</option>
+                        <option value="Naranja">Naranja</option>
+                        <option value="Coral">Coral</option>
+                        <option value="Morado">Morado</option>
+                        <option value="Lila">Lila</option>
+                        <option value="Lavanda">Lavanda</option>
+                        <option value="Crudo">Crudo</option>
+                        <option value="Marfil">Marfil</option>
+                        <option value="Crema">Crema</option>
+                        <option value="Plateado">Plateado</option>
+                        <option value="Dorado">Dorado</option>
+                        <option value="Cobrizo">Cobrizo</option>
+                        <option value="Bronce">Bronce</option>
+                        <option value="Turquesa">Turquesa</option>
+                        <option value="Teal">Teal</option>
+                        <option value="Beige rosado">Beige rosado</option>
+                        <option value="Estampado">Estampado</option>
+                        <option value="Animal print">Animal print</option>
+                        <option value="A cuadros">A cuadros</option>
+                        <option value="A rayas">A rayas</option>
+                        <option value="Floral">Floral</option>
+                        <option value="Otro">OTRO</option>
+                    </select>
+                    <input type="text" id="editColorOtraInput" placeholder="Escribe el color" style="margin-top:0.5rem; display:none;">
+                    <input type="hidden" id="editColor" name="color">
                 </div>
 
                 <div id="editModalError" style="display:none; color:#c0392b; font-size:0.8rem; margin-top:0.5rem;"></div>
@@ -642,6 +869,146 @@
         rellenarTallas(tipo);
     }
 
+    // --- Lógica de marca (select + "OTRA") ---
+    function actualizarMarcaFinal() {
+        const select = document.getElementById('marcaSelect');
+        const inputOtra = document.getElementById('marcaOtraInput');
+        const hiddenFinal = document.getElementById('marcaFinal');
+        if (!select || !inputOtra || !hiddenFinal) return;
+
+        const valorSelect = select.value;
+        const valorOtra = inputOtra.value.trim();
+
+        if (valorSelect === 'Otro') {
+            hiddenFinal.value = valorOtra || '';
+        } else {
+            hiddenFinal.value = valorSelect || '';
+        }
+    }
+
+    // Lógica de color (select + "OTRO") alta
+    function actualizarColorFinal() {
+        const select = document.getElementById('colorSelect');
+        const inputOtro = document.getElementById('colorOtroInput');
+        const hiddenFinal = document.getElementById('colorFinal');
+        if (!select || !inputOtro || !hiddenFinal) return;
+
+        const valorSelect = select.value;
+        const valorOtro = inputOtro.value.trim();
+
+        if (valorSelect === 'Otro') {
+            hiddenFinal.value = valorOtro || '';
+        } else {
+            hiddenFinal.value = valorSelect || '';
+        }
+    }
+
+    // Lógica equivalente para el modal de edición (marca)
+    function actualizarMarcaFinalEdicion() {
+        const select = document.getElementById('editMarcaSelect');
+        const inputOtra = document.getElementById('editMarcaOtraInput');
+        const hiddenFinal = document.getElementById('editMarca');
+        if (!select || !inputOtra || !hiddenFinal) return;
+
+        const valorSelect = select.value;
+        const valorOtra = inputOtra.value.trim();
+
+        if (valorSelect === 'Otro') {
+            hiddenFinal.value = valorOtra || '';
+        } else {
+            hiddenFinal.value = valorSelect || '';
+        }
+    }
+
+    // Lógica de color en edición
+    function actualizarColorFinalEdicion() {
+        const select = document.getElementById('editColorSelect');
+        const inputOtro = document.getElementById('editColorOtraInput');
+        const hiddenFinal = document.getElementById('editColor');
+        if (!select || !inputOtro || !hiddenFinal) return;
+
+        const valorSelect = select.value;
+        const valorOtro = inputOtro.value.trim();
+
+        if (valorSelect === 'Otro') {
+            hiddenFinal.value = valorOtro || '';
+        } else {
+            hiddenFinal.value = valorSelect || '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        mostrarCategorias();
+
+        // Inicializar comportamiento de marca (alta)
+        const selectMarca = document.getElementById('marcaSelect');
+        const inputMarcaOtra = document.getElementById('marcaOtraInput');
+        if (selectMarca && inputMarcaOtra) {
+            selectMarca.addEventListener('change', function () {
+                if (this.value === 'Otro') {
+                    inputMarcaOtra.style.display = 'block';
+                } else {
+                    inputMarcaOtra.style.display = 'none';
+                    inputMarcaOtra.value = '';
+                }
+                actualizarMarcaFinal();
+            });
+
+            inputMarcaOtra.addEventListener('input', actualizarMarcaFinal);
+        }
+
+        // Inicializar comportamiento de color (alta)
+        const selectColor = document.getElementById('colorSelect');
+        const inputColorOtro = document.getElementById('colorOtroInput');
+        if (selectColor && inputColorOtro) {
+            selectColor.addEventListener('change', function () {
+                if (this.value === 'Otro') {
+                    inputColorOtro.style.display = 'block';
+                } else {
+                    inputColorOtro.style.display = 'none';
+                    inputColorOtro.value = '';
+                }
+                actualizarColorFinal();
+            });
+
+            inputColorOtro.addEventListener('input', actualizarColorFinal);
+        }
+
+        // Inicializar comportamiento de marca (edición)
+        const selectMarcaEdit = document.getElementById('editMarcaSelect');
+        const inputMarcaOtraEdit = document.getElementById('editMarcaOtraInput');
+        if (selectMarcaEdit && inputMarcaOtraEdit) {
+            selectMarcaEdit.addEventListener('change', function () {
+                if (this.value === 'Otro') {
+                    inputMarcaOtraEdit.style.display = 'block';
+                } else {
+                    inputMarcaOtraEdit.style.display = 'none';
+                    inputMarcaOtraEdit.value = '';
+                }
+                actualizarMarcaFinalEdicion();
+            });
+
+            inputMarcaOtraEdit.addEventListener('input', actualizarMarcaFinalEdicion);
+        }
+
+        // Inicializar comportamiento de color (edición)
+        const selectColorEdit = document.getElementById('editColorSelect');
+        const inputColorOtraEdit = document.getElementById('editColorOtraInput');
+        if (selectColorEdit && inputColorOtraEdit) {
+            selectColorEdit.addEventListener('change', function () {
+                if (this.value === 'Otro') {
+                    inputColorOtraEdit.style.display = 'block';
+                } else {
+                    inputColorOtraEdit.style.display = 'none';
+                    inputColorOtraEdit.value = '';
+                }
+                actualizarColorFinalEdicion();
+            });
+
+            inputColorOtraEdit.addEventListener('input', actualizarColorFinalEdicion);
+        }
+    });
+
     function rellenarTallas(tipo) {
         const select = document.getElementById('tallaSelect');
         if (!select) return;
@@ -659,14 +1026,14 @@
         optDefault.textContent = '-- Seleccionar --';
         select.appendChild(optDefault);
 
-        // Listas de tallas según tipo (mismas que en enums)
+        // Listas de tallas según tipo (alineadas con los enums)
         let tallas = [];
         if (tipo === 'superior') {
-            tallas = ['XS', 'S', 'M', 'L', 'XL'];
+            tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'];
         } else if (tipo === 'inferior') {
-            tallas = ['36', '38', '40', '42'];
+            tallas = ['32', '34', '36', '38', '40', '42', '44', '46', '48', '50'];
         } else if (tipo === 'calzado') {
-            tallas = ['36', '37', '38', '39', '40', '41', '42', '43', '44'];
+            tallas = ['34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
         }
 
         tallas.forEach(t => {
@@ -695,11 +1062,11 @@
 
         let tallas = [];
         if (tipo === 'superior') {
-            tallas = ['XS', 'S', 'M', 'L', 'XL'];
+            tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'];
         } else if (tipo === 'inferior') {
-            tallas = ['36', '38', '40', '42'];
+            tallas = ['32', '34', '36', '38', '40', '42', '44', '46', '48', '50'];
         } else if (tipo === 'calzado') {
-            tallas = ['36', '37', '38', '39', '40', '41', '42', '43', '44'];
+            tallas = ['34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
         }
 
         tallas.forEach(t => {
@@ -764,6 +1131,12 @@
         // rellenar tallas del modal según tipo y seleccionar la actual
         rellenarTallasEdicion(editTipoPrendaInput.value, talla);
 
+        // Inicializar select de marcas en el modal según la marca actual
+        inicializarMarcaEdicion(marca);
+
+        // Inicializar select de colores en el modal
+        inicializarColorEdicion(color);
+
         if (editModalError) {
             editModalError.style.display = 'none';
             editModalError.textContent = '';
@@ -814,6 +1187,75 @@
                 return false;
             }
         });
+    }
+
+    function inicializarMarcaEdicion(marcaActual) {
+        const select = document.getElementById('editMarcaSelect');
+        const inputOtra = document.getElementById('editMarcaOtraInput');
+        const hiddenFinal = document.getElementById('editMarca');
+        if (!select || !inputOtra || !hiddenFinal) return;
+
+        const lower = (marcaActual || '').trim().toLowerCase();
+        let encontrada = false;
+
+        Array.from(select.options).forEach(opt => {
+            if (!opt.value) {
+                opt.selected = false;
+                return;
+            }
+            if (opt.value.toLowerCase() === lower) {
+                opt.selected = true;
+                encontrada = true;
+            } else {
+                opt.selected = false;
+            }
+        });
+
+        if (!encontrada && marcaActual) {
+            // No está en la lista: dejamos el select sin selección específica
+            select.value = '';
+            inputOtra.style.display = 'block';
+            inputOtra.value = marcaActual;
+            hiddenFinal.value = marcaActual;
+        } else {
+            inputOtra.style.display = 'none';
+            inputOtra.value = '';
+            hiddenFinal.value = marcaActual || '';
+        }
+    }
+
+    function inicializarColorEdicion(colorActual) {
+        const select = document.getElementById('editColorSelect');
+        const inputOtro = document.getElementById('editColorOtraInput');
+        const hiddenFinal = document.getElementById('editColor');
+        if (!select || !inputOtro || !hiddenFinal) return;
+
+        const lower = (colorActual || '').trim().toLowerCase();
+        let encontrada = false;
+
+        Array.from(select.options).forEach(opt => {
+            if (!opt.value) {
+                opt.selected = false;
+                return;
+            }
+            if (opt.value.toLowerCase() === lower) {
+                opt.selected = true;
+                encontrada = true;
+            } else {
+                opt.selected = false;
+            }
+        });
+
+        if (!encontrada && colorActual) {
+            select.value = '';
+            inputOtro.style.display = 'block';
+            inputOtro.value = colorActual;
+            hiddenFinal.value = colorActual;
+        } else {
+            inputOtro.style.display = 'none';
+            inputOtro.value = '';
+            hiddenFinal.value = colorActual || '';
+        }
     }
 
     // --- Lógica de recorte con cuadro fijo de 800x800 ---

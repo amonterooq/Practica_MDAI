@@ -38,6 +38,70 @@ public class PrendaServiceImpl implements PrendaService {
     }
 
     @Override
+    public String normalizarMarca(String marcaIntroducida) {
+        if (marcaIntroducida == null) {
+            return null;
+        }
+        String raw = marcaIntroducida.trim();
+        if (raw.isEmpty()) {
+            return "";
+        }
+
+        String lower = raw.toLowerCase();
+
+        // Tabla de marcas conocidas: clave en minúsculas -> forma estándar
+        String[][] marcas = new String[][]{
+                {"zara", "Zara"},
+                {"mango", "Mango"},
+                {"h&m", "H&M"},
+                {"h & m", "H&M"},
+                {"pull&bear", "Pull&Bear"},
+                {"pull & bear", "Pull&Bear"},
+                {"bershka", "Bershka"},
+                {"stradivarius", "Stradivarius"},
+                {"massimo dutti", "Massimo Dutti"},
+                {"primark", "Primark"},
+                {"springfield", "Springfield"},
+                {"cortefiel", "Cortefiel"},
+                {"lefties", "Lefties"},
+                {"nike", "Nike"},
+                {"adidas", "Adidas"},
+                {"reebok", "Reebok"},
+                {"puma", "Puma"},
+                {"new balance", "New Balance"},
+                {"converse", "Converse"},
+                {"vans", "Vans"},
+                {"levi's", "Levi's"},
+                {"levis", "Levi's"},
+                {"tommy hilfiger", "Tommy Hilfiger"},
+                {"calvin klein", "Calvin Klein"},
+                {"guess", "Guess"},
+                {"desigual", "Desigual"},
+                {"sfera", "Sfera"},
+                {"pepe jeans", "Pepe Jeans"},
+                {"only", "Only"},
+                {"jack&jones", "Jack&Jones"},
+                {"jack & jones", "Jack&Jones"},
+                {"uniqlo", "Uniqlo"},
+                {"benetton", "Benetton"},
+                {"el corte ingles", "El Corte Inglés"},
+                {"el corte inglés", "El Corte Inglés"}
+        };
+
+        for (String[] par : marcas) {
+            if (lower.equals(par[0])) {
+                return par[1];
+            }
+        }
+
+        // Si no coincide con ninguna conocida, capitalizar de forma sencilla
+        if (raw.length() == 1) {
+            return raw.toUpperCase();
+        }
+        return raw.substring(0, 1).toUpperCase() + raw.substring(1).toLowerCase();
+    }
+
+    @Override
     public Optional<Prenda> buscarPrendaPorId(Long id) {
         if (id == null) {
             logger.warn("buscarPrendaPorId: id nulo");
