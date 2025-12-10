@@ -536,7 +536,7 @@
         </div>
 
         <!-- Barra de búsqueda y filtros -->
-        <form th:action="@{/armario/}" method="get" class="filters-bar">
+        <form id="filtroForm" th:action="@{/armario/}" method="get" class="filters-bar">
             <div class="search-wrapper">
                 <span class="icon"><i class="fas fa-search"></i></span>
                 <input type="text" name="q" placeholder="Buscar por nombre (ej. Cami)"
@@ -544,7 +544,7 @@
             </div>
 
             <div>
-                <select name="tipo">
+                <select id="filtroTipoSelect" name="tipo" onchange="mostrarCategoriasYTallasFiltro()">
                     <option value="">Tipo</option>
                     <option value="superior" th:selected="${filtroTipo == 'superior'}">Parte superior</option>
                     <option value="inferior" th:selected="${filtroTipo == 'inferior'}">Parte inferior</option>
@@ -552,36 +552,50 @@
                 </select>
             </div>
 
-            <div>
-                <select name="categoria">
+            <!-- Categoría Superior -->
+            <div id="divFiltroCatSuperior" class="hidden">
+                <select id="categoriaSuperiorSelect">
                     <option value="">Categoría</option>
-                    <optgroup label="Superior">
-                        <option th:each="cat : ${categoriasSuperior}"
-                                th:value="${cat.name()}"
-                                th:text="${cat.etiqueta}"
-                                th:selected="${filtroCategoria == cat.name()}">
-                        </option>
-                    </optgroup>
-                    <optgroup label="Inferior">
-                        <option th:each="cat : ${categoriasInferior}"
-                                th:value="${cat.name()}"
-                                th:text="${cat.etiqueta}"
-                                th:selected="${filtroCategoria == cat.name()}">
-                        </option>
-                    </optgroup>
-                    <optgroup label="Calzado">
-                        <option th:each="cat : ${categoriasCalzado}"
-                                th:value="${cat.name()}"
-                                th:text="${cat.etiqueta}"
-                                th:selected="${filtroCategoria == cat.name()}">
-                        </option>
-                    </optgroup>
+                    <option th:each="cat : ${categoriasSuperior}"
+                            th:value="${cat.name()}"
+                            th:text="${cat.etiqueta}"
+                            th:selected="${filtroCategoria == cat.name()}">
+                    </option>
                 </select>
             </div>
 
-            <div>
-                <input type="text" name="color" placeholder="Color"
-                       th:value="${filtroColor}">
+            <!-- Categoría Inferior -->
+            <div id="divFiltroCatInferior" class="hidden">
+                <select id="categoriaInferiorSelect">
+                    <option value="">Categoría</option>
+                    <option th:each="cat : ${categoriasInferior}"
+                            th:value="${cat.name()}"
+                            th:text="${cat.etiqueta}"
+                            th:selected="${filtroCategoria == cat.name()}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Categoría Calzado -->
+            <div id="divFiltroCatCalzado" class="hidden">
+                <select id="categoriaCalzadoSelect">
+                    <option value="">Categoría</option>
+                    <option th:each="cat : ${categoriasCalzado}"
+                            th:value="${cat.name()}"
+                            th:text="${cat.etiqueta}"
+                            th:selected="${filtroCategoria == cat.name()}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Campo oculto que se enviará al backend con la categoría unificada -->
+            <input type="hidden" id="categoriaUnificada" name="categoria">
+
+            <!-- Talla (se rellena dinámicamente según el tipo) -->
+            <div id="divFiltroTalla" class="hidden">
+                <select id="filtroTallaSelect" name="talla" th:attr="data-talla-seleccionada=${filtroTalla}">
+                    <option value="">Talla</option>
+                </select>
             </div>
 
             <div>
@@ -590,30 +604,8 @@
             </div>
 
             <div>
-                <select name="talla">
-                    <option value="">Talla</option>
-                    <optgroup label="Superior">
-                        <option th:each="t : ${tallasSuperior}"
-                                th:value="${t.name()}"
-                                th:text="${t.name()}"
-                                th:selected="${filtroTalla == t.name()}">
-                        </option>
-                    </optgroup>
-                    <optgroup label="Inferior">
-                        <option th:each="t : ${tallasInferior}"
-                                th:value="${t.etiqueta}"
-                                th:text="${t.etiqueta}"
-                                th:selected="${filtroTalla == t.etiqueta}">
-                        </option>
-                    </optgroup>
-                    <optgroup label="Calzado">
-                        <option th:each="t : ${tallasCalzado}"
-                                th:value="${t.etiqueta}"
-                                th:text="${t.etiqueta}"
-                                th:selected="${filtroTalla == t.etiqueta}">
-                        </option>
-                    </optgroup>
-                </select>
+                <input type="text" name="color" placeholder="Color"
+                       th:value="${filtroColor}">
             </div>
 
             <div>
@@ -1520,6 +1512,142 @@
         const dataUrl = outCanvas.toDataURL('image/jpeg', 0.9);
         imagenRecortadaInput.value = dataUrl;
     }
+
+    // --- Lógica para filtros dinámicos ---
+    function mostrarCategoriasYTallasFiltro() {
+        // Ocultar todos los divs de categoría
+        document.getElementById('divFiltroCatSuperior').classList.add('hidden');
+        document.getElementById('divFiltroCatInferior').classList.add('hidden');
+        document.getElementById('divFiltroCatCalzado').classList.add('hidden');
+        document.getElementById('divFiltroTalla').classList.add('hidden');
+
+        const tipo = document.getElementById('filtroTipoSelect').value;
+
+        // Limpiar las selecciones de categoría
+        const selSupFiltro = document.querySelector('#divFiltroCatSuperior select');
+        const selInfFiltro = document.querySelector('#divFiltroCatInferior select');
+        const selCalFiltro = document.querySelector('#divFiltroCatCalzado select');
+        if (selSupFiltro) selSupFiltro.value = "";
+        if (selInfFiltro) selInfFiltro.value = "";
+        if (selCalFiltro) selCalFiltro.value = "";
+
+        // Mostrar categoría según el tipo seleccionado
+        if (tipo === 'superior') {
+            document.getElementById('divFiltroCatSuperior').classList.remove('hidden');
+        } else if (tipo === 'inferior') {
+            document.getElementById('divFiltroCatInferior').classList.remove('hidden');
+        } else if (tipo === 'calzado') {
+            document.getElementById('divFiltroCatCalzado').classList.remove('hidden');
+        }
+
+        // Mostrar y rellenar tallas si hay tipo seleccionado
+        if (tipo) {
+            document.getElementById('divFiltroTalla').classList.remove('hidden');
+            rellenarTallasFiltro(tipo);
+        }
+    }
+
+    function rellenarTallasFiltro(tipo) {
+        const select = document.getElementById('filtroTallaSelect');
+        if (!select) return;
+
+        // Guardar la talla actualmente seleccionada (si existe)
+        const tallaActual = select.getAttribute('data-talla-seleccionada') || '';
+
+        // Limpiar opciones existentes
+        while (select.firstChild) {
+            select.removeChild(select.firstChild);
+        }
+
+        // Agregar opción por defecto
+        const optDefault = document.createElement('option');
+        optDefault.value = "";
+        optDefault.textContent = 'Talla';
+        select.appendChild(optDefault);
+
+        let tallas = [];
+        if (tipo === 'superior') {
+            tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'];
+        } else if (tipo === 'inferior') {
+            tallas = ['32', '34', '36', '38', '40', '42', '44', '46', '48', '50'];
+        } else if (tipo === 'calzado') {
+            tallas = ['34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
+        }
+
+        tallas.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            // Restaurar la selección si coincide con la talla actual
+            if (tallaActual && t === tallaActual) {
+                opt.selected = true;
+            }
+            select.appendChild(opt);
+        });
+    }
+
+    // Función que muestra categorías y tallas SIN limpiar valores (para inicialización)
+    function mostrarCategoriasYTallasFiltroSinLimpiar() {
+        // Ocultar todos los divs de categoría
+        document.getElementById('divFiltroCatSuperior').classList.add('hidden');
+        document.getElementById('divFiltroCatInferior').classList.add('hidden');
+        document.getElementById('divFiltroCatCalzado').classList.add('hidden');
+        document.getElementById('divFiltroTalla').classList.add('hidden');
+
+        const tipo = document.getElementById('filtroTipoSelect').value;
+
+        // NO limpiar las selecciones de categoría (para preservar valores del servidor)
+
+        // Mostrar categoría según el tipo seleccionado
+        if (tipo === 'superior') {
+            document.getElementById('divFiltroCatSuperior').classList.remove('hidden');
+        } else if (tipo === 'inferior') {
+            document.getElementById('divFiltroCatInferior').classList.remove('hidden');
+        } else if (tipo === 'calzado') {
+            document.getElementById('divFiltroCatCalzado').classList.remove('hidden');
+        }
+
+        // Mostrar y rellenar tallas si hay tipo seleccionado
+        if (tipo) {
+            document.getElementById('divFiltroTalla').classList.remove('hidden');
+            rellenarTallasFiltro(tipo);
+        }
+    }
+
+    // Inicializar filtros al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        // Si ya hay un tipo seleccionado (por ejemplo, al volver de un filtro previo)
+        const tipoActual = document.getElementById('filtroTipoSelect').value;
+        if (tipoActual) {
+            // Mostrar las categorías y tallas correspondientes sin limpiar valores
+            mostrarCategoriasYTallasFiltroSinLimpiar();
+        }
+
+        // Agregar evento de submit al formulario de filtros
+        const filtroForm = document.getElementById('filtroForm');
+        if (filtroForm) {
+            filtroForm.addEventListener('submit', function(e) {
+                // Unificar las categorías en el campo oculto
+                const categoriaUnificada = document.getElementById('categoriaUnificada');
+                const catSup = document.getElementById('categoriaSuperiorSelect');
+                const catInf = document.getElementById('categoriaInferiorSelect');
+                const catCal = document.getElementById('categoriaCalzadoSelect');
+
+                let valorCategoria = '';
+                if (catSup && !catSup.closest('.hidden')) {
+                    valorCategoria = catSup.value;
+                } else if (catInf && !catInf.closest('.hidden')) {
+                    valorCategoria = catInf.value;
+                } else if (catCal && !catCal.closest('.hidden')) {
+                    valorCategoria = catCal.value;
+                }
+
+                if (categoriaUnificada) {
+                    categoriaUnificada.value = valorCategoria;
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>
