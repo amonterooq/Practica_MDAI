@@ -343,178 +343,182 @@
 
         <form th:action="@{/armario/crear}" method="post" enctype="multipart/form-data">
 
+            <!-- 1. Nombre -->
             <div class="form-group">
                 <label>Nombre</label>
                 <input type="text" name="nombre" placeholder="Ej. Camisa Blanca" required>
             </div>
 
+            <!-- 2. Tipo de prenda -->
             <div class="form-group">
                 <label>Tipo de Prenda</label>
                 <select id="tipoPrendaSelect" name="tipoPrenda" onchange="mostrarCategorias()" required>
-                    <option value="" disabled selected>-- Seleccionar --</option>
+                    <option value="">-- Seleccionar --</option>
                     <option value="superior">Parte Superior</option>
                     <option value="inferior">Parte Inferior</option>
                     <option value="calzado">Calzado</option>
                 </select>
             </div>
 
+            <!-- 3. Categoría (según tipo) -->
             <div id="divCatSuperior" class="form-group hidden">
-                <label>Categoría (Superior)</label>
+                <label>Categoría</label>
                 <select name="catSuperior">
-                    <option value="" disabled selected>-- Seleccionar --</option>
-                    <option th:each="cat : ${categoriasSuperior}" th:value="${cat}" th:text="${cat}"></option>
+                    <option value="">-- Seleccionar --</option>
+                    <option th:each="cat : ${categoriasSuperior}" th:value="${cat}" th:text="${cat.etiqueta}"></option>
                 </select>
             </div>
 
             <div id="divCatInferior" class="form-group hidden">
-                <label>Categoría (Inferior)</label>
+                <label>Categoría</label>
                 <select name="catInferior">
-                    <option value="" disabled selected>-- Seleccionar --</option>
-                    <option th:each="cat : ${categoriasInferior}" th:value="${cat}" th:text="${cat}"></option>
+                    <option value="">-- Seleccionar --</option>
+                    <option th:each="cat : ${categoriasInferior}" th:value="${cat}" th:text="${cat.etiqueta}"></option>
                 </select>
             </div>
 
             <div id="divCatCalzado" class="form-group hidden">
-                <label>Categoría (Calzado)</label>
+                <label>Categoría</label>
                 <select name="catCalzado">
-                    <option value="" disabled selected>-- Seleccionar --</option>
-                    <option th:each="cat : ${categoriasCalzado}" th:value="${cat}" th:text="${cat}"></option>
+                    <option value="">-- Seleccionar --</option>
+                    <option th:each="cat : ${categoriasCalzado}" th:value="${cat}" th:text="${cat.etiqueta}"></option>
                 </select>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <div class="form-group" style="flex: 1;">
-                    <label>Marca</label>
-                    <!-- Select de marca con opción 'OTRA' y campo de texto opcional -->
-                    <select id="marcaSelect" name="marcaSeleccionada">
-                        <option value="" disabled selected>-- Seleccionar --</option>
-                        <option value="Zara">Zara</option>
-                        <option value="Mango">Mango</option>
-                        <option value="H&M">H&amp;M</option>
-                        <option value="Pull&Bear">Pull&Bear</option>
-                        <option value="Bershka">Bershka</option>
-                        <option value="Stradivarius">Stradivarius</option>
-                        <option value="Massimo Dutti">Massimo Dutti</option>
-                        <option value="Primark">Primark</option>
-                        <option value="Springfield">Springfield</option>
-                        <option value="Cortefiel">Cortefiel</option>
-                        <option value="Lefties">Lefties</option>
-                        <option value="Oysho">Oysho</option>
-                        <option value="Women'Secret">Women'Secret</option>
-                        <option value="Intimissimi">Intimissimi</option>
-                        <option value="Calzedonia">Calzedonia</option>
-                        <option value="Nike">Nike</option>
-                        <option value="Adidas">Adidas</option>
-                        <option value="Reebok">Reebok</option>
-                        <option value="Puma">Puma</option>
-                        <option value="New Balance">New Balance</option>
-                        <option value="Converse">Converse</option>
-                        <option value="Vans">Vans</option>
-                        <option value="Fila">Fila</option>
-                        <option value="Asics">Asics</option>
-                        <option value="Under Armour">Under Armour</option>
-                        <option value="Levi's">Levi's</option>
-                        <option value="Pepe Jeans">Pepe Jeans</option>
-                        <option value="Tommy Hilfiger">Tommy Hilfiger</option>
-                        <option value="Calvin Klein">Calvin Klein</option>
-                        <option value="Guess">Guess</option>
-                        <option value="Ralph Lauren">Ralph Lauren</option>
-                        <option value="Lacoste">Lacoste</option>
-                        <option value="Desigual">Desigual</option>
-                        <option value="Sfera">Sfera</option>
-                        <option value="Only">Only</option>
-                        <option value="Jack&Jones">Jack&Jones</option>
-                        <option value="Uniqlo">Uniqlo</option>
-                        <option value="Benetton">Benetton</option>
-                        <option value="El Corte Inglés">El Corte Inglés</option>
-                        <option value="Dolce &amp; Gabbana">Dolce &amp; Gabbana</option>
-                        <option value="Gucci">Gucci</option>
-                        <option value="Balenciaga">Balenciaga</option>
-                        <option value="Valentino">Valentino</option>
-                        <option value="Armani">Armani</option>
-                        <option value="Chanel">Chanel</option>
-                        <option value="Dior">Dior</option>
-                        <option value="Prada">Prada</option>
-                        <option value="Zalando">Zalando</option>
-                        <option value="Shein">Shein</option>
-                        <option value="Asos">Asos</option>
-                        <option value="Bimba y Lola">Bimba y Lola</option>
-                        <option value="Paco Martínez">Paco Martínez</option>
-                        <option value="Pedro del Hierro">Pedro del Hierro</option>
-                        <option value="Otro">Otra</option>
-                    </select>
-                    <input type="text" id="marcaOtraInput" placeholder="Escribe la marca" style="margin-top:0.5rem; display:none;">
-                    <!-- Campo oculto real que se envía al backend -->
-                    <input type="hidden" id="marcaFinal" name="marca">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Talla</label>
-                    <!-- Un único select de talla que se rellena según el tipo -->
-                    <select id="tallaSelect" name="talla" required>
-                        <option value="" disabled selected>-- Seleccionar --</option>
-                    </select>
-                </div>
+            <!-- 4. Talla -->
+            <div id="divTalla" class="form-group hidden">
+                <label>Talla</label>
+                <select id="tallaSelect" name="talla" required>
+                    <option value="">-- Seleccionar --</option>
+                </select>
             </div>
 
+            <!-- 5. Marca -->
+            <div class="form-group">
+                <label>Marca</label>
+                <select id="marcaSelect" name="marcaSeleccionada">
+                    <option value="">-- Seleccionar --</option>
+                    <option value="Adidas">Adidas</option>
+                    <option value="Armani">Armani</option>
+                    <option value="Asics">Asics</option>
+                    <option value="Asos">Asos</option>
+                    <option value="Balenciaga">Balenciaga</option>
+                    <option value="Benetton">Benetton</option>
+                    <option value="Bershka">Bershka</option>
+                    <option value="Bimba y Lola">Bimba y Lola</option>
+                    <option value="Calvin Klein">Calvin Klein</option>
+                    <option value="Calzedonia">Calzedonia</option>
+                    <option value="Chanel">Chanel</option>
+                    <option value="Converse">Converse</option>
+                    <option value="Cortefiel">Cortefiel</option>
+                    <option value="Desigual">Desigual</option>
+                    <option value="Dior">Dior</option>
+                    <option value="Dolce &amp; Gabbana">Dolce &amp; Gabbana</option>
+                    <option value="El Corte Inglés">El Corte Inglés</option>
+                    <option value="Fila">Fila</option>
+                    <option value="Guess">Guess</option>
+                    <option value="Gucci">Gucci</option>
+                    <option value="H&M">H&amp;M</option>
+                    <option value="Intimissimi">Intimissimi</option>
+                    <option value="Jack&Jones">Jack&Jones</option>
+                    <option value="Lacoste">Lacoste</option>
+                    <option value="Lefties">Lefties</option>
+                    <option value="Levi's">Levi's</option>
+                    <option value="Mango">Mango</option>
+                    <option value="Massimo Dutti">Massimo Dutti</option>
+                    <option value="New Balance">New Balance</option>
+                    <option value="Nike">Nike</option>
+                    <option value="Only">Only</option>
+                    <option value="Oysho">Oysho</option>
+                    <option value="Paco Martínez">Paco Martínez</option>
+                    <option value="Pedro del Hierro">Pedro del Hierro</option>
+                    <option value="Pepe Jeans">Pepe Jeans</option>
+                    <option value="Prada">Prada</option>
+                    <option value="Primark">Primark</option>
+                    <option value="Pull&Bear">Pull&Bear</option>
+                    <option value="Puma">Puma</option>
+                    <option value="Ralph Lauren">Ralph Lauren</option>
+                    <option value="Reebok">Reebok</option>
+                    <option value="Sfera">Sfera</option>
+                    <option value="Shein">Shein</option>
+                    <option value="Springfield">Springfield</option>
+                    <option value="Stradivarius">Stradivarius</option>
+                    <option value="Tommy Hilfiger">Tommy Hilfiger</option>
+                    <option value="Under Armour">Under Armour</option>
+                    <option value="Uniqlo">Uniqlo</option>
+                    <option value="Valentino">Valentino</option>
+                    <option value="Vans">Vans</option>
+                    <option value="Women'Secret">Women'Secret</option>
+                    <option value="Zalando">Zalando</option>
+                    <option value="Zara">Zara</option>
+                    <option value="Otro">Otra</option>
+                </select>
+                <input type="text" id="marcaOtraInput" placeholder="Escribe la marca" style="margin-top:0.5rem; display:none;">
+                <!-- Campo oculto real que se envía al backend -->
+                <input type="hidden" id="marcaFinal" name="marca">
+            </div>
+
+            <!-- 6. Color -->
             <div class="form-group">
                 <label>Color</label>
                 <!-- Select de color con opción 'OTRO' y campo de texto opcional -->
                 <select id="colorSelect" name="colorSeleccionado" required>
-                    <option value="" disabled selected>-- Seleccionar --</option>
-                    <option value="Negro">Negro</option>
+                    <option value="">-- Seleccionar --</option>
+                    <option value="A cuadros">A cuadros</option>
+                    <option value="A rayas">A rayas</option>
+                    <option value="Amarillo">Amarillo</option>
+                    <option value="Animal print">Animal print</option>
+                    <option value="Azul cielo">Azul cielo</option>
+                    <option value="Azul claro">Azul claro</option>
+                    <option value="Azul eléctrico">Azul eléctrico</option>
+                    <option value="Azul marino">Azul marino</option>
+                    <option value="Azul oscuro">Azul oscuro</option>
+                    <option value="Beige">Beige</option>
+                    <option value="Beige rosado">Beige rosado</option>
                     <option value="Blanco">Blanco</option>
+                    <option value="Bronce">Bronce</option>
+                    <option value="Burdeos">Burdeos</option>
+                    <option value="Camel">Camel</option>
+                    <option value="Caqui">Caqui</option>
+                    <option value="Chocolate">Chocolate</option>
+                    <option value="Cobrizo">Cobrizo</option>
+                    <option value="Coral">Coral</option>
+                    <option value="Crema">Crema</option>
+                    <option value="Crudo">Crudo</option>
+                    <option value="Dorado">Dorado</option>
+                    <option value="Estampado">Estampado</option>
+                    <option value="Floral">Floral</option>
+                    <option value="Fucsia">Fucsia</option>
+                    <option value="Granate">Granate</option>
                     <option value="Gris">Gris</option>
                     <option value="Gris claro">Gris claro</option>
                     <option value="Gris oscuro">Gris oscuro</option>
-                    <option value="Beige">Beige</option>
+                    <option value="Lavanda">Lavanda</option>
+                    <option value="Lila">Lila</option>
+                    <option value="Marfil">Marfil</option>
                     <option value="Marrón">Marrón</option>
-                    <option value="Camel">Camel</option>
-                    <option value="Chocolate">Chocolate</option>
-                    <option value="Azul marino">Azul marino</option>
-                    <option value="Azul oscuro">Azul oscuro</option>
-                    <option value="Azul claro">Azul claro</option>
-                    <option value="Azul cielo">Azul cielo</option>
-                    <option value="Azul eléctrico">Azul eléctrico</option>
+                    <option value="Morado">Morado</option>
+                    <option value="Mostaza">Mostaza</option>
+                    <option value="Naranja">Naranja</option>
+                    <option value="Negro">Negro</option>
+                    <option value="Plateado">Plateado</option>
                     <option value="Rojo">Rojo</option>
-                    <option value="Granate">Granate</option>
-                    <option value="Burdeos">Burdeos</option>
                     <option value="Rosa">Rosa</option>
                     <option value="Rosa palo">Rosa palo</option>
-                    <option value="Fucsia">Fucsia</option>
-                    <option value="Verde oscuro">Verde oscuro</option>
+                    <option value="Teal">Teal</option>
+                    <option value="Turquesa">Turquesa</option>
                     <option value="Verde botella">Verde botella</option>
-                    <option value="Verde militar">Verde militar</option>
                     <option value="Verde claro">Verde claro</option>
                     <option value="Verde menta">Verde menta</option>
-                    <option value="Caqui">Caqui</option>
-                    <option value="Mostaza">Mostaza</option>
-                    <option value="Amarillo">Amarillo</option>
-                    <option value="Naranja">Naranja</option>
-                    <option value="Coral">Coral</option>
-                    <option value="Morado">Morado</option>
-                    <option value="Lila">Lila</option>
-                    <option value="Lavanda">Lavanda</option>
-                    <option value="Crudo">Crudo</option>
-                    <option value="Marfil">Marfil</option>
-                    <option value="Crema">Crema</option>
-                    <option value="Plateado">Plateado</option>
-                    <option value="Dorado">Dorado</option>
-                    <option value="Cobrizo">Cobrizo</option>
-                    <option value="Bronce">Bronce</option>
-                    <option value="Turquesa">Turquesa</option>
-                    <option value="Teal">Teal</option>
-                    <option value="Beige rosado">Beige rosado</option>
-                    <option value="Estampado">Estampado</option>
-                    <option value="Animal print">Animal print</option>
-                    <option value="A cuadros">A cuadros</option>
-                    <option value="A rayas">A rayas</option>
-                    <option value="Floral">Floral</option>
-                    <option value="Otro">OTRO</option>
+                    <option value="Verde militar">Verde militar</option>
+                    <option value="Verde oscuro">Verde oscuro</option>
+                    <option value="Otro">Otro</option>
                 </select>
                 <input type="text" id="colorOtroInput" placeholder="Escribe el color" style="margin-top:0.5rem; display:none;">
                 <input type="hidden" id="colorFinal" name="color">
             </div>
 
+            <!-- 7. Subir foto -->
             <div class="form-group">
                 <label>Subir Foto</label>
                 <input type="file" id="fileInput" name="imagenOriginal" accept="image/*">
@@ -554,21 +558,21 @@
                     <optgroup label="Superior">
                         <option th:each="cat : ${categoriasSuperior}"
                                 th:value="${cat.name()}"
-                                th:text="${cat}"
+                                th:text="${cat.etiqueta}"
                                 th:selected="${filtroCategoria == cat.name()}">
                         </option>
                     </optgroup>
                     <optgroup label="Inferior">
                         <option th:each="cat : ${categoriasInferior}"
                                 th:value="${cat.name()}"
-                                th:text="${cat}"
+                                th:text="${cat.etiqueta}"
                                 th:selected="${filtroCategoria == cat.name()}">
                         </option>
                     </optgroup>
                     <optgroup label="Calzado">
                         <option th:each="cat : ${categoriasCalzado}"
                                 th:value="${cat.name()}"
-                                th:text="${cat}"
+                                th:text="${cat.etiqueta}"
                                 th:selected="${filtroCategoria == cat.name()}">
                         </option>
                     </optgroup>
@@ -693,59 +697,59 @@
                         <!-- Mismo patrón que en alta: select + OTRA + campo oculto -->
                         <select id="editMarcaSelect">
                             <option value="" disabled selected>-- Seleccionar --</option>
-                            <option value="Zara">Zara</option>
-                            <option value="Mango">Mango</option>
-                            <option value="H&M">H&amp;M</option>
-                            <option value="Pull&Bear">Pull&Bear</option>
-                            <option value="Bershka">Bershka</option>
-                            <option value="Stradivarius">Stradivarius</option>
-                            <option value="Massimo Dutti">Massimo Dutti</option>
-                            <option value="Primark">Primark</option>
-                            <option value="Springfield">Springfield</option>
-                            <option value="Cortefiel">Cortefiel</option>
-                            <option value="Lefties">Lefties</option>
-                            <option value="Oysho">Oysho</option>
-                            <option value="Women'Secret">Women'Secret</option>
-                            <option value="Intimissimi">Intimissimi</option>
-                            <option value="Calzedonia">Calzedonia</option>
-                            <option value="Nike">Nike</option>
                             <option value="Adidas">Adidas</option>
-                            <option value="Reebok">Reebok</option>
-                            <option value="Puma">Puma</option>
-                            <option value="New Balance">New Balance</option>
-                            <option value="Converse">Converse</option>
-                            <option value="Vans">Vans</option>
-                            <option value="Fila">Fila</option>
-                            <option value="Asics">Asics</option>
-                            <option value="Under Armour">Under Armour</option>
-                            <option value="Levi's">Levi's</option>
-                            <option value="Pepe Jeans">Pepe Jeans</option>
-                            <option value="Tommy Hilfiger">Tommy Hilfiger</option>
-                            <option value="Calvin Klein">Calvin Klein</option>
-                            <option value="Guess">Guess</option>
-                            <option value="Ralph Lauren">Ralph Lauren</option>
-                            <option value="Lacoste">Lacoste</option>
-                            <option value="Desigual">Desigual</option>
-                            <option value="Sfera">Sfera</option>
-                            <option value="Only">Only</option>
-                            <option value="Jack&Jones">Jack&Jones</option>
-                            <option value="Uniqlo">Uniqlo</option>
-                            <option value="Benetton">Benetton</option>
-                            <option value="El Corte Inglés">El Corte Inglés</option>
-                            <option value="Dolce &amp; Gabbana">Dolce &amp; Gabbana</option>
-                            <option value="Gucci">Gucci</option>
-                            <option value="Balenciaga">Balenciaga</option>
-                            <option value="Valentino">Valentino</option>
                             <option value="Armani">Armani</option>
-                            <option value="Chanel">Chanel</option>
-                            <option value="Dior">Dior</option>
-                            <option value="Prada">Prada</option>
-                            <option value="Zalando">Zalando</option>
-                            <option value="Shein">Shein</option>
+                            <option value="Asics">Asics</option>
                             <option value="Asos">Asos</option>
+                            <option value="Balenciaga">Balenciaga</option>
+                            <option value="Benetton">Benetton</option>
+                            <option value="Bershka">Bershka</option>
                             <option value="Bimba y Lola">Bimba y Lola</option>
+                            <option value="Calvin Klein">Calvin Klein</option>
+                            <option value="Calzedonia">Calzedonia</option>
+                            <option value="Chanel">Chanel</option>
+                            <option value="Converse">Converse</option>
+                            <option value="Cortefiel">Cortefiel</option>
+                            <option value="Desigual">Desigual</option>
+                            <option value="Dior">Dior</option>
+                            <option value="Dolce &amp; Gabbana">Dolce &amp; Gabbana</option>
+                            <option value="El Corte Inglés">El Corte Inglés</option>
+                            <option value="Fila">Fila</option>
+                            <option value="Guess">Guess</option>
+                            <option value="Gucci">Gucci</option>
+                            <option value="H&M">H&amp;M</option>
+                            <option value="Intimissimi">Intimissimi</option>
+                            <option value="Jack&Jones">Jack&Jones</option>
+                            <option value="Lacoste">Lacoste</option>
+                            <option value="Lefties">Lefties</option>
+                            <option value="Levi's">Levi's</option>
+                            <option value="Mango">Mango</option>
+                            <option value="Massimo Dutti">Massimo Dutti</option>
+                            <option value="New Balance">New Balance</option>
+                            <option value="Nike">Nike</option>
+                            <option value="Only">Only</option>
+                            <option value="Oysho">Oysho</option>
                             <option value="Paco Martínez">Paco Martínez</option>
+                            <option value="Pepe Jeans">Pepe Jeans</option>
                             <option value="Pedro del Hierro">Pedro del Hierro</option>
+                            <option value="Primark">Primark</option>
+                            <option value="Prada">Prada</option>
+                            <option value="Pull&Bear">Pull&Bear</option>
+                            <option value="Puma">Puma</option>
+                            <option value="Ralph Lauren">Ralph Lauren</option>
+                            <option value="Reebok">Reebok</option>
+                            <option value="Shein">Shein</option>
+                            <option value="Sfera">Sfera</option>
+                            <option value="Springfield">Springfield</option>
+                            <option value="Stradivarius">Stradivarius</option>
+                            <option value="Tommy Hilfiger">Tommy Hilfiger</option>
+                            <option value="Under Armour">Under Armour</option>
+                            <option value="Uniqlo">Uniqlo</option>
+                            <option value="Vans">Vans</option>
+                            <option value="Valentino">Valentino</option>
+                            <option value="Women'Secret">Women'Secret</option>
+                            <option value="Zalando">Zalando</option>
+                            <option value="Zara">Zara</option>
                             <option value="Otro">Otra</option>
                         </select>
                         <input type="text" id="editMarcaOtraInput" placeholder="Escribe la marca" style="margin-top:0.5rem; display:none;">
@@ -765,55 +769,55 @@
                     <!-- Select de color en edición -->
                     <select id="editColorSelect">
                         <option value="" disabled selected>-- Seleccionar --</option>
-                        <option value="Negro">Negro</option>
+                        <option value="A cuadros">A cuadros</option>
+                        <option value="A rayas">A rayas</option>
+                        <option value="Amarillo">Amarillo</option>
+                        <option value="Animal print">Animal print</option>
+                        <option value="Azul cielo">Azul cielo</option>
+                        <option value="Azul claro">Azul claro</option>
+                        <option value="Azul eléctrico">Azul eléctrico</option>
+                        <option value="Azul marino">Azul marino</option>
+                        <option value="Azul oscuro">Azul oscuro</option>
+                        <option value="Beige">Beige</option>
+                        <option value="Beige rosado">Beige rosado</option>
                         <option value="Blanco">Blanco</option>
+                        <option value="Bronce">Bronce</option>
+                        <option value="Burdeos">Burdeos</option>
+                        <option value="Camel">Camel</option>
+                        <option value="Caqui">Caqui</option>
+                        <option value="Chocolate">Chocolate</option>
+                        <option value="Cobrizo">Cobrizo</option>
+                        <option value="Coral">Coral</option>
+                        <option value="Crema">Crema</option>
+                        <option value="Crudo">Crudo</option>
+                        <option value="Dorado">Dorado</option>
+                        <option value="Estampado">Estampado</option>
+                        <option value="Floral">Floral</option>
+                        <option value="Fucsia">Fucsia</option>
+                        <option value="Granate">Granate</option>
                         <option value="Gris">Gris</option>
                         <option value="Gris claro">Gris claro</option>
                         <option value="Gris oscuro">Gris oscuro</option>
-                        <option value="Beige">Beige</option>
+                        <option value="Lavanda">Lavanda</option>
+                        <option value="Lila">Lila</option>
+                        <option value="Marfil">Marfil</option>
                         <option value="Marrón">Marrón</option>
-                        <option value="Camel">Camel</option>
-                        <option value="Chocolate">Chocolate</option>
-                        <option value="Azul marino">Azul marino</option>
-                        <option value="Azul oscuro">Azul oscuro</option>
-                        <option value="Azul claro">Azul claro</option>
-                        <option value="Azul cielo">Azul cielo</option>
-                        <option value="Azul eléctrico">Azul eléctrico</option>
+                        <option value="Morado">Morado</option>
+                        <option value="Mostaza">Mostaza</option>
+                        <option value="Naranja">Naranja</option>
+                        <option value="Negro">Negro</option>
+                        <option value="Plateado">Plateado</option>
                         <option value="Rojo">Rojo</option>
-                        <option value="Granate">Granate</option>
-                        <option value="Burdeos">Burdeos</option>
                         <option value="Rosa">Rosa</option>
                         <option value="Rosa palo">Rosa palo</option>
-                        <option value="Fucsia">Fucsia</option>
-                        <option value="Verde oscuro">Verde oscuro</option>
+                        <option value="Teal">Teal</option>
+                        <option value="Turquesa">Turquesa</option>
                         <option value="Verde botella">Verde botella</option>
-                        <option value="Verde militar">Verde militar</option>
                         <option value="Verde claro">Verde claro</option>
                         <option value="Verde menta">Verde menta</option>
-                        <option value="Caqui">Caqui</option>
-                        <option value="Mostaza">Mostaza</option>
-                        <option value="Amarillo">Amarillo</option>
-                        <option value="Naranja">Naranja</option>
-                        <option value="Coral">Coral</option>
-                        <option value="Morado">Morado</option>
-                        <option value="Lila">Lila</option>
-                        <option value="Lavanda">Lavanda</option>
-                        <option value="Crudo">Crudo</option>
-                        <option value="Marfil">Marfil</option>
-                        <option value="Crema">Crema</option>
-                        <option value="Plateado">Plateado</option>
-                        <option value="Dorado">Dorado</option>
-                        <option value="Cobrizo">Cobrizo</option>
-                        <option value="Bronce">Bronce</option>
-                        <option value="Turquesa">Turquesa</option>
-                        <option value="Teal">Teal</option>
-                        <option value="Beige rosado">Beige rosado</option>
-                        <option value="Estampado">Estampado</option>
-                        <option value="Animal print">Animal print</option>
-                        <option value="A cuadros">A cuadros</option>
-                        <option value="A rayas">A rayas</option>
-                        <option value="Floral">Floral</option>
-                        <option value="Otro">OTRO</option>
+                        <option value="Verde militar">Verde militar</option>
+                        <option value="Verde oscuro">Verde oscuro</option>
+                        <option value="Otro">Otro</option>
                     </select>
                     <input type="text" id="editColorOtraInput" placeholder="Escribe el color" style="margin-top:0.5rem; display:none;">
                     <input type="hidden" id="editColor" name="color">
@@ -852,21 +856,61 @@
         document.getElementById('divCatSuperior').classList.add('hidden');
         document.getElementById('divCatInferior').classList.add('hidden');
         document.getElementById('divCatCalzado').classList.add('hidden');
+        document.getElementById('divTalla').classList.add('hidden');
 
         const tipo = document.getElementById('tipoPrendaSelect').value;
 
+        const selSup = document.querySelector('#divCatSuperior select');
+        const selInf = document.querySelector('#divCatInferior select');
+        const selCal = document.querySelector('#divCatCalzado select');
+        if (selSup) selSup.value = "";
+        if (selInf) selInf.value = "";
+        if (selCal) selCal.value = "";
+
         if (tipo === 'superior') {
             document.getElementById('divCatSuperior').classList.remove('hidden');
-        }
-        if (tipo === 'inferior') {
+        } else if (tipo === 'inferior') {
             document.getElementById('divCatInferior').classList.remove('hidden');
-        }
-        if (tipo === 'calzado') {
+        } else if (tipo === 'calzado') {
             document.getElementById('divCatCalzado').classList.remove('hidden');
         }
 
-        // Rellenar la lista de tallas en función del tipo
+        if (tipo) {
+            document.getElementById('divTalla').classList.remove('hidden');
+        }
+
         rellenarTallas(tipo);
+    }
+
+    function rellenarTallas(tipo) {
+        const select = document.getElementById('tallaSelect');
+        if (!select) return;
+
+        while (select.firstChild) {
+            select.removeChild(select.firstChild);
+        }
+
+        const optDefault = document.createElement('option');
+        optDefault.value = "";
+        optDefault.selected = true;
+        optDefault.textContent = '-- Seleccionar --';
+        select.appendChild(optDefault);
+
+        let tallas = [];
+        if (tipo === 'superior') {
+            tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'];
+        } else if (tipo === 'inferior') {
+            tallas = ['32', '34', '36', '38', '40', '42', '44', '46', '48', '50'];
+        } else if (tipo === 'calzado') {
+            tallas = ['34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
+        }
+
+        tallas.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            select.appendChild(opt);
+        });
     }
 
     // --- Lógica de marca (select + "OTRA") ---
@@ -1021,7 +1065,6 @@
         // Opción por defecto
         const optDefault = document.createElement('option');
         optDefault.value = '';
-        optDefault.disabled = true;
         optDefault.selected = true;
         optDefault.textContent = '-- Seleccionar --';
         select.appendChild(optDefault);
@@ -1056,7 +1099,6 @@
 
         const optDefault = document.createElement('option');
         optDefault.value = '';
-        optDefault.disabled = true;
         optDefault.textContent = '-- Seleccionar --';
         select.appendChild(optDefault);
 
