@@ -539,4 +539,36 @@ public class PrendaServiceImpl implements PrendaService {
             throw new IllegalArgumentException("El color es obligatorio.");
         }
     }
+
+    @Override
+    public List<String> obtenerMarcasDelUsuario(Long usuarioId) {
+        if (usuarioId == null || usuarioId <= 0) {
+            logger.warn("obtenerMarcasDelUsuario: usuarioId inválido");
+            return List.of();
+        }
+        try {
+            List<String> marcas = prendaRepository.findDistinctMarcasByUsuarioId(usuarioId);
+            logger.debug("obtenerMarcasDelUsuario: usuarioId={} -> {} marcas únicas", usuarioId, marcas.size());
+            return marcas;
+        } catch (Exception e) {
+            logger.error("obtenerMarcasDelUsuario: error al obtener marcas", e);
+            return List.of();
+        }
+    }
+
+    @Override
+    public List<String> obtenerColoresDelUsuario(Long usuarioId) {
+        if (usuarioId == null || usuarioId <= 0) {
+            logger.warn("obtenerColoresDelUsuario: usuarioId inválido");
+            return List.of();
+        }
+        try {
+            List<String> colores = prendaRepository.findDistinctColoresByUsuarioId(usuarioId);
+            logger.debug("obtenerColoresDelUsuario: usuarioId={} -> {} colores únicos", usuarioId, colores.size());
+            return colores;
+        } catch (Exception e) {
+            logger.error("obtenerColoresDelUsuario: error al obtener colores", e);
+            return List.of();
+        }
+    }
 }

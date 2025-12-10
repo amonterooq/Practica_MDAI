@@ -40,4 +40,14 @@ public interface PrendaService {
      * si no coincide, devuelve la cadena tal cual con el primer carácter en mayúscula.
      */
     String normalizarMarca(String marcaIntroducida);
+
+    /**
+     * Obtiene todas las marcas únicas que tiene el usuario en sus prendas.
+     */
+    List<String> obtenerMarcasDelUsuario(Long usuarioId);
+
+    /**
+     * Obtiene todos los colores únicos que tiene el usuario en sus prendas.
+     */
+    List<String> obtenerColoresDelUsuario(Long usuarioId);
 }

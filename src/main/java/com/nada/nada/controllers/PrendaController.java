@@ -69,6 +69,44 @@ public class PrendaController {
         model.addAttribute("tallasInferior", TallaInferior.values());
         model.addAttribute("tallasCalzado", TallaCalzado.values());
 
+        // Listas de marcas y colores para formulario de creación (enums)
+        model.addAttribute("marcas", Marca.values());
+        model.addAttribute("colores", Color.values());
+
+        // OPCIÓN C: Combinar enums con valores del usuario para los filtros
+        // Esto asegura que siempre haya opciones disponibles, incluso para usuarios nuevos
+
+        // Obtener marcas y colores personalizados del usuario
+        List<String> marcasUsuario = prendaService.obtenerMarcasDelUsuario(usuarioId);
+        List<String> coloresUsuario = prendaService.obtenerColoresDelUsuario(usuarioId);
+
+        // Crear sets para combinar y evitar duplicados
+        java.util.Set<String> marcasSet = new java.util.HashSet<>();
+        java.util.Set<String> coloresSet = new java.util.HashSet<>();
+
+        // Agregar todas las marcas del enum
+        for (Marca m : Marca.values()) {
+            marcasSet.add(m.getEtiqueta());
+        }
+
+        // Agregar todas las colores del enum
+        for (Color c : Color.values()) {
+            coloresSet.add(c.getEtiqueta());
+        }
+
+        // Agregar marcas y colores personalizados del usuario (si los tiene)
+        marcasSet.addAll(marcasUsuario);
+        coloresSet.addAll(coloresUsuario);
+
+        // Convertir a listas y ordenar alfabéticamente
+        List<String> marcasFiltro = new java.util.ArrayList<>(marcasSet);
+        List<String> coloresFiltro = new java.util.ArrayList<>(coloresSet);
+        java.util.Collections.sort(marcasFiltro);
+        java.util.Collections.sort(coloresFiltro);
+
+        model.addAttribute("marcasFiltro", marcasFiltro);
+        model.addAttribute("coloresFiltro", coloresFiltro);
+
         // Volver a pintar los valores de filtro en la UI
         model.addAttribute("filtroNombre", nombreEmpiezaPor);
         model.addAttribute("filtroTipo", tipoPrenda);
