@@ -322,7 +322,7 @@ public class PrendaServiceImpl implements PrendaService {
         return base.stream()
                 .filter(p -> {
                     if (nombreEmpiezaPor != null && !nombreEmpiezaPor.isBlank()) {
-                        return p.getNombre() != null && p.getNombre().toLowerCase().startsWith(nombreEmpiezaPor.toLowerCase());
+                        return p.getNombre() != null && p.getNombre().toLowerCase().contains(nombreEmpiezaPor.toLowerCase());
                     }
                     return true;
                 })
