@@ -239,8 +239,12 @@ public class PrendaController {
             return "redirect:/armario/";
         }
 
+        // Normalizar marca y color (si el usuario escribe algo que coincide con el enum, usamos el valor del enum)
+        String marcaNormalizada = normalizarMarca(marca);
+        String colorNormalizado = normalizarColor(color);
+
         logger.info("Actualizando prenda id={} nombre='{}' marca='{}' talla='{}' color='{}' tipo={}",
-                id, nombre, marca, talla, color, tipoPrenda);
+                id, nombre, marcaNormalizada, talla, colorNormalizado, tipoPrenda);
 
         // Cargar la prenda y comprobar permisos
         Prenda prendaExistente = prendaService.buscarPrendaPorId(id).orElse(null);
@@ -257,9 +261,9 @@ public class PrendaController {
 
         // Actualizar campos básicos
         prendaExistente.setNombre(nombre);
-        prendaExistente.setMarca(marca);
+        prendaExistente.setMarca(marcaNormalizada);
         prendaExistente.setTalla(talla);
-        prendaExistente.setColor(color);
+        prendaExistente.setColor(colorNormalizado);
 
         // Actualizar categoría específica según la subclase
         if (prendaExistente instanceof PrendaSuperior superior) {
@@ -352,5 +356,57 @@ public class PrendaController {
 
         // Devolvemos la ruta relativa que usará la vista para mostrar la imagen
         return "/images/" + usuarioId + "/" + fileName;
+    }
+
+    /**
+     * Normaliza una marca escrita por el usuario.
+     * Si coincide (ignorando mayúsculas) con alguna del enum, devuelve la etiqueta correcta del enum.
+     * Si no coincide, devuelve el valor tal cual (marca personalizada).
+     */
+    private String normalizarMarca(String marcaEscrita) {
+        if (marcaEscrita == null || marcaEscrita.trim().isEmpty()) {
+            return marcaEscrita;
+        }
+
+        String marcaTrim = marcaEscrita.trim();
+        String marcaLower = marcaTrim.toLowerCase();
+
+        // Buscar en el enum si coincide (ignorando mayúsculas)
+        for (Marca m : Marca.values()) {
+            if (m.getEtiqueta().toLowerCase().equals(marcaLower)) {
+                logger.debug("Marca '{}' normalizada a '{}'", marcaEscrita, m.getEtiqueta());
+                return m.getEtiqueta();
+            }
+        }
+
+        // No coincide con ninguna del enum, devolver tal cual (marca personalizada)
+        logger.debug("Marca '{}' es personalizada, se mantiene tal cual", marcaEscrita);
+        return marcaTrim;
+    }
+
+    /**
+     * Normaliza un color escrito por el usuario.
+     * Si coincide (ignorando mayúsculas) con alguno del enum, devuelve la etiqueta correcta del enum.
+     * Si no coincide, devuelve el valor tal cual (color personalizado).
+     */
+    private String normalizarColor(String colorEscrito) {
+        if (colorEscrito == null || colorEscrito.trim().isEmpty()) {
+            return colorEscrito;
+        }
+
+        String colorTrim = colorEscrito.trim();
+        String colorLower = colorTrim.toLowerCase();
+
+        // Buscar en el enum si coincide (ignorando mayúsculas)
+        for (Color c : Color.values()) {
+            if (c.getEtiqueta().toLowerCase().equals(colorLower)) {
+                logger.debug("Color '{}' normalizado a '{}'", colorEscrito, c.getEtiqueta());
+                return c.getEtiqueta();
+            }
+        }
+
+        // No coincide con ninguno del enum, devolver tal cual (color personalizado)
+        logger.debug("Color '{}' es personalizado, se mantiene tal cual", colorEscrito);
+        return colorTrim;
     }
 }
