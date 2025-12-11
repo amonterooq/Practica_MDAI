@@ -5,6 +5,7 @@ public enum Color {
     A_RAYAS("A rayas"),
     AMARILLO("Amarillo"),
     ANIMAL_PRINT("Animal print"),
+    Azul("Azul"),
     AZUL_CIELO("Azul cielo"),
     AZUL_CLARO("Azul claro"),
     AZUL_ELECTRICO("Azul eléctrico"),

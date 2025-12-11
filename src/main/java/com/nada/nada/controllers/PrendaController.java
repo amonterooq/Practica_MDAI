@@ -39,6 +39,12 @@ public class PrendaController {
         this.conjuntoService = conjuntoService;
     }
 
+    // Maneja /armario sin barra final redirigiendo a /armario/
+    @GetMapping
+    public String redirigirArmarioRaiz() {
+        return "redirect:/armario/";
+    }
+
     // Nota: La clase se dejara asi de momento porque funciona, falta perfeccionarla y mejorar el codigo.
     @GetMapping("/")
     public String verArmario(HttpSession session, Model model,
@@ -425,24 +431,24 @@ public class PrendaController {
      * Si coincide (ignorando mayúsculas) con alguno del enum, devuelve la etiqueta correcta del enum.
      * Si no coincide, devuelve el valor tal cual (color personalizado).
      */
-    private String normalizarColor(String colorEscrito) {
-        if (colorEscrito == null || colorEscrito.trim().isEmpty()) {
-            return colorEscrito;
+    private String normalizarColor(String colorEscrita) {
+        if (colorEscrita == null || colorEscrita.trim().isEmpty()) {
+            return colorEscrita;
         }
 
-        String colorTrim = colorEscrito.trim();
+        String colorTrim = colorEscrita.trim();
         String colorLower = colorTrim.toLowerCase();
 
         // Buscar en el enum si coincide (ignorando mayúsculas)
         for (Color c : Color.values()) {
             if (c.getEtiqueta().toLowerCase().equals(colorLower)) {
-                logger.debug("Color '{}' normalizado a '{}'", colorEscrito, c.getEtiqueta());
+                logger.debug("Color '{}' normalizado a '{}'", colorEscrita, c.getEtiqueta());
                 return c.getEtiqueta();
             }
         }
 
         // No coincide con ninguno del enum, devolver tal cual (color personalizado)
-        logger.debug("Color '{}' es personalizado, se mantiene tal cual", colorEscrito);
+        logger.debug("Color '{}' es personalizado, se mantiene tal cual", colorEscrita);
         return colorTrim;
     }
 }

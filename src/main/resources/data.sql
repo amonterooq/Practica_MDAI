@@ -20,69 +20,69 @@ VALUES (1, 'alice', 'alice123', 'alice@nada.test'),
 
 -- Usuario 1: alice
 INSERT INTO prenda (id, nombre, color, marca, talla, dir_imagen, usuario_id, tipo_prenda)
-VALUES (1, 'Camiseta blanca', 'blanco', 'Uniqlo', 'M', NULL, 1, 'SUPERIOR'),
-       (2, 'Camisa celeste', 'celeste', 'Massimo Dutti', 'M', NULL, 1, 'SUPERIOR'),
-       (3, 'Suéter gris', 'gris', 'H&M', 'M', NULL, 1, 'SUPERIOR'),
-       (4, 'Vaquero slim', 'azul', 'Levi''s', '36', NULL, 1, 'INFERIOR'),
-       (5, 'Pantalón chino', 'beige', 'Dockers', '36', NULL, 1, 'INFERIOR'),
-       (6, 'Short running', 'negro', 'Nike', '36', NULL, 1, 'INFERIOR'),
-       (7, 'Zapatillas running', 'negro', 'Nike', '40', NULL, 1, 'CALZADO'),
-       (8, 'Zapatillas urban', 'blanco', 'Adidas', '40', NULL, 1, 'CALZADO');
+VALUES (1, 'Camiseta blanca', 'Blanco', 'Uniqlo', 'M', NULL, 1, 'SUPERIOR'),
+       (2, 'Camisa celeste', 'Azul claro', 'Massimo Dutti', 'M', NULL, 1, 'SUPERIOR'),
+       (3, 'Suéter gris', 'Gris', 'H&M', 'M', NULL, 1, 'SUPERIOR'),
+       (4, 'Vaquero slim', 'Azul', 'Levi''s', '36', NULL, 1, 'INFERIOR'),
+       (5, 'Pantalón chino', 'Beige', 'Dockers', '36', NULL, 1, 'INFERIOR'),
+       (6, 'Short running', 'Negro', 'Nike', '36', NULL, 1, 'INFERIOR'),
+       (7, 'Zapatillas running', 'Negro', 'Nike', '40', NULL, 1, 'CALZADO'),
+       (8, 'Zapatillas urban', 'Blanco', 'Adidas', '40', NULL, 1, 'CALZADO');
 
 -- Usuario 2: bob
 INSERT INTO prenda (id, nombre, color, marca, talla, dir_imagen, usuario_id, tipo_prenda)
-VALUES (9, 'Chaqueta cuero', 'negro', 'Zara', 'M', NULL, 2, 'SUPERIOR'),
-       (10, 'Abrigo lana', 'camel', 'Mango', 'M', NULL, 2, 'SUPERIOR'),
-       (11, 'Camiseta negra', 'negro', 'Uniqlo', 'M', NULL, 2, 'SUPERIOR'),
-       (12, 'Jeans negros', 'negro', 'Levi''s', '36', NULL, 2, 'INFERIOR'),
-       (13, 'Pantalón vestir', 'gris', 'Hugo Boss', '36', NULL, 2, 'INFERIOR'),
-       (14, 'Short denim', 'azul', 'Pull&Bear', '36', NULL, 2, 'INFERIOR'),
-       (15, 'Botas montaña', 'marrón', 'Salomon', '40', NULL, 2, 'CALZADO'),
-       (16, 'Zapatos oxford', 'negro', 'Clarks', '40', NULL, 2, 'CALZADO');
+VALUES (9, 'Chaqueta cuero', 'Negro', 'Zara', 'M', NULL, 2, 'SUPERIOR'),
+       (10, 'Abrigo lana', 'Camel', 'Mango', 'M', NULL, 2, 'SUPERIOR'),
+       (11, 'Camiseta negra', 'Negro', 'Uniqlo', 'M', NULL, 2, 'SUPERIOR'),
+       (12, 'Jeans negros', 'Negro', 'Levi''s', '36', NULL, 2, 'INFERIOR'),
+       (13, 'Pantalón vestir', 'Gris', 'Hugo Boss', '36', NULL, 2, 'INFERIOR'),
+       (14, 'Short denim', 'Azul', 'Pull&Bear', '36', NULL, 2, 'INFERIOR'),
+       (15, 'Botas montaña', 'Marrón', 'Salomon', '40', NULL, 2, 'CALZADO'),
+       (16, 'Zapatos oxford', 'Negro', 'Clarks', '40', NULL, 2, 'CALZADO');
 
 -- Usuario 3: carla
 INSERT INTO prenda (id, nombre, color, marca, talla, dir_imagen, usuario_id, tipo_prenda)
-VALUES (17, 'Blusa seda', 'blanco', 'Mango', 'M', NULL, 3, 'SUPERIOR'),
-       (18, 'Chaqueta vaquera', 'azul', 'Levi''s', 'M', NULL, 3, 'SUPERIOR'),
-       (19, 'Camiseta rayas', 'marino', 'Petit Bateau', 'M', NULL, 3, 'SUPERIOR'),
-       (20, 'Falda midi', 'verde', 'Zara', '36', NULL, 3, 'INFERIOR'),
-       (21, 'Pantalón culotte', 'negro', 'COS', '36', NULL, 3, 'INFERIOR'),
-       (22, 'Jeans recto', 'azul', 'Lee', '36', NULL, 3, 'INFERIOR'),
-       (23, 'Sandalias tira', 'negro', 'Birkenstock', '40', NULL, 3, 'CALZADO'),
-       (24, 'Zapatillas plataforma', 'blanco', 'Victoria', '40', NULL, 3, 'CALZADO');
+VALUES (17, 'Blusa seda', 'Blanco', 'Mango', 'M', NULL, 3, 'SUPERIOR'),
+       (18, 'Chaqueta vaquera', 'Azul', 'Levi''s', 'M', NULL, 3, 'SUPERIOR'),
+       (19, 'Camiseta rayas', 'Azul marino', 'Petit Bateau', 'M', NULL, 3, 'SUPERIOR'),
+       (20, 'Falda midi', 'Verde', 'Zara', '36', NULL, 3, 'INFERIOR'),
+       (21, 'Pantalón culotte', 'Negro', 'COS', '36', NULL, 3, 'INFERIOR'),
+       (22, 'Jeans recto', 'Azul', 'Lee', '36', NULL, 3, 'INFERIOR'),
+       (23, 'Sandalias tira', 'Negro', 'Birkenstock', '40', NULL, 3, 'CALZADO'),
+       (24, 'Zapatillas plataforma', 'Blanco', 'Victoria', '40', NULL, 3, 'CALZADO');
 
 -- Usuario 4: diego
 INSERT INTO prenda (id, nombre, color, marca, talla, dir_imagen, usuario_id, tipo_prenda)
-VALUES (25, 'Camisa cuadros', 'rojo', 'Barbour', 'M', NULL, 4, 'SUPERIOR'),
-       (26, 'Suéter cuello alto', 'gris', 'Uniqlo', 'M', NULL, 4, 'SUPERIOR'),
-       (27, 'Chaqueta bomber', 'verde', 'Alpha', 'M', NULL, 4, 'SUPERIOR'),
-       (28, 'Pantalón cargo', 'verde', 'Carhartt', '36', NULL, 4, 'INFERIOR'),
-       (29, 'Jeans oscuro', 'azul', 'Wrangler', '36', NULL, 4, 'INFERIOR'),
-       (30, 'Short trekking', 'gris', 'Quechua', '36', NULL, 4, 'INFERIOR'),
-       (31, 'Botas senderismo', 'gris', 'Merrell', '40', NULL, 4, 'CALZADO'),
-       (32, 'Zapatillas court', 'blanco', 'New Balance', '40', NULL, 4, 'CALZADO');
+VALUES (25, 'Camisa cuadros', 'Rojo', 'Barbour', 'M', NULL, 4, 'SUPERIOR'),
+       (26, 'Suéter cuello alto', 'Gris', 'Uniqlo', 'M', NULL, 4, 'SUPERIOR'),
+       (27, 'Chaqueta bomber', 'Verde', 'Alpha', 'M', NULL, 4, 'SUPERIOR'),
+       (28, 'Pantalón cargo', 'Verde', 'Carhartt', '36', NULL, 4, 'INFERIOR'),
+       (29, 'Jeans oscuro', 'Azul oscuro', 'Wrangler', '36', NULL, 4, 'INFERIOR'),
+       (30, 'Short trekking', 'Gris', 'Quechua', '36', NULL, 4, 'INFERIOR'),
+       (31, 'Botas senderismo', 'Gris', 'Merrell', '40', NULL, 4, 'CALZADO'),
+       (32, 'Zapatillas court', 'Blanco', 'New Balance', '40', NULL, 4, 'CALZADO');
 
 -- Usuario 5: eva
 INSERT INTO prenda (id, nombre, color, marca, talla, dir_imagen, usuario_id, tipo_prenda)
-VALUES (33, 'Blusa flores', 'multicolor', 'Zara', 'M', NULL, 5, 'SUPERIOR'),
-       (34, 'Abrigo largo', 'negro', 'COS', 'M', NULL, 5, 'SUPERIOR'),
-       (35, 'Camiseta básica', 'blanco', 'H&M', 'M', NULL, 5, 'SUPERIOR'),
-       (36, 'Falda lápiz', 'negro', 'Mango', '36', NULL, 5, 'INFERIOR'),
-       (37, 'Pantalón traje', 'azul', 'Massimo Dutti', '36', NULL, 5, 'INFERIOR'),
-       (38, 'Short lino', 'beige', 'Oysho', '36', NULL, 5, 'INFERIOR'),
-       (39, 'Zapato salón', 'negro', 'Geox', '40', NULL, 5, 'CALZADO'),
-       (40, 'Zapatillas running', 'rosa', 'Asics', '40', NULL, 5, 'CALZADO');
+VALUES (33, 'Blusa flores', 'Multicolor', 'Zara', 'M', NULL, 5, 'SUPERIOR'),
+       (34, 'Abrigo largo', 'Negro', 'COS', 'M', NULL, 5, 'SUPERIOR'),
+       (35, 'Camiseta básica', 'Blanco', 'H&M', 'M', NULL, 5, 'SUPERIOR'),
+       (36, 'Falda lápiz', 'Negro', 'Mango', '36', NULL, 5, 'INFERIOR'),
+       (37, 'Pantalón traje', 'Azul', 'Massimo Dutti', '36', NULL, 5, 'INFERIOR'),
+       (38, 'Short lino', 'Beige', 'Oysho', '36', NULL, 5, 'INFERIOR'),
+       (39, 'Zapato salón', 'Negro', 'Geox', '40', NULL, 5, 'CALZADO'),
+       (40, 'Zapatillas running', 'Rosa', 'Asics', '40', NULL, 5, 'CALZADO');
 
 -- Usuario 6: fran
 INSERT INTO prenda (id, nombre, color, marca, talla, dir_imagen, usuario_id, tipo_prenda)
-VALUES (41, 'Camisa blanca', 'blanco', 'Hugo Boss', 'M', '/images/6/prenda_1.jpg', 6, 'SUPERIOR'),
-       (42, 'Chaqueta softshell', 'azul', 'The North Face', 'M', '/images/6/prenda_2.jpg', 6, 'SUPERIOR'),
-       (43, 'Suéter azul', 'azul', 'GAP', 'M', '/images/6/prenda_3.jpg', 6, 'SUPERIOR'),
-       (44, 'Pantalón jogger', 'gris', 'Nike', '36', '/images/6/prenda_4.jpg', 6, 'INFERIOR'),
-       (45, 'Jeans slim', 'azul', 'Pepe Jeans', '36', '/images/6/prenda_5.jpg', 6, 'INFERIOR'),
-       (46, 'Short deporte', 'negro', 'Adidas', '36', '/images/6/prenda_6.jpg', 6, 'INFERIOR'),
-       (47, 'Zapatillas trail', 'naranja', 'Salomon', '40', '/images/6/prenda_7.jpg', 6, 'CALZADO'),
-       (48, 'Zapatos derby', 'marrón', 'Clarks', '40', '/images/6/prenda_8.jpg', 6, 'CALZADO');
+VALUES (41, 'Camisa blanca', 'Blanco', 'Hugo Boss', 'M', '/images/6/prenda_1.jpg', 6, 'SUPERIOR'),
+       (42, 'Chaqueta softshell', 'Azul', 'The North Face', 'M', '/images/6/prenda_2.jpg', 6, 'SUPERIOR'),
+       (43, 'Suéter azul', 'Azul', 'GAP', 'M', '/images/6/prenda_3.jpg', 6, 'SUPERIOR'),
+       (44, 'Pantalón jogger', 'Gris', 'Nike', '36', '/images/6/prenda_4.jpg', 6, 'INFERIOR'),
+       (45, 'Jeans slim', 'Azul', 'Pepe Jeans', '36', '/images/6/prenda_5.jpg', 6, 'INFERIOR'),
+       (46, 'Short deporte', 'Negro', 'Adidas', '36', '/images/6/prenda_6.jpg', 6, 'INFERIOR'),
+       (47, 'Zapatillas trail', 'Naranja', 'Salomon', '40', '/images/6/prenda_7.jpg', 6, 'CALZADO'),
+       (48, 'Zapatos derby', 'Marrón', 'Clarks', '40', '/images/6/prenda_8.jpg', 6, 'CALZADO');
 
 -- =========================================================
 -- SUBTABLAS (JOINED)
