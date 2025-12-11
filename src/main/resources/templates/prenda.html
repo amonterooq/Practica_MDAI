@@ -535,13 +535,12 @@
                         Sin imagen
                     </div>
 
-                    <form th:action="@{/armario/eliminar}" method="post" style="position:absolute; top:8px; right:8px; margin:0;">
-                        <input type="hidden" name="id" th:value="${prenda.id}">
-                        <button type="submit" class="delete-btn" title="Eliminar"
-                                onclick="event.stopPropagation(); return confirm('¿Eliminar prenda?');">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </form>
+                    <button type="button" class="delete-btn" title="Eliminar"
+                            th:attr="data-prenda-id=${prenda.id}, data-prenda-nombre=${prenda.nombre}"
+                            onclick="event.stopPropagation(); abrirModalEliminar(this);"
+                            style="position:absolute; top:8px; right:8px; margin:0; background:none; border:none; cursor:pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
 
                 <div class="card-details">
@@ -645,6 +644,50 @@
         <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
             <button type="button" id="cancelCropBtn">Cancelar</button>
             <button type="button" id="confirmCropBtn">Aplicar recorte</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div id="deleteModalOverlay" class="edit-modal-overlay" style="display:none;">
+    <div class="edit-modal" style="max-width: 550px; grid-template-columns: 1fr;">
+        <div class="edit-modal-content">
+            <h2 style="margin-bottom: 1rem; color: #c0392b;">
+                <i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i>
+                Confirmar eliminación
+            </h2>
+
+            <p style="margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.6;">
+                ¿Estás seguro de que deseas eliminar la prenda <strong id="deletePrendaNombre"></strong>?
+            </p>
+
+            <div id="deleteConjuntosInfo" style="display: none; background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; margin-bottom: 1rem;">
+                <p style="margin: 0 0 0.5rem 0; font-weight: 600; color: #856404;">
+                    <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                    Esta acción también eliminará <span id="deleteConjuntosCantidad">0</span> conjunto(s):
+                </p>
+                <ul id="deleteConjuntosLista" style="margin: 0; padding-left: 1.5rem; color: #856404; font-size: 0.9rem;">
+                </ul>
+            </div>
+
+            <div id="deleteNoConjuntosInfo" style="display: none; background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 1rem; margin-bottom: 1rem;">
+                <p style="margin: 0; color: #0c5460; font-size: 0.9rem;">
+                    <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                    Esta prenda no forma parte de ningún conjunto.
+                </p>
+            </div>
+
+            <p style="margin-bottom: 1.5rem; font-size: 0.85rem; color: #666; font-style: italic;">
+                Esta acción no se puede deshacer.
+            </p>
+
+            <div class="edit-modal-actions" style="margin-top: 0;">
+                <button type="button" class="btn-outline" id="cancelDeleteBtn">Cancelar</button>
+                <button type="button" class="btn-primary" id="confirmDeleteBtn" style="background: #c0392b; border-color: #c0392b;">
+                    <i class="fas fa-trash" style="margin-right: 0.5rem;"></i>
+                    Eliminar
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1479,6 +1522,91 @@
                     categoriaUnificada.value = valorCategoria;
                 }
             });
+        }
+    });
+
+    // --- Lógica del modal de eliminación ---
+    let prendaIdToDelete = null;
+
+    function abrirModalEliminar(button) {
+        const prendaId = button.getAttribute('data-prenda-id');
+        const prendaNombre = button.getAttribute('data-prenda-nombre');
+
+        prendaIdToDelete = prendaId;
+        document.getElementById('deletePrendaNombre').textContent = prendaNombre;
+
+        // Ocultar ambos divs informativos inicialmente
+        document.getElementById('deleteConjuntosInfo').style.display = 'none';
+        document.getElementById('deleteNoConjuntosInfo').style.display = 'none';
+
+        // Hacer petición AJAX para obtener conjuntos afectados
+        fetch('/armario/conjuntos-afectados/' + prendaId)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                    return;
+                }
+
+                if (data.cantidad > 0) {
+                    // Hay conjuntos afectados
+                    document.getElementById('deleteConjuntosCantidad').textContent = data.cantidad;
+                    const lista = document.getElementById('deleteConjuntosLista');
+                    lista.innerHTML = '';
+
+                    data.nombres.forEach(nombre => {
+                        const li = document.createElement('li');
+                        li.textContent = nombre;
+                        lista.appendChild(li);
+                    });
+
+                    document.getElementById('deleteConjuntosInfo').style.display = 'block';
+                } else {
+                    // No hay conjuntos afectados
+                    document.getElementById('deleteNoConjuntosInfo').style.display = 'block';
+                }
+
+                // Mostrar el modal
+                document.getElementById('deleteModalOverlay').style.display = 'flex';
+            })
+            .catch(error => {
+                console.error('Error al obtener conjuntos afectados:', error);
+                // Mostrar el modal de todos modos, sin información de conjuntos
+                document.getElementById('deleteNoConjuntosInfo').style.display = 'block';
+                document.getElementById('deleteModalOverlay').style.display = 'flex';
+            });
+    }
+
+    function cerrarModalEliminar() {
+        document.getElementById('deleteModalOverlay').style.display = 'none';
+        prendaIdToDelete = null;
+    }
+
+    function confirmarEliminacion() {
+        if (!prendaIdToDelete) return;
+
+        // Crear un formulario y enviarlo
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/armario/eliminar';
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'id';
+        input.value = prendaIdToDelete;
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // Event listeners para el modal de eliminación
+    document.getElementById('cancelDeleteBtn').addEventListener('click', cerrarModalEliminar);
+    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmarEliminacion);
+
+    document.getElementById('deleteModalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+            cerrarModalEliminar();
         }
     });
 </script>

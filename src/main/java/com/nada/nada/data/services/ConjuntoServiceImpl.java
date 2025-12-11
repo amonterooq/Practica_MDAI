@@ -9,6 +9,8 @@ import com.nada.nada.data.repository.PrendaCalzadoRepository;
 import com.nada.nada.data.repository.PrendaInferiorRepository;
 import com.nada.nada.data.repository.PrendaSuperiorRepository;
 import com.nada.nada.data.repository.UsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,10 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
 public class ConjuntoServiceImpl implements ConjuntoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConjuntoServiceImpl.class);
 
     private final ConjuntoRepository conjuntoRepository;
     private final PrendaSuperiorRepository prendaSuperiorRepository;
@@ -139,6 +145,34 @@ public class ConjuntoServiceImpl implements ConjuntoService {
                     () -> new IllegalArgumentException("La prenda de calzado con id " + id + " no existe"));
             if (pc.getUsuario() == null || !usuarioId.equals(pc.getUsuario().getId()))
                 throw new IllegalArgumentException("La prenda de calzado no pertenece al usuario del conjunto");
+        }
+    }
+
+    @Override
+    public List<Conjunto> buscarConjuntosConPrenda(Long prendaId) {
+        if (prendaId == null || prendaId <= 0) {
+            logger.warn("buscarConjuntosConPrenda: prendaId inválido");
+            return List.of();
+        }
+
+        try {
+            List<Conjunto> todos = StreamSupport
+                .stream(conjuntoRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
+
+            List<Conjunto> afectados = todos.stream()
+                .filter(c -> {
+                    if (c.getPrendaSuperior() != null && prendaId.equals(c.getPrendaSuperior().getId())) return true;
+                    if (c.getPrendaInferior() != null && prendaId.equals(c.getPrendaInferior().getId())) return true;
+                    return c.getPrendaCalzado() != null && prendaId.equals(c.getPrendaCalzado().getId());
+                })
+                .collect(Collectors.toList());
+
+            logger.debug("buscarConjuntosConPrenda: prendaId={} -> {} conjuntos afectados", prendaId, afectados.size());
+            return afectados;
+        } catch (Exception e) {
+            logger.error("buscarConjuntosConPrenda: error al buscar conjuntos con prendaId={}", prendaId, e);
+            return List.of();
         }
     }
 }

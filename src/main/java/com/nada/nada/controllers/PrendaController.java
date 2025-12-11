@@ -2,6 +2,7 @@
 package com.nada.nada.controllers;
 
 import com.nada.nada.data.model.*;
+import com.nada.nada.data.services.ConjuntoService;
 import com.nada.nada.data.services.PrendaService;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -30,10 +31,12 @@ public class PrendaController {
     private String UPLOAD_BASE_DIR = "/app/static/images";
 
     private PrendaService prendaService;
+    private ConjuntoService conjuntoService;
 
     @Autowired
-    public PrendaController(PrendaService prendaService) {
+    public PrendaController(PrendaService prendaService, ConjuntoService conjuntoService) {
         this.prendaService = prendaService;
+        this.conjuntoService = conjuntoService;
     }
 
     // Nota: La clase se dejara asi de momento porque funciona, falta perfeccionarla y mejorar el codigo.
@@ -291,6 +294,39 @@ public class PrendaController {
         }
 
         return "redirect:/armario/";
+    }
+
+    @GetMapping("/conjuntos-afectados/{prendaId}")
+    @ResponseBody
+    public java.util.Map<String, Object> obtenerConjuntosAfectados(@PathVariable Long prendaId, HttpSession session) {
+        // Devuelve información sobre los conjuntos que serán eliminados si se borra esta prenda
+
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuarioLogueado == null) {
+            return java.util.Map.of("error", "No autenticado");
+        }
+
+        try {
+            List<Conjunto> conjuntosAfectados = conjuntoService.buscarConjuntosConPrenda(prendaId);
+
+            // Filtrar solo los conjuntos del usuario (seguridad adicional)
+            conjuntosAfectados = conjuntosAfectados.stream()
+                .filter(c -> c.getUsuario() != null && c.getUsuario().getId().equals(usuarioLogueado.getId()))
+                .toList();
+
+            // Extraer solo los nombres de los conjuntos
+            List<String> nombresConjuntos = conjuntosAfectados.stream()
+                .map(Conjunto::getNombre)
+                .toList();
+
+            return java.util.Map.of(
+                "cantidad", conjuntosAfectados.size(),
+                "nombres", nombresConjuntos
+            );
+        } catch (Exception e) {
+            logger.error("Error al obtener conjuntos afectados para prendaId={}", prendaId, e);
+            return java.util.Map.of("error", "Error al obtener información");
+        }
     }
 
     @PostMapping("/eliminar")
