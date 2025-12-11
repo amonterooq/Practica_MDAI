@@ -82,5 +82,47 @@ public enum Marca {
         }
         return false;
     }
+
+    /**
+     * Convierte un string a un valor de Marca enum.
+     * Primero intenta coincidir por etiqueta (case-insensitive).
+     * Luego por name() (case-insensitive).
+     * Luego normalizando espacios a '_', eliminando '&' y '\'' y comparando con name().
+     * Si no encuentra coincidencia, devuelve Marca.OTRA.
+     */
+    public static Marca fromString(String valor) {
+        if (valor == null || valor.trim().isEmpty()) {
+            return Marca.OTRA;
+        }
+        
+        String raw = valor.trim();
+        
+        // Intentar coincidir por etiqueta (case-insensitive)
+        for (Marca m : values()) {
+            if (m.etiqueta.equalsIgnoreCase(raw)) {
+                return m;
+            }
+        }
+        
+        // Intentar coincidir por name() (case-insensitive)
+        for (Marca m : values()) {
+            if (m.name().equalsIgnoreCase(raw)) {
+                return m;
+            }
+        }
+        
+        // Normalizar: espacios a '_', eliminar '&' y '\''
+        String normalized = raw.replace(" ", "_")
+                               .replace("&", "")
+                               .replace("'", "");
+        
+        for (Marca m : values()) {
+            if (m.name().equalsIgnoreCase(normalized)) {
+                return m;
+            }
+        }
+        
+        return Marca.OTRA;
+    }
 }
 

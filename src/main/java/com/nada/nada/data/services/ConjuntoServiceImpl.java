@@ -77,7 +77,7 @@ public class ConjuntoServiceImpl implements ConjuntoService {
         if (usuarioId == null) {
             throw new IllegalArgumentException("El id de usuario no puede ser nulo");
         }
-        return conjuntoRepository.findByUsuario_Id(usuarioId);
+        return conjuntoRepository.findByUsuario_IdOrderByIdDesc(usuarioId);
     }
 
     @Override
