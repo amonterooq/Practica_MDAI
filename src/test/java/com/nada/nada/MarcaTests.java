@@ -91,5 +91,46 @@ public class MarcaTests {
             Marca.valueOf("MARCA_INEXISTENTE");
         });
     }
+
+    @Test
+    void testMarcaFromStringConEtiquetaCorrecta() {
+        assertEquals(Marca.ZARA, Marca.fromString("Zara"));
+        assertEquals(Marca.NIKE, Marca.fromString("Nike"));
+        assertEquals(Marca.ADIDAS, Marca.fromString("Adidas"));
+        assertEquals(Marca.HM, Marca.fromString("H&M"));
+    }
+
+    @Test
+    void testMarcaFromStringCaseInsensitive() {
+        assertEquals(Marca.ZARA, Marca.fromString("zara"));
+        assertEquals(Marca.ZARA, Marca.fromString("ZARA"));
+        assertEquals(Marca.ZARA, Marca.fromString("ZaRa"));
+        assertEquals(Marca.NIKE, Marca.fromString("nike"));
+        assertEquals(Marca.NIKE, Marca.fromString("NIKE"));
+    }
+
+    @Test
+    void testMarcaFromStringConEspacios() {
+        assertEquals(Marca.CALVIN_KLEIN, Marca.fromString("Calvin Klein"));
+        assertEquals(Marca.CALVIN_KLEIN, Marca.fromString("calvin klein"));
+        assertEquals(Marca.MASSIMO_DUTTI, Marca.fromString("Massimo Dutti"));
+    }
+
+    @Test
+    void testMarcaFromStringConCaracteresEspeciales() {
+        assertEquals(Marca.HM, Marca.fromString("H&M"));
+        assertEquals(Marca.HM, Marca.fromString("h&m"));
+        assertEquals(Marca.LEVIS, Marca.fromString("Levi's"));
+        assertEquals(Marca.LEVIS, Marca.fromString("levis"));
+        assertEquals(Marca.DOLCE_GABBANA, Marca.fromString("Dolce & Gabbana"));
+    }
+
+    @Test
+    void testMarcaFromStringDevuelveOtraParaValorDesconocido() {
+        assertEquals(Marca.OTRA, Marca.fromString("MarcaDesconocida"));
+        assertEquals(Marca.OTRA, Marca.fromString(""));
+        assertEquals(Marca.OTRA, Marca.fromString(null));
+        assertEquals(Marca.OTRA, Marca.fromString("   "));
+    }
 }
 
