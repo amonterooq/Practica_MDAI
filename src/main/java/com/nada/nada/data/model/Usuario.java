@@ -24,6 +24,9 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Conjunto> conjuntos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Post> posts = new LinkedList<>();
+
     public Usuario() {
     }
 
@@ -31,8 +34,6 @@ public class Usuario {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.prendas = new LinkedList<>();
-        this.conjuntos = new ArrayList<>();
     }
 
     public Long getId() {
@@ -83,6 +84,14 @@ public class Usuario {
         this.conjuntos = conjuntos;
     }
 
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
     public boolean addPrenda(Prenda prenda) {
         return this.prendas.add(prenda);
     }
@@ -91,16 +100,32 @@ public class Usuario {
         return this.conjuntos.add(conjunto);
     }
 
+    public boolean addPost(Post post) {
+        return this.posts.add(post);
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Usuario usuario = (Usuario) o;
-        return id != null && usuario.id != null && id.equals(usuario.id);
+        return Objects.equals(id, usuario.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", prendas=" + prendas +
+                ", conjuntos=" + conjuntos +
+                ", posts=" + posts +
+                '}';
     }
 }

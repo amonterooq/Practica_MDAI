@@ -25,17 +25,21 @@ public class Conjunto {
     @ManyToOne
     private PrendaCalzado prendaCalzado;
 
+    @OneToOne(mappedBy = "conjunto")
+    private Post post;
+
     public Conjunto() {
 
     }
 
-    public Conjunto(String nombre, Usuario usuario, String descripcion, PrendaSuperior prendaSuperior, PrendaInferior prendaInferior, PrendaCalzado prendaCalzado) {
+    public Conjunto(String nombre, Usuario usuario, String descripcion, PrendaSuperior prendaSuperior, PrendaInferior prendaInferior, PrendaCalzado prendaCalzado, Post post) {
         this.nombre = nombre;
         this.usuario = usuario;
         this.descripcion = descripcion;
         this.prendaSuperior = prendaSuperior;
         this.prendaInferior = prendaInferior;
         this.prendaCalzado = prendaCalzado;
+        this.post = post;
     }
 
     public Long getId() {
@@ -94,9 +98,18 @@ public class Conjunto {
         this.prendaCalzado = prendaCalzado;
     }
 
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Conjunto conjunto)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+        Conjunto conjunto = (Conjunto) o;
         return Objects.equals(id, conjunto.id);
     }
 
@@ -115,6 +128,7 @@ public class Conjunto {
                 ", prendaSuperior=" + prendaSuperior +
                 ", prendaInferior=" + prendaInferior +
                 ", prendaCalzado=" + prendaCalzado +
+                ", post=" + post +
                 '}';
     }
 }
