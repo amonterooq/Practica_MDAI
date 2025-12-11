@@ -1,6 +1,7 @@
 package com.nada.nada.data.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -11,6 +12,10 @@ public class Conjunto {
     private String nombre;
     @Column(length = 256)
     private String descripcion;
+
+    // Marca de tiempo de creación para posibles ordenaciones adicionales
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -30,6 +35,15 @@ public class Conjunto {
 
     public Conjunto() {
 
+    }
+
+    public Conjunto(String nombre, Usuario usuario, String descripcion, PrendaSuperior prendaSuperior, PrendaInferior prendaInferior, PrendaCalzado prendaCalzado) {
+        this.nombre = nombre;
+        this.usuario = usuario;
+        this.descripcion = descripcion;
+        this.prendaSuperior = prendaSuperior;
+        this.prendaInferior = prendaInferior;
+        this.prendaCalzado = prendaCalzado;
     }
 
     public Conjunto(String nombre, Usuario usuario, String descripcion, PrendaSuperior prendaSuperior, PrendaInferior prendaInferior, PrendaCalzado prendaCalzado, Post post) {
@@ -106,6 +120,15 @@ public class Conjunto {
         this.post = post;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -129,6 +152,7 @@ public class Conjunto {
                 ", prendaInferior=" + prendaInferior +
                 ", prendaCalzado=" + prendaCalzado +
                 ", post=" + post +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }

@@ -2,6 +2,7 @@ package com.nada.nada.data.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -16,6 +17,10 @@ public abstract class Prenda {
     protected String marca;
     protected String talla;
     protected String dirImagen;
+
+    // Marca de tiempo de creación
+    @Column(name = "created_at", updatable = false)
+    protected LocalDateTime createdAt;
 
     @ManyToOne
     protected Usuario usuario;
@@ -88,6 +93,15 @@ public abstract class Prenda {
 
     public void setDirImagen(String dirImagen) {
         this.dirImagen = dirImagen;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
 
     @Override

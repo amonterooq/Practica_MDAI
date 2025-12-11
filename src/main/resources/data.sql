@@ -113,25 +113,30 @@ VALUES (1, 0, 0),
        (43, 2, 1);
 
 -- INFERIORES
+-- Orden de CategoriaInferior (ordinal):
+-- 0 BERMUDA, 1 FALDA_CORTA, 2 FALDA_LARGA, 3 FALDA_MIDI,
+-- 4 JEAN, 5 JOGGER, 6 LEGGINGS, 7 MONO_CORTO, 8 MONO_LARGO,
+-- 9 PANTALON, 10 PANTALON_CHANDAL, 11 PANTALON_VAQUERO,
+-- 12 PANTALON_VESTIR, 13 SHORT
 INSERT INTO prenda_inferior (id, categoria_inferior)
-VALUES (4, 3),
-       (5, 0),
-       (6, 1),
-       (12, 3),
-       (13, 0),
-       (14, 1),
-       (20, 2),
-       (21, 0),
-       (22, 3),
-       (28, 0),
-       (29, 3),
-       (30, 1),
-       (36, 2),
-       (37, 0),
-       (38, 1),
-       (44, 0),
-       (45, 3),
-       (46, 1);
+VALUES (4, 11),   -- Vaquero slim -> PANTALON_VAQUERO
+       (5, 9),    -- Pantalón chino -> PANTALON
+       (6, 10),   -- Short running -> PANTALON_CHANDAL
+       (12, 11),  -- Jeans negros -> PANTALON_VAQUERO
+       (13, 12),  -- Pantalón vestir -> PANTALON_VESTIR
+       (14, 13),  -- Short denim -> SHORT
+       (20, 3),   -- Falda midi -> FALDA_MIDI
+       (21, 9),   -- Pantalón culotte -> PANTALON (aprox)
+       (22, 11),  -- Jeans recto -> PANTALON_VAQUERO
+       (28, 9),   -- Pantalón cargo -> PANTALON
+       (29, 11),  -- Jeans oscuro -> PANTALON_VAQUERO
+       (30, 13),  -- Short trekking -> SHORT
+       (36, 2),   -- Falda lápiz -> FALDA_LARGA (aprox)
+       (37, 12),  -- Pantalón traje -> PANTALON_VESTIR
+       (38, 13),  -- Short lino -> SHORT
+       (44, 5),   -- Pantalón jogger -> JOGGER
+       (45, 11),  -- Jeans slim -> PANTALON_VAQUERO
+       (46, 13);  -- Short deporte -> SHORT
 
 -- CALZADOS
 INSERT INTO prenda_calzado (id, categoria)

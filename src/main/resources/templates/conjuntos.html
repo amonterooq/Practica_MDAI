@@ -146,10 +146,32 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
 
+        /* Nombre del conjunto arriba a la izquierda sobre las imágenes */
+        .outfit-header {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            z-index: 9;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            border-radius: 2px;
+            max-width: 80%;
+        }
+
+        .outfit-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         /* Zona de imágenes del conjunto: 3 cuadrados apilados como card-img */
         .outfit-images {
             display: flex;
             flex-direction: column;
+            position: relative; /* para posicionar nombre y botón eliminar */
         }
 
         .outfit-slot {
@@ -179,6 +201,8 @@
             justify-content: center;
             font-size: 0.8rem;
             color: var(--text-secondary);
+            text-align: center;
+            padding: 0.5rem;
         }
 
         .card-details { padding: 1rem; text-align: left; }
@@ -378,7 +402,12 @@
                               data-inferior-id=${conjunto.prendaInferior != null ? conjunto.prendaInferior.id : ''},
                               data-calzado-id=${conjunto.prendaCalzado != null ? conjunto.prendaCalzado.id : ''}"
                      onclick="abrirModalEdicion(this)">
-                <div class="outfit-images" style="position: relative;">
+                <div class="outfit-images">
+                    <!-- Nombre del conjunto arriba a la izquierda -->
+                    <div class="outfit-header">
+                        <h3 class="outfit-title" th:text="${conjunto.nombre}">Nombre conjunto</h3>
+                    </div>
+
                     <button type="button" class="delete-btn"
                             th:attr="data-conjunto-id=${conjunto.id}, data-conjunto-nombre=${conjunto.nombre}"
                             onclick="event.stopPropagation(); abrirModalEliminar(this);">
@@ -392,13 +421,14 @@
                              alt="Superior"
                              onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
                         <span class="placeholder"
-                              th:if="${conjunto.prendaSuperior != null and conjunto.prendaSuperior.dirImagen == null}"
-                              th:text="${conjunto.prendaSuperior.nombre}">
-                            Superior sin imagen
+                              th:if="${conjunto.prendaSuperior != null and conjunto.prendaSuperior.dirImagen == null}">
+                            👚<br th:remove="tag" />
+                            <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Superior</span>
                         </span>
                         <span class="placeholder"
                               th:if="${conjunto.prendaSuperior == null}">
-                            Sin superior
+                            👚<br th:remove="tag" />
+                            <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Sin superior</span>
                         </span>
                     </div>
                     <!-- Slot inferior -->
@@ -408,13 +438,14 @@
                              alt="Inferior"
                              onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
                         <span class="placeholder"
-                              th:if="${conjunto.prendaInferior != null and conjunto.prendaInferior.dirImagen == null}"
-                              th:text="${conjunto.prendaInferior.nombre}">
-                            Inferior sin imagen
+                              th:if="${conjunto.prendaInferior != null and conjunto.prendaInferior.dirImagen == null}">
+                            👖<br th:remove="tag" />
+                            <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Inferior</span>
                         </span>
                         <span class="placeholder"
                               th:if="${conjunto.prendaInferior == null}">
-                            Sin inferior
+                            👖<br th:remove="tag" />
+                            <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Sin inferior</span>
                         </span>
                     </div>
                     <!-- Slot calzado -->
@@ -424,22 +455,23 @@
                              alt="Calzado"
                              onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
                         <span class="placeholder"
-                              th:if="${conjunto.prendaCalzado != null and conjunto.prendaCalzado.dirImagen == null}"
-                              th:text="${conjunto.prendaCalzado.nombre}">
-                            Calzado sin imagen
+                              th:if="${conjunto.prendaCalzado != null and conjunto.prendaCalzado.dirImagen == null}">
+                            👞<br th:remove="tag" />
+                            <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Calzado</span>
                         </span>
                         <span class="placeholder"
                               th:if="${conjunto.prendaCalzado == null}">
-                            Sin calzado
+                            👞<br th:remove="tag" />
+                            <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Sin calzado</span>
                         </span>
                     </div>
                 </div>
 
                 <div class="card-details">
-                    <h3 th:text="${conjunto.nombre}">Nombre conjunto</h3>
+                    <!-- Nombre ya se muestra arriba; aquí solo la descripción -->
                     <div class="card-meta">
                         <span th:text="${conjunto.descripcion}">Descripción</span>
-                        <span th:text="'ID ' + ${conjunto.id}">ID</span>
+                        <!-- ID oculto en la UI -->
                     </div>
                 </div>
             </article>

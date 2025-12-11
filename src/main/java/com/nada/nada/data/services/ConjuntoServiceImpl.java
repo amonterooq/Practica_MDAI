@@ -77,7 +77,17 @@ public class ConjuntoServiceImpl implements ConjuntoService {
         if (usuarioId == null) {
             throw new IllegalArgumentException("El id de usuario no puede ser nulo");
         }
-        return conjuntoRepository.findByUsuario_Id(usuarioId);
+        List<Conjunto> conjuntos = conjuntoRepository.findByUsuario_Id(usuarioId);
+        // Ordenar por id descendente: el conjunto más reciente (id más alto) primero
+        conjuntos.sort((c1, c2) -> {
+            Long id1 = c1.getId();
+            Long id2 = c2.getId();
+            if (id1 == null && id2 == null) return 0;
+            if (id1 == null) return 1;
+            if (id2 == null) return -1;
+            return id2.compareTo(id1);
+        });
+        return conjuntos;
     }
 
     @Override

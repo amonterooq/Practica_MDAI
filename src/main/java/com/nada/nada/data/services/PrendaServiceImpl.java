@@ -369,16 +369,15 @@ public class PrendaServiceImpl implements PrendaService {
                     return true;
                 })
                 .sorted((p1, p2) -> {
-                    int t1 = tipoOrden(p1);
-                    int t2 = tipoOrden(p2);
-                    int cmpTipo = Integer.compare(t1, t2);
-                    if (cmpTipo != 0) return cmpTipo;
+                    // Orden principal: id descendente (más nuevo primero)
+                    Long id1 = p1.getId();
+                    Long id2 = p2.getId();
+                    if (id1 != null && id2 != null) {
+                        int cmpId = id2.compareTo(id1); // DESC
+                        if (cmpId != 0) return cmpId;
+                    }
 
-                    String c1 = categoriaDe(p1);
-                    String c2 = categoriaDe(p2);
-                    int cmpCat = c1.compareToIgnoreCase(c2);
-                    if (cmpCat != 0) return cmpCat;
-
+                    // Desempate: nombre alfabético
                     String n1 = p1.getNombre() != null ? p1.getNombre() : "";
                     String n2 = p2.getNombre() != null ? p2.getNombre() : "";
                     return n1.compareToIgnoreCase(n2);
@@ -386,7 +385,7 @@ public class PrendaServiceImpl implements PrendaService {
                 .toList();
     }
 
-    // Orden de tipos: superior (0), inferior (1), calzado (2), resto (99)
+    // Ya no usamos tipoOrden y categoriaDe en el orden, pero los dejamos por si se usan en el futuro
     private int tipoOrden(Prenda p) {
         if (p instanceof PrendaSuperior) return 0;
         if (p instanceof PrendaInferior) return 1;
@@ -394,7 +393,6 @@ public class PrendaServiceImpl implements PrendaService {
         return 99;
     }
 
-    // Devuelve la categoría como String (según el tipo de prenda)
     private String categoriaDe(Prenda p) {
         if (p instanceof PrendaSuperior sup && sup.getCategoria() != null) {
             return sup.getCategoria().name();
