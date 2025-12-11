@@ -52,11 +52,7 @@ public class PrendaServiceImpl implements PrendaService {
             return marca.getEtiqueta();
         }
 
-        // Capitalización estándar si no coincide con enum
-        if (raw.length() == 1) {
-            return raw.toUpperCase();
-        }
-        return raw.substring(0, 1).toUpperCase() + raw.substring(1).toLowerCase();
+        return capitalizarString(raw);
     }
 
     @Override
@@ -74,11 +70,18 @@ public class PrendaServiceImpl implements PrendaService {
             return color.getEtiqueta();
         }
 
-        // Capitalización estándar si no coincide con enum
-        if (raw.length() == 1) {
-            return raw.toUpperCase();
+        return capitalizarString(raw);
+    }
+
+    /**
+     * Capitaliza un string: primera letra en mayúscula, resto en minúscula.
+     * Si el string tiene solo un carácter, lo devuelve en mayúscula.
+     */
+    private String capitalizarString(String s) {
+        if (s.length() == 1) {
+            return s.toUpperCase();
         }
-        return raw.substring(0, 1).toUpperCase() + raw.substring(1).toLowerCase();
+        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
     }
 
     @Override
@@ -365,8 +368,9 @@ public class PrendaServiceImpl implements PrendaService {
                     if (cmpNombre != 0) return cmpNombre;
 
                     // Desempate por ID descendente (más reciente primero)
-                    Long id1 = p1.getId() != null ? p1.getId() : 0L;
-                    Long id2 = p2.getId() != null ? p2.getId() : 0L;
+                    // Null IDs se consideran como los más antiguos (valores bajos)
+                    Long id1 = p1.getId() != null ? p1.getId() : Long.MIN_VALUE;
+                    Long id2 = p2.getId() != null ? p2.getId() : Long.MIN_VALUE;
                     return Long.compare(id2, id1);  // Orden descendente
                 })
                 .toList();
