@@ -100,6 +100,46 @@ public class ColorTests {
     }
 
     @Test
+    void testColorFromStringConEtiquetaCorrecta() {
+        assertEquals(Color.NEGRO, Color.fromString("Negro"));
+        assertEquals(Color.BLANCO, Color.fromString("Blanco"));
+        assertEquals(Color.ROJO, Color.fromString("Rojo"));
+        assertEquals(Color.AZUL_MARINO, Color.fromString("Azul marino"));
+    }
+
+    @Test
+    void testColorFromStringCaseInsensitive() {
+        assertEquals(Color.NEGRO, Color.fromString("negro"));
+        assertEquals(Color.NEGRO, Color.fromString("NEGRO"));
+        assertEquals(Color.NEGRO, Color.fromString("NeGrO"));
+        assertEquals(Color.BLANCO, Color.fromString("blanco"));
+        assertEquals(Color.BLANCO, Color.fromString("BLANCO"));
+    }
+
+    @Test
+    void testColorFromStringConEspacios() {
+        assertEquals(Color.AZUL_MARINO, Color.fromString("Azul marino"));
+        assertEquals(Color.AZUL_MARINO, Color.fromString("azul marino"));
+        assertEquals(Color.GRIS_CLARO, Color.fromString("Gris claro"));
+        assertEquals(Color.VERDE_MILITAR, Color.fromString("Verde militar"));
+    }
+
+    @Test
+    void testColorFromStringConGuionBajo() {
+        assertEquals(Color.AZUL_MARINO, Color.fromString("Azul_marino"));
+        assertEquals(Color.GRIS_CLARO, Color.fromString("gris_claro"));
+        assertEquals(Color.VERDE_MILITAR, Color.fromString("VERDE_MILITAR"));
+    }
+
+    @Test
+    void testColorFromStringDevuelveOtroParaValorDesconocido() {
+        assertEquals(Color.OTRO, Color.fromString("ColorDesconocido"));
+        assertEquals(Color.OTRO, Color.fromString(""));
+        assertEquals(Color.OTRO, Color.fromString(null));
+        assertEquals(Color.OTRO, Color.fromString("   "));
+    }
+
+    @Test
     void testColorTieneVariedadDeAzules() {
         assertTrue(Color.esValida("Azul cielo"));
         assertTrue(Color.esValida("Azul claro"));

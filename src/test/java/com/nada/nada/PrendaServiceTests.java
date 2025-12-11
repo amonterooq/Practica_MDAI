@@ -130,4 +130,50 @@ class PrendaServiceTests {
         assertEquals(1, filtradas.size());
         assertEquals("Camiseta Blanca", filtradas.get(0).getNombre());
     }
+
+    @Test
+    void testNormalizarColorConValoresDelEnum() {
+        assertEquals("Blanco", prendaService.normalizarColor("blanco"));
+        assertEquals("Blanco", prendaService.normalizarColor("BLANCO"));
+        assertEquals("Blanco", prendaService.normalizarColor("Blanco"));
+        assertEquals("Negro", prendaService.normalizarColor("negro"));
+        assertEquals("Azul marino", prendaService.normalizarColor("azul marino"));
+        assertEquals("Azul marino", prendaService.normalizarColor("AZUL MARINO"));
+    }
+
+    @Test
+    void testNormalizarColorConValorDesconocido() {
+        assertEquals("Personalizado", prendaService.normalizarColor("personalizado"));
+        assertEquals("Nuevo", prendaService.normalizarColor("NUEVO"));
+    }
+
+    @Test
+    void testNormalizarColorConValoresNulosOVacios() {
+        assertNull(prendaService.normalizarColor(null));
+        assertEquals("", prendaService.normalizarColor(""));
+        assertEquals("", prendaService.normalizarColor("   "));
+    }
+
+    @Test
+    void testNormalizarMarcaConValoresDelEnum() {
+        assertEquals("Zara", prendaService.normalizarMarca("zara"));
+        assertEquals("Zara", prendaService.normalizarMarca("ZARA"));
+        assertEquals("Zara", prendaService.normalizarMarca("Zara"));
+        assertEquals("Nike", prendaService.normalizarMarca("nike"));
+        assertEquals("H&M", prendaService.normalizarMarca("h&m"));
+        assertEquals("Levi's", prendaService.normalizarMarca("levis"));
+    }
+
+    @Test
+    void testNormalizarMarcaConValorDesconocido() {
+        assertEquals("Personalizado", prendaService.normalizarMarca("personalizado"));
+        assertEquals("Nueva", prendaService.normalizarMarca("NUEVA"));
+    }
+
+    @Test
+    void testNormalizarMarcaConValoresNulosOVacios() {
+        assertNull(prendaService.normalizarMarca(null));
+        assertEquals("", prendaService.normalizarMarca(""));
+        assertEquals("", prendaService.normalizarMarca("   "));
+    }
 }

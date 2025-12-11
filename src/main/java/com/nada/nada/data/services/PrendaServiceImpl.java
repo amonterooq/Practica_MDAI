@@ -47,58 +47,41 @@ public class PrendaServiceImpl implements PrendaService {
             return "";
         }
 
-        String lower = raw.toLowerCase();
-
-        // Tabla de marcas conocidas: clave en minúsculas -> forma estándar
-        String[][] marcas = new String[][]{
-                {"zara", "Zara"},
-                {"mango", "Mango"},
-                {"h&m", "H&M"},
-                {"h & m", "H&M"},
-                {"pull&bear", "Pull&Bear"},
-                {"pull & bear", "Pull&Bear"},
-                {"bershka", "Bershka"},
-                {"stradivarius", "Stradivarius"},
-                {"massimo dutti", "Massimo Dutti"},
-                {"primark", "Primark"},
-                {"springfield", "Springfield"},
-                {"cortefiel", "Cortefiel"},
-                {"lefties", "Lefties"},
-                {"nike", "Nike"},
-                {"adidas", "Adidas"},
-                {"reebok", "Reebok"},
-                {"puma", "Puma"},
-                {"new balance", "New Balance"},
-                {"converse", "Converse"},
-                {"vans", "Vans"},
-                {"levi's", "Levi's"},
-                {"levis", "Levi's"},
-                {"tommy hilfiger", "Tommy Hilfiger"},
-                {"calvin klein", "Calvin Klein"},
-                {"guess", "Guess"},
-                {"desigual", "Desigual"},
-                {"sfera", "Sfera"},
-                {"pepe jeans", "Pepe Jeans"},
-                {"only", "Only"},
-                {"jack&jones", "Jack&Jones"},
-                {"jack & jones", "Jack&Jones"},
-                {"uniqlo", "Uniqlo"},
-                {"benetton", "Benetton"},
-                {"el corte ingles", "El Corte Inglés"},
-                {"el corte inglés", "El Corte Inglés"}
-        };
-
-        for (String[] par : marcas) {
-            if (lower.equals(par[0])) {
-                return par[1];
-            }
+        Marca marca = Marca.fromString(raw);
+        if (marca != null && marca != Marca.OTRA) {
+            return marca.getEtiqueta();
         }
 
-        // Si no coincide con ninguna conocida, capitalizar de forma sencilla
-        if (raw.length() == 1) {
-            return raw.toUpperCase();
+        return capitalizarString(raw);
+    }
+
+    @Override
+    public String normalizarColor(String colorIntroducido) {
+        if (colorIntroducido == null) {
+            return null;
         }
-        return raw.substring(0, 1).toUpperCase() + raw.substring(1).toLowerCase();
+        String raw = colorIntroducido.trim();
+        if (raw.isEmpty()) {
+            return "";
+        }
+
+        Color color = Color.fromString(raw);
+        if (color != null && color != Color.OTRO) {
+            return color.getEtiqueta();
+        }
+
+        return capitalizarString(raw);
+    }
+
+    /**
+     * Capitaliza un string: primera letra en mayúscula, resto en minúscula.
+     * Si el string tiene solo un carácter, lo devuelve en mayúscula.
+     */
+    private String capitalizarString(String s) {
+        if (s.length() == 1) {
+            return s.toUpperCase();
+        }
+        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
     }
 
     @Override
@@ -381,7 +364,14 @@ public class PrendaServiceImpl implements PrendaService {
 
                     String n1 = p1.getNombre() != null ? p1.getNombre() : "";
                     String n2 = p2.getNombre() != null ? p2.getNombre() : "";
-                    return n1.compareToIgnoreCase(n2);
+                    int cmpNombre = n1.compareToIgnoreCase(n2);
+                    if (cmpNombre != 0) return cmpNombre;
+
+                    // Desempate por ID descendente (más reciente primero)
+                    // Null IDs se consideran como los más antiguos (valores bajos)
+                    Long id1 = p1.getId() != null ? p1.getId() : Long.MIN_VALUE;
+                    Long id2 = p2.getId() != null ? p2.getId() : Long.MIN_VALUE;
+                    return Long.compare(id2, id1);  // Orden descendente
                 })
                 .toList();
     }

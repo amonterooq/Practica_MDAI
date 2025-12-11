@@ -42,6 +42,13 @@ public interface PrendaService {
     String normalizarMarca(String marcaIntroducida);
 
     /**
+     * Normaliza un color introducido por el usuario: si coincide (ignorando mayúsculas/minúsculas)
+     * con algún color predefinido en el enum Color, devuelve exactamente la etiqueta estándar;
+     * si no coincide, devuelve la cadena tal cual con el primer carácter en mayúscula.
+     */
+    String normalizarColor(String colorIntroducido);
+
+    /**
      * Obtiene todas las marcas únicas que tiene el usuario en sus prendas.
      */
     List<String> obtenerMarcasDelUsuario(Long usuarioId);

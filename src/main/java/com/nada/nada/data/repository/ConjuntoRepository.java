@@ -11,4 +11,7 @@ public interface ConjuntoRepository extends CrudRepository<Conjunto, Long> {
 
     // Añadido para permitir obtener los conjuntos de un usuario desde el servicio
     List<Conjunto> findByUsuario_Id(Long usuarioId);
+    
+    // Obtener conjuntos de un usuario ordenados por ID descendente (más reciente primero)
+    List<Conjunto> findByUsuario_IdOrderByIdDesc(Long usuarioId);
 }

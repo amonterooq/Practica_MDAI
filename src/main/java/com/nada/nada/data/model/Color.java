@@ -72,5 +72,44 @@ public enum Color {
         }
         return false;
     }
+
+    /**
+     * Convierte un string a un valor de Color enum.
+     * Primero intenta coincidir por etiqueta (case-insensitive).
+     * Luego por name() (case-insensitive).
+     * Luego reemplazando espacios por '_' y comparando con name().
+     * Si no encuentra coincidencia, devuelve Color.OTRO.
+     */
+    public static Color fromString(String valor) {
+        if (valor == null || valor.trim().isEmpty()) {
+            return Color.OTRO;
+        }
+        
+        String raw = valor.trim();
+        
+        // Intentar coincidir por etiqueta (case-insensitive)
+        for (Color c : values()) {
+            if (c.etiqueta.equalsIgnoreCase(raw)) {
+                return c;
+            }
+        }
+        
+        // Intentar coincidir por name() (case-insensitive)
+        for (Color c : values()) {
+            if (c.name().equalsIgnoreCase(raw)) {
+                return c;
+            }
+        }
+        
+        // Intentar reemplazando espacios por '_' y comparando con name()
+        String withUnderscores = raw.replace(" ", "_");
+        for (Color c : values()) {
+            if (c.name().equalsIgnoreCase(withUnderscores)) {
+                return c;
+            }
+        }
+        
+        return Color.OTRO;
+    }
 }
 

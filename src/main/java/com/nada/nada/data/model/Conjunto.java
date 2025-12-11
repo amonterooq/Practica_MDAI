@@ -32,6 +32,19 @@ public class Conjunto {
 
     }
 
+    // Nuevo constructor sin Post, usado al crear conjuntos desde la web
+    public Conjunto(String nombre, Usuario usuario, String descripcion,
+                    PrendaSuperior prendaSuperior, PrendaInferior prendaInferior,
+                    PrendaCalzado prendaCalzado) {
+        this.nombre = nombre;
+        this.usuario = usuario;
+        this.descripcion = descripcion;
+        this.prendaSuperior = prendaSuperior;
+        this.prendaInferior = prendaInferior;
+        this.prendaCalzado = prendaCalzado;
+    }
+
+    // Constructor completo con Post para usos donde ya exista una publicación asociada
     public Conjunto(String nombre, Usuario usuario, String descripcion, PrendaSuperior prendaSuperior, PrendaInferior prendaInferior, PrendaCalzado prendaCalzado, Post post) {
         this.nombre = nombre;
         this.usuario = usuario;
