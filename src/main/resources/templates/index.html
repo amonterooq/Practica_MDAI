@@ -185,6 +185,7 @@
     <div class="nav-container">
         <a th:href="@{/}" class="logo">NADA<span style="color:var(--accent)">.</span></a>
         <ul class="nav-links">
+            <li><a th:href="@{/posts/}">Posts</a></li>
             <li><a th:href="${session.usuarioLogueado == null} ? @{/usuarios/login} : @{/armario/}">Armario</a></li>
             <li><a th:href="${session.usuarioLogueado == null} ? @{/usuarios/login} : @{/conjuntos/}">Conjuntos</a></li>
             <!-- Si el usuario no está logueado, muestra "Acceder" -->

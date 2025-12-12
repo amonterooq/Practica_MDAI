@@ -30,7 +30,7 @@ public class Conjunto {
     @ManyToOne
     private PrendaCalzado prendaCalzado;
 
-    @OneToOne(mappedBy = "conjunto")
+    @OneToOne(mappedBy = "conjunto", cascade = CascadeType.ALL, orphanRemoval = true)
     private Post post;
 
     public Conjunto() {
@@ -44,6 +44,7 @@ public class Conjunto {
         this.prendaSuperior = prendaSuperior;
         this.prendaInferior = prendaInferior;
         this.prendaCalzado = prendaCalzado;
+        this.post = null;
     }
 
     public Conjunto(String nombre, Usuario usuario, String descripcion, PrendaSuperior prendaSuperior, PrendaInferior prendaInferior, PrendaCalzado prendaCalzado, Post post) {

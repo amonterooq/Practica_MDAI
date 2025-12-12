@@ -314,6 +314,7 @@
     <div class="nav-container">
         <a href="/" class="logo">NADA<span class="dot">.</span></a>
         <ul class="nav-links">
+            <li><a th:href="@{/posts/}">Posts</a></li>
             <li><a th:href="@{/armario/}">Mi Armario</a></li>
             <li><a th:href="@{/conjuntos/}" class="active">Conjuntos</a></li>
             <li><a th:href="@{/usuarios/perfil}">Perfil</a></li>
@@ -471,8 +472,12 @@
                     <!-- Nombre ya se muestra arriba; aquí solo la descripción -->
                     <div class="card-meta">
                         <span th:text="${conjunto.descripcion}">Descripción</span>
-                        <!-- ID oculto en la UI -->
                     </div>
+                    <form th:action="@{/conjuntos/{id}/toggle-publicacion(id=${conjunto.id})}" method="post" style="margin-top:0.75rem;">
+                        <button type="submit" class="btn-primary" style="width:100%; text-align:center;"
+                                th:text="${conjunto.post == null} ? 'Publicar conjunto' : 'Quitar publicación'"
+                                onclick="event.stopPropagation();"></button>
+                    </form>
                 </div>
             </article>
 

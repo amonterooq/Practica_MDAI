@@ -3,6 +3,7 @@ package com.nada.nada.controllers;
 import com.nada.nada.data.model.*;
 import com.nada.nada.data.services.ConjuntoService;
 import com.nada.nada.data.services.PrendaService;
+import com.nada.nada.data.services.PostService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,11 +21,13 @@ public class ConjuntosController {
 
     private ConjuntoService conjuntoService;
     private PrendaService prendaService;
+    private PostService postService;
 
     @Autowired
-    public ConjuntosController(ConjuntoService conjuntoService, PrendaService prendaService) {
+    public ConjuntosController(ConjuntoService conjuntoService, PrendaService prendaService, PostService postService) {
         this.conjuntoService = conjuntoService;
         this.prendaService = prendaService;
+        this.postService = postService;
     }
 
     @GetMapping("/")
@@ -205,6 +208,56 @@ public class ConjuntosController {
         } else {
             redirectAttributes.addFlashAttribute("error", "No tienes permiso para eliminar este conjunto.");
         }
+        return "redirect:/conjuntos/";
+    }
+
+    @PostMapping("/{id}/toggle-publicacion")
+    public String togglePublicacion(@PathVariable("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuarioLogueado == null) {
+            return "redirect:/usuarios/login";
+        }
+
+        Conjunto conjunto = conjuntoService.buscarConjuntoPorId(id).orElse(null);
+        if (conjunto == null) {
+            redirectAttributes.addFlashAttribute("error", "Conjunto no encontrado.");
+            return "redirect:/conjuntos/";
+        }
+
+        if (!conjunto.getUsuario().getId().equals(usuarioLogueado.getId())) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permiso para modificar la publicación de este conjunto.");
+            return "redirect:/conjuntos/";
+        }
+
+        try {
+            if (conjunto.getPost() == null) {
+                // Publicar: crear post y asociarlo bidireccionalmente
+                Post post = new Post(usuarioLogueado, conjunto);
+                post.setConjunto(conjunto);
+                conjunto.setPost(post);
+                postService.crearPost(post);
+                conjuntoService.guardarConjunto(conjunto);
+                redirectAttributes.addFlashAttribute("success", "Conjunto publicado correctamente.");
+            } else {
+                // Despublicar: eliminar post y desasociarlo en ambos lados
+                Post post = conjunto.getPost();
+                Long postId = (post != null ? post.getId() : null);
+
+                if (post != null) {
+                    post.setConjunto(null);
+                }
+                conjunto.setPost(null);
+                conjuntoService.guardarConjunto(conjunto);
+
+                if (postId != null) {
+                    postService.eliminarPost(postId);
+                }
+                redirectAttributes.addFlashAttribute("success", "Publicación del conjunto eliminada.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cambiar la publicación: " + e.getMessage());
+        }
+
         return "redirect:/conjuntos/";
     }
 }
