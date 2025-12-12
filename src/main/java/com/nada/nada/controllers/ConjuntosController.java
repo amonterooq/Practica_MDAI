@@ -67,6 +67,9 @@ public class ConjuntosController {
         model.addAttribute("faltaInferior", prendasInferiores.isEmpty());
         model.addAttribute("faltaCalzado", prendasCalzados.isEmpty());
 
+        // Nombre de usuario para el saludo del chat IA
+        model.addAttribute("username", usuarioLogueado.getUsername());
+
         return "conjuntos";
     }
 

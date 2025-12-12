@@ -93,24 +93,24 @@ VALUES (41, 'Camisa blanca', 'Blanco', 'Hugo Boss', 'M', '/images/6/prenda_1.jpg
 
 -- SUPERIORES
 INSERT INTO prenda_superior (id, categoria, manga)
-VALUES (1, 0, 0),
-       (2, 1, 1),
-       (3, 2, 1),
-       (9, 3, 1),
-       (10, 4, 1),
-       (11, 0, 0),
-       (17, 5, 2),
-       (18, 3, 1),
-       (19, 0, 0),
-       (25, 1, 1),
-       (26, 2, 1),
-       (27, 3, 1),
-       (33, 5, 2),
-       (34, 4, 1),
-       (35, 0, 0),
-       (41, 1, 1),
-       (42, 3, 1),
-       (43, 2, 1);
+VALUES (1, 5, 0),   -- Camiseta blanca -> CAMISETA
+       (2, 4, 1),   -- Camisa celeste -> CAMISA
+       (3, 11, 1),  -- Suéter gris -> JERSEY
+       (9, 9, 1),   -- Chaqueta cuero -> CHAQUETA
+       (10, 0, 1),  -- Abrigo lana -> ABRIGO
+       (11, 5, 0),  -- Camiseta negra -> CAMISETA
+       (17, 2, 2),  -- Blusa seda -> BLUSA
+       (18, 7, 1),  -- Chaqueta vaquera -> CAZADORA
+       (19, 5, 0),  -- Camiseta rayas -> CAMISETA
+       (25, 4, 1),  -- Camisa cuadros -> CAMISA
+       (26, 11, 1), -- Suéter cuello alto -> JERSEY
+       (27, 7, 1),  -- Chaqueta bomber -> CAZADORA
+       (33, 2, 2),  -- Blusa flores -> BLUSA
+       (34, 0, 1),  -- Abrigo largo -> ABRIGO
+       (35, 5, 0),  -- Camiseta básica -> CAMISETA
+       (41, 4, 1),  -- Camisa blanca -> CAMISA
+       (42, 9, 1),  -- Chaqueta softshell -> CHAQUETA
+       (43, 11, 1); -- Suéter azul -> JERSEY
 
 -- INFERIORES
 -- Orden de CategoriaInferior (ordinal):
@@ -140,18 +140,18 @@ VALUES (4, 11),   -- Vaquero slim -> PANTALON_VAQUERO
 
 -- CALZADOS
 INSERT INTO prenda_calzado (id, categoria)
-VALUES (7, 0),
-       (8, 4),
-       (15, 2),
-       (16, 1),
-       (23, 3),
-       (24, 4),
-       (31, 2),
-       (32, 4),
-       (39, 1),
-       (40, 0),
-       (47, 0),
-       (48, 1);
+VALUES (7, 6),    -- Zapatillas running -> DEPORTIVO
+       (8, 12),   -- Zapatillas urban -> ZAPATILLA_CASUAL
+       (15, 2),   -- Botas montaña -> BOTA
+       (16, 13),  -- Zapatos oxford -> ZAPATO_FORMAL
+       (23, 9),   -- Sandalias tira -> SANDALIA
+       (24, 12),  -- Zapatillas plataforma -> ZAPATILLA_CASUAL
+       (31, 2),   -- Botas senderismo -> BOTA
+       (32, 6),   -- Zapatillas court -> DEPORTIVO
+       (39, 11),  -- Zapato salón -> TACON
+       (40, 6),   -- Zapatillas running -> DEPORTIVO
+       (47, 6),   -- Zapatillas trail -> DEPORTIVO
+       (48, 13);  -- Zapatos derby -> ZAPATO_FORMAL
 
 -- =========================================================
 -- CONJUNTOS
