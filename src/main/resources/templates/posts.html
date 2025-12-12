@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NADA | Posts</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #fafafa;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #2c3e50;
+            --border-color: #e0e0e0;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Lato', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-body); background-color: var(--bg-color); color: var(--text-primary); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        img { display: block; max-width: 100%; height: auto; }
+
+        .navbar {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .nav-container {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
+        .logo .dot { color: var(--accent); }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-primary); font-weight: 700; }
+        .btn-link { background: none; border: none; font: inherit; cursor: pointer; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto 3rem;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+        }
+        .page-header span {
+            color: var(--text-secondary);
+            font-family: var(--font-heading);
+            font-style: italic;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .post-card {
+            background: var(--card-bg);
+            border: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        .post-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .outfit-images {
+            position: relative;
+            overflow: hidden;
+            background: #f9f9f9;
+        }
+        .outfit-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .outfit-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        .outfit-slot {
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* 1:1 Aspect Ratio */
+            overflow: hidden;
+        }
+        .outfit-slot img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .outfit-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        .outfit-placeholder i {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .post-body {
+            padding: 1rem 1.2rem 1.2rem;
+        }
+        .post-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+        .post-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            min-height: 2.6em;
+        }
+        .post-meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            margin-top: 3rem;
+            padding: 3rem 2rem;
+            border: 1px dashed var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            background: #fafafa;
+        }
+
+        @media (max-width: 900px) {
+            .page-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/}" class="logo">NADA<span class="dot">.</span></a>
+        <ul class="nav-links">
+            <li><a th:href="@{/posts/}" class="active">Posts</a></li>
+            <li><a th:href="@{/armario/}">Armario</a></li>
+            <li><a th:href="@{/conjuntos/}">Conjuntos</a></li>
+            <li th:if="${session.usuarioLogueado != null}"><a th:href="@{/usuarios/perfil}">Perfil</a></li>
+            <li th:if="${session.usuarioLogueado != null}">
+                <a th:href="@{/usuarios/logout}" class="btn-link">Salir</a>
+            </li>
+            <li th:if="${session.usuarioLogueado == null}"><a th:href="@{/usuarios/login}">Acceder</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-container">
+    <div class="page-header">
+        <h1>Posts</h1>
+        <span th:text="${#lists.size(conjuntosPublicados)} + ' looks compartidos'">0 looks compartidos</span>
+    </div>
+
+    <section th:if="${conjuntosPublicados != null and !conjuntosPublicados.isEmpty()}">
+        <div class="posts-grid">
+            <article class="post-card" th:each="conjunto : ${conjuntosPublicados}">
+                <div class="outfit-images">
+                    <div class="outfit-header">
+                        <h3 class="outfit-title" th:text="${conjunto.nombre}">Nombre conjunto</h3>
+                    </div>
+                    <!-- Slot superior -->
+                    <div class="outfit-slot">
+                        <img th:if="${conjunto.prendaSuperior != null and conjunto.prendaSuperior.dirImagen != null}"
+                             th:src="${conjunto.prendaSuperior.dirImagen}"
+                             alt="Superior"
+                             onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
+                        <span class="outfit-placeholder"
+                              th:if="${conjunto.prendaSuperior != null and conjunto.prendaSuperior.dirImagen == null}">
+                            👚<br th:remove="tag" />
+                            <span>Superior</span>
+                        </span>
+                        <span class="outfit-placeholder"
+                              th:if="${conjunto.prendaSuperior == null}">
+                            👚<br th:remove="tag" />
+                            <span>Sin superior</span>
+                        </span>
+                    </div>
+                    <!-- Slot inferior -->
+                    <div class="outfit-slot">
+                        <img th:if="${conjunto.prendaInferior != null and conjunto.prendaInferior.dirImagen != null}"
+                             th:src="${conjunto.prendaInferior.dirImagen}"
+                             alt="Inferior"
+                             onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
+                        <span class="outfit-placeholder"
+                              th:if="${conjunto.prendaInferior != null and conjunto.prendaInferior.dirImagen == null}">
+                            👖<br th:remove="tag" />
+                            <span>Inferior</span>
+                        </span>
+                        <span class="outfit-placeholder"
+                              th:if="${conjunto.prendaInferior == null}">
+                            👖<br th:remove="tag" />
+                            <span>Sin inferior</span>
+                        </span>
+                    </div>
+                    <!-- Slot calzado -->
+                    <div class="outfit-slot">
+                        <img th:if="${conjunto.prendaCalzado != null and conjunto.prendaCalzado.dirImagen != null}"
+                             th:src="${conjunto.prendaCalzado.dirImagen}"
+                             alt="Calzado"
+                             onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
+                        <span class="outfit-placeholder"
+                              th:if="${conjunto.prendaCalzado != null and conjunto.prendaCalzado.dirImagen == null}">
+                            👞<br th:remove="tag" />
+                            <span>Calzado</span>
+                        </span>
+                        <span class="outfit-placeholder"
+                              th:if="${conjunto.prendaCalzado == null}">
+                            👞<br th:remove="tag" />
+                            <span>Sin calzado</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="post-body">
+                    <h2 class="post-title" th:text="${conjunto.nombre}">Nombre conjunto</h2>
+                    <p class="post-description" th:text="${conjunto.descripcion != null ? conjunto.descripcion : 'Sin descripción'}"></p>
+                    <p class="post-meta" th:text="'Creado por ' + ${conjunto.usuario.username}"></p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <div class="empty-state" th:if="${conjuntosPublicados == null or conjuntosPublicados.isEmpty()}">
+        <p>Nadie ha publicado ningún conjunto aún.</p>
+        <p style="margin-top:0.5rem;">Sé la primera persona en compartir tu estilo desde la sección de Conjuntos.</p>
+    </div>
+</main>
+
+</body>
+</html>

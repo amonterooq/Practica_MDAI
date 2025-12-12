@@ -15,6 +15,7 @@ public class Post {
     private Usuario usuario;
 
     @OneToOne
+    @JoinColumn(name = "conjunto_id", unique = true)
     private Conjunto conjunto;
 
     public Post() {
