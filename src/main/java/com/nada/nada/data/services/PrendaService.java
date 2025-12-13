@@ -1,6 +1,9 @@
 package com.nada.nada.data.services;
 
 import com.nada.nada.data.model.*;
+import com.nada.nada.data.model.enums.CategoriaCalzado;
+import com.nada.nada.data.model.enums.CategoriaInferior;
+import com.nada.nada.data.model.enums.CategoriaSuperior;
 
 import java.util.List;
 import java.util.Optional;

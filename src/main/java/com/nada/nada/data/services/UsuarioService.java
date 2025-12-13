@@ -11,4 +11,6 @@ public interface UsuarioService {
     public Optional<Usuario> validarLogin(String username, String password);
     public void cambiarPassword(Long usuarioId, String oldPassword, String newPassword);
     public void eliminarUsuario(Long usuarioId);
+    public boolean darLikeAPost(Long usuarioId, Long postId);
+    public boolean quitarLikeDePost(Long usuarioId, Long postId);
 }

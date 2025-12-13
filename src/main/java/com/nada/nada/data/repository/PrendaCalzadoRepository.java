@@ -1,6 +1,6 @@
 package com.nada.nada.data.repository;
 
-import com.nada.nada.data.model.CategoriaCalzado;
+import com.nada.nada.data.model.enums.CategoriaCalzado;
 import com.nada.nada.data.model.PrendaCalzado;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

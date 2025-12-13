@@ -1,5 +1,7 @@
 package com.nada.nada.data.model;
 
+import com.nada.nada.data.model.enums.CategoriaSuperior;
+import com.nada.nada.data.model.enums.Manga;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

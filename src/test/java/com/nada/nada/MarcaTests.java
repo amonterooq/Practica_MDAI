@@ -1,6 +1,6 @@
 package com.nada.nada;
 
-import com.nada.nada.data.model.Marca;
+import com.nada.nada.data.model.enums.Marca;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

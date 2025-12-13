@@ -1,12 +1,15 @@
 package com.nada.nada;
 
 import com.nada.nada.data.model.*;
+import com.nada.nada.data.model.enums.CategoriaCalzado;
+import com.nada.nada.data.model.enums.CategoriaInferior;
+import com.nada.nada.data.model.enums.CategoriaSuperior;
+import com.nada.nada.data.model.enums.Manga;
 import com.nada.nada.data.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 

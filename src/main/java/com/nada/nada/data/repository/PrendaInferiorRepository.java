@@ -1,6 +1,6 @@
 package com.nada.nada.data.repository;
 
-import com.nada.nada.data.model.CategoriaInferior;
+import com.nada.nada.data.model.enums.CategoriaInferior;
 import com.nada.nada.data.model.PrendaInferior;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

@@ -1,6 +1,8 @@
 package com.nada.nada;
 
 import com.nada.nada.data.model.*;
+import com.nada.nada.data.model.enums.CategoriaSuperior;
+import com.nada.nada.data.model.enums.Manga;
 import com.nada.nada.data.repository.PrendaRepository;
 import com.nada.nada.data.repository.UsuarioRepository;
 import com.nada.nada.data.services.PrendaService;

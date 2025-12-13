@@ -64,8 +64,8 @@ Ejemplo: Camiseta azul, Pantalón blanco, Zapatos negros — Conjunto “Reunió
 ---
 
 ## Funcionalidades opcionales, recomendables o futuribles
-- Recomendación automática de conjuntos según el clima o la ocasión.
-- Posibilidad de compartir conjuntos en redes sociales.
+- Recomendación automática de conjuntos mediante Inteligencia Artificial (hecho).
+- Posibilidad de publicar conjuntos y recibir likes (hecho).
 - Estadísticas de uso (qué prendas usas más, colores favoritos, etc.).
 - Sugerencias de compra relacionadas con las prendas del usuario.
 - Modo colaborativo (compartir armarios entre amigos o familiares).

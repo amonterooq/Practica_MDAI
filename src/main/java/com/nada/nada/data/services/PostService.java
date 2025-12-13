@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostService {
-    List<Post> buscarTodos();
-    Optional<Post> buscarPorId(Long id);
-    Post crearPost(Post post);
-    void eliminarPost(Long id);
-    List<Post> buscarPostsPorUsuario(Long usuarioId);
+    public List<Post> buscarTodos();
+    public Optional<Post> buscarPorId(Long id);
+    public Post crearPost(Post post);
+    public void eliminarPost(Long id);
+    public List<Post> buscarPostsPorUsuario(Long usuarioId);
+    public int contarLikes(Long postId);
+    public boolean usuarioHaDadoLike(Long postId, Long usuarioId);
 }

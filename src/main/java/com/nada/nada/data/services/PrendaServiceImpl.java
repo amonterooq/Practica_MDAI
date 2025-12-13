@@ -1,6 +1,7 @@
 package com.nada.nada.data.services;
 
 import com.nada.nada.data.model.*;
+import com.nada.nada.data.model.enums.*;
 import com.nada.nada.data.repository.PrendaCalzadoRepository;
 import com.nada.nada.data.repository.PrendaInferiorRepository;
 import com.nada.nada.data.repository.PrendaRepository;

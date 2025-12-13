@@ -2,6 +2,8 @@ package com.nada.nada.data.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +19,9 @@ public class Post {
     @OneToOne
     @JoinColumn(name = "conjunto_id", unique = true)
     private Conjunto conjunto;
+
+    @ManyToMany(mappedBy = "postsLikeados")
+    private List<Usuario> usuariosQueDieronLike = new ArrayList<>();
 
     public Post() {
     }
@@ -48,6 +53,14 @@ public class Post {
 
     public void setConjunto(Conjunto conjunto) {
         this.conjunto = conjunto;
+    }
+
+    public List<Usuario> getUsuariosQueDieronLike() {
+        return usuariosQueDieronLike;
+    }
+
+    public void setUsuariosQueDieronLike(List<Usuario> usuariosQueDieronLike) {
+        this.usuariosQueDieronLike = usuariosQueDieronLike;
     }
 
     @Override

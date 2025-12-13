@@ -1,6 +1,8 @@
 package com.nada.nada.data.services;
 
+import com.nada.nada.data.model.Post;
 import com.nada.nada.data.model.Usuario;
+import com.nada.nada.data.repository.PostRepository;
 import com.nada.nada.data.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +19,15 @@ import java.util.Optional;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PostRepository postRepository;
 
     // Ruta del contenedor (Compartida mediante volumen)
     private final Path IMAGES_BASE_DIR = Paths.get("/app/static/images");
 
     @Autowired
-    public UsuarioServiceImpl (UsuarioRepository usuarioRepository) {
-        System.out.println("\t UsuarioServiceImpl constructor ");
-        this.usuarioRepository=usuarioRepository;
+    public UsuarioServiceImpl (UsuarioRepository usuarioRepository, PostRepository postRepository) {
+        this.usuarioRepository = usuarioRepository;
+        this.postRepository = postRepository;
     }
 
     //En la capa servicios es donde se implementa la LOGICA de negocio
@@ -160,5 +163,51 @@ public class UsuarioServiceImpl implements UsuarioService {
         } catch (IOException e) {
             System.err.println("Error al recorrer carpeta de imágenes de usuario " + usuarioId + ": " + e.getMessage());
         }
+    }
+
+    @Override
+    @Transactional
+    public boolean darLikeAPost(Long usuarioId, Long postId) {
+        if (usuarioId == null || postId == null) {
+            throw new IllegalArgumentException("El id de usuario y el id de post no pueden ser nulos");
+        }
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        // Usar findByIdWithLikes para asegurar que la colección de likes esté inicializada
+        Post post = postRepository.findByIdWithLikes(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post no encontrado"));
+
+        boolean cambiado = usuario.likePost(post);
+
+        if (cambiado) {
+            usuarioRepository.save(usuario);
+        }
+
+        return cambiado;
+    }
+
+    @Override
+    @Transactional
+    public boolean quitarLikeDePost(Long usuarioId, Long postId) {
+        if (usuarioId == null || postId == null) {
+            throw new IllegalArgumentException("El id de usuario y el id de post no pueden ser nulos");
+        }
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        // Usar findByIdWithLikes para asegurar que la colección de likes esté inicializada
+        Post post = postRepository.findByIdWithLikes(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post no encontrado"));
+
+        boolean cambiado = usuario.unlikePost(post);
+
+        if (cambiado) {
+            usuarioRepository.save(usuario);
+        }
+
+        return cambiado;
     }
 }

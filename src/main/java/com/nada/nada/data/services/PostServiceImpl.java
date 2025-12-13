@@ -1,6 +1,7 @@
 package com.nada.nada.data.services;
 
 import com.nada.nada.data.model.Post;
+import com.nada.nada.data.model.Usuario;
 import com.nada.nada.data.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,14 +23,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> buscarTodos() {
-        List<Post> posts = new ArrayList<>();
-        postRepository.findAll().forEach(posts::add);
-
-        if (posts.isEmpty()) {
-            throw new RuntimeException("No hay posts en la base de datos");
-        }
-
-        return posts;
+        return postRepository.findAllWithLikes();
     }
 
     @Override
@@ -89,5 +83,29 @@ public class PostServiceImpl implements PostService {
         });
 
         return resultado;
+    }
+
+    @Override
+    public int contarLikes(Long postId) {
+        if (postId == null) {
+            return 0;
+        }
+
+        return postRepository.findByIdWithLikes(postId)
+                .map(post -> post.getUsuariosQueDieronLike().size())
+                .orElse(0);
+    }
+
+    @Override
+    public boolean usuarioHaDadoLike(Long postId, Long usuarioId) {
+        if (postId == null || usuarioId == null) {
+            return false;
+        }
+
+        return postRepository.findByIdWithLikes(postId)
+                .map(post -> post.getUsuariosQueDieronLike().stream()
+                        .map(Usuario::getId)
+                        .anyMatch(id -> id != null && id.equals(usuarioId)))
+                .orElse(false);
     }
 }

@@ -1,4 +1,4 @@
-package com.nada.nada.data.model;
+package com.nada.nada.data.model.enums;
 
 public enum CategoriaCalzado {
     ALPARGATA("Alpargata"),

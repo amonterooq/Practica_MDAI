@@ -3,7 +3,6 @@ package com.nada.nada.data.model;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,13 +18,16 @@ public class Usuario {
     private String email;
 
     @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Prenda> prendas = new LinkedList<>();
+    private List<Prenda> prendas = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Conjunto> conjuntos = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Post> posts = new LinkedList<>();
+    private List<Post> posts = new ArrayList<>();
+
+    @ManyToMany
+    private List<Post> postsLikeados = new ArrayList<>();
 
     public Usuario() {
     }
@@ -92,6 +94,14 @@ public class Usuario {
         this.posts = posts;
     }
 
+    public List<Post> getPostsLikeados() {
+        return postsLikeados;
+    }
+
+    public void setPostsLikeados(List<Post> postsLikeados) {
+        this.postsLikeados = postsLikeados;
+    }
+
     public boolean addPrenda(Prenda prenda) {
         return this.prendas.add(prenda);
     }
@@ -102,6 +112,23 @@ public class Usuario {
 
     public boolean addPost(Post post) {
         return this.posts.add(post);
+    }
+
+    public boolean likePost(Post post) {
+        if (!this.postsLikeados.contains(post)) {
+            this.postsLikeados.add(post);
+            post.getUsuariosQueDieronLike().add(this);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean unlikePost(Post post) {
+        if (this.postsLikeados.remove(post)) {
+            post.getUsuariosQueDieronLike().remove(this);
+            return true;
+        }
+        return false;
     }
 
     @Override

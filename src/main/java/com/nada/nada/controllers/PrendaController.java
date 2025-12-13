@@ -2,6 +2,7 @@
 package com.nada.nada.controllers;
 
 import com.nada.nada.data.model.*;
+import com.nada.nada.data.model.enums.*;
 import com.nada.nada.data.services.ConjuntoService;
 import com.nada.nada.data.services.PrendaService;
 import jakarta.servlet.http.HttpSession;

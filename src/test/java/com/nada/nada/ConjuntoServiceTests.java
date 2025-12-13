@@ -1,6 +1,10 @@
 package com.nada.nada;
 
 import com.nada.nada.data.model.*;
+import com.nada.nada.data.model.enums.CategoriaCalzado;
+import com.nada.nada.data.model.enums.CategoriaInferior;
+import com.nada.nada.data.model.enums.CategoriaSuperior;
+import com.nada.nada.data.model.enums.Manga;
 import com.nada.nada.data.repository.ConjuntoRepository;
 import com.nada.nada.data.repository.PrendaCalzadoRepository;
 import com.nada.nada.data.repository.PrendaInferiorRepository;

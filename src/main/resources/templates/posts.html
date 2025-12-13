@@ -97,6 +97,11 @@
             padding: 1rem;
             border-bottom: 1px solid var(--border-color);
         }
+        .outfit-user {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.2rem;
+        }
         .outfit-title {
             font-size: 1.2rem;
             font-weight: 700;
@@ -134,21 +139,39 @@
 
         .post-body {
             padding: 1rem 1.2rem 1.2rem;
+            text-align: center; /* Centrar contenido del body */
         }
-        .post-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-        }
+        /* Eliminado .post-title de aquí porque ya no se usa abajo */
         .post-description {
             font-size: 0.9rem;
             color: var(--text-secondary);
             margin-bottom: 0.8rem;
             min-height: 2.6em;
         }
-        .post-meta {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+        /* Eliminado .post-meta de aquí */
+
+        .like-section {
+            margin-top: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centrar horizontalmente */
+            gap: 0.8rem;
+            font-size: 1.5rem; /* Doble tamaño base aprox */
+        }
+        .like-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            font-size: inherit; /* Heredar tamaño */
+            transition: transform 0.2s;
+        }
+        .like-btn:active {
+            transform: scale(1.2);
+        }
+        .like-count {
+            font-weight: bold;
+            font-size: 1.2rem;
         }
 
         .empty-state {
@@ -190,82 +213,169 @@
 <main class="main-container">
     <div class="page-header">
         <h1>Posts</h1>
-        <span th:text="${#lists.size(conjuntosPublicados)} + ' looks compartidos'">0 looks compartidos</span>
+        <span th:text="${#lists.size(posts)} + ' looks compartidos'">0 looks compartidos</span>
     </div>
 
-    <section th:if="${conjuntosPublicados != null and !conjuntosPublicados.isEmpty()}">
+    <section th:if="${posts != null and !posts.isEmpty()}">
         <div class="posts-grid">
-            <article class="post-card" th:each="conjunto : ${conjuntosPublicados}">
+            <article class="post-card" th:each="post : ${posts}"
+                     th:ondblclick="${usuarioLogueado != null} ? 'toggleLike(' + ${post.id} + ', event)' : ''"
+                     style="cursor: pointer;">
                 <div class="outfit-images">
                     <div class="outfit-header">
-                        <h3 class="outfit-title" th:text="${conjunto.nombre}">Nombre conjunto</h3>
+                        <div class="outfit-user" th:text="${post.usuario != null ? post.usuario.username : 'Autor desconocido'}">Usuario</div>
+                        <h3 class="outfit-title" th:text="${post.conjunto != null ? post.conjunto.nombre : 'Conjunto sin nombre'}">Nombre conjunto</h3>
                     </div>
                     <!-- Slot superior -->
                     <div class="outfit-slot">
-                        <img th:if="${conjunto.prendaSuperior != null and conjunto.prendaSuperior.dirImagen != null}"
-                             th:src="${conjunto.prendaSuperior.dirImagen}"
+                        <img th:if="${post.conjunto != null and post.conjunto.prendaSuperior != null and post.conjunto.prendaSuperior.dirImagen != null}"
+                             th:src="${post.conjunto.prendaSuperior.dirImagen}"
                              alt="Superior"
                              onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
                         <span class="outfit-placeholder"
-                              th:if="${conjunto.prendaSuperior != null and conjunto.prendaSuperior.dirImagen == null}">
+                              th:if="${post.conjunto != null and post.conjunto.prendaSuperior != null and post.conjunto.prendaSuperior.dirImagen == null}">
                             👚<br th:remove="tag" />
                             <span>Superior</span>
                         </span>
                         <span class="outfit-placeholder"
-                              th:if="${conjunto.prendaSuperior == null}">
+                              th:if="${post.conjunto == null or post.conjunto.prendaSuperior == null}">
                             👚<br th:remove="tag" />
                             <span>Sin superior</span>
                         </span>
                     </div>
                     <!-- Slot inferior -->
                     <div class="outfit-slot">
-                        <img th:if="${conjunto.prendaInferior != null and conjunto.prendaInferior.dirImagen != null}"
-                             th:src="${conjunto.prendaInferior.dirImagen}"
+                        <img th:if="${post.conjunto != null and post.conjunto.prendaInferior != null and post.conjunto.prendaInferior.dirImagen != null}"
+                             th:src="${post.conjunto.prendaInferior.dirImagen}"
                              alt="Inferior"
                              onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
                         <span class="outfit-placeholder"
-                              th:if="${conjunto.prendaInferior != null and conjunto.prendaInferior.dirImagen == null}">
+                              th:if="${post.conjunto != null and post.conjunto.prendaInferior != null and post.conjunto.prendaInferior.dirImagen == null}">
                             👖<br th:remove="tag" />
                             <span>Inferior</span>
                         </span>
                         <span class="outfit-placeholder"
-                              th:if="${conjunto.prendaInferior == null}">
+                              th:if="${post.conjunto == null or post.conjunto.prendaInferior == null}">
                             👖<br th:remove="tag" />
                             <span>Sin inferior</span>
                         </span>
                     </div>
                     <!-- Slot calzado -->
                     <div class="outfit-slot">
-                        <img th:if="${conjunto.prendaCalzado != null and conjunto.prendaCalzado.dirImagen != null}"
-                             th:src="${conjunto.prendaCalzado.dirImagen}"
+                        <img th:if="${post.conjunto != null and post.conjunto.prendaCalzado != null and post.conjunto.prendaCalzado.dirImagen != null}"
+                             th:src="${post.conjunto.prendaCalzado.dirImagen}"
                              alt="Calzado"
                              onerror="this.onerror=null;this.src='/images/placeholder_cloth.png';">
                         <span class="outfit-placeholder"
-                              th:if="${conjunto.prendaCalzado != null and conjunto.prendaCalzado.dirImagen == null}">
-                            👞<br th:remove="tag" />
+                              th:if="${post.conjunto != null and post.conjunto.prendaCalzado != null and post.conjunto.prendaCalzado.dirImagen == null}">
+                            👟<br th:remove="tag" />
                             <span>Calzado</span>
                         </span>
                         <span class="outfit-placeholder"
-                              th:if="${conjunto.prendaCalzado == null}">
-                            👞<br th:remove="tag" />
+                              th:if="${post.conjunto == null or post.conjunto.prendaCalzado == null}">
+                            👟<br th:remove="tag" />
                             <span>Sin calzado</span>
                         </span>
                     </div>
                 </div>
                 <div class="post-body">
-                    <h2 class="post-title" th:text="${conjunto.nombre}">Nombre conjunto</h2>
-                    <p class="post-description" th:text="${conjunto.descripcion != null ? conjunto.descripcion : 'Sin descripción'}"></p>
-                    <p class="post-meta" th:text="'Creado por ' + ${conjunto.usuario.username}"></p>
+                    <!-- Eliminado título de conjunto de aquí -->
+                    <p class="post-description">
+                        <strong style="color:var(--text-primary);">Descripción: </strong>
+                        <span th:text="${post.conjunto != null && post.conjunto.descripcion != null ? post.conjunto.descripcion : 'Sin descripción'}"></span>
+                    </p>
+                    <!-- Eliminado post-meta de aquí -->
+
+                    <!-- Zona de likes -->
+                    <div class="like-section">
+                        <!-- Botón para usuarios logueados (AJAX) -->
+                        <button th:if="${usuarioLogueado != null}"
+                                type="button"
+                                class="like-btn"
+                                th:onclick="'toggleLike(' + ${post.id} + ', event)'"
+                                ondblclick="event.stopPropagation()">
+                            <i th:id="'heart-icon-' + ${post.id}"
+                               class="fa-heart"
+                               th:classappend="${post.usuariosQueDieronLike.contains(usuarioLogueado) ? ' fa-solid' : ' fa-regular'}"
+                               th:style="${post.usuariosQueDieronLike.contains(usuarioLogueado) ? 'color:#e74c3c;' : 'color:#bdc3c7;'}"></i>
+                        </button>
+
+                        <!-- Icono estático para usuarios NO logueados -->
+                        <div th:if="${usuarioLogueado == null}" style="display:inline;">
+                             <i class="fa-regular fa-heart" style="color:#bdc3c7;"></i>
+                        </div>
+
+                        <span th:id="'like-count-' + ${post.id}"
+                              class="like-count"
+                              th:text="${post.usuariosQueDieronLike.size()}">0</span>
+                    </div>
                 </div>
             </article>
         </div>
     </section>
 
-    <div class="empty-state" th:if="${conjuntosPublicados == null or conjuntosPublicados.isEmpty()}">
+    <div class="empty-state" th:if="${posts == null or posts.isEmpty()}">
         <p>Nadie ha publicado ningún conjunto aún.</p>
         <p style="margin-top:0.5rem;">Sé la primera persona en compartir tu estilo desde la sección de Conjuntos.</p>
     </div>
 </main>
+
+<!-- Script para manejar likes sin recargar (AJAX) -->
+<script>
+    function toggleLike(postId, event) {
+        // Detener la propagación del evento para evitar conflictos (ej. click vs doble click)
+        if (event) {
+            event.stopPropagation();
+        }
+
+        console.log('Intentando dar like al post:', postId);
+
+        // Llamada asíncrona al servidor
+        fetch('/posts/' + postId + '/toggle-like-api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Error en la petición: ' + response.status);
+        })
+        .then(data => {
+            console.log('Respuesta del servidor:', data);
+            if (data.success) {
+                // 1. Actualizar el contador
+                const countSpan = document.getElementById('like-count-' + postId);
+                if (countSpan) {
+                    countSpan.textContent = data.likesCount;
+                }
+
+                // 2. Actualizar el icono (color y relleno)
+                const icon = document.getElementById('heart-icon-' + postId);
+                if (icon) {
+                    if (data.liked) {
+                        // Ahora es Like: Corazón sólido y rojo
+                        icon.classList.remove('fa-regular');
+                        icon.classList.add('fa-solid');
+                        icon.style.color = '#e74c3c';
+                    } else {
+                        // Ahora es Unlike: Corazón borde y gris
+                        icon.classList.remove('fa-solid');
+                        icon.classList.add('fa-regular');
+                        icon.style.color = '#bdc3c7';
+                    }
+
+                    // Pequeña animación visual
+                    icon.style.transform = 'scale(1.3)';
+                    setTimeout(() => icon.style.transform = 'scale(1)', 200);
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
 
 </body>
 </html>
