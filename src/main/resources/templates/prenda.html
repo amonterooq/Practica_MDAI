@@ -337,17 +337,24 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            background-color: var(--text-primary);
+            width: 56px;
+            height: 56px;
+            border-radius: 999px;
+            background: var(--text-primary);
             color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
             cursor: pointer;
             z-index: 2600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .ai-chat-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+            background: #000000;
         }
 
         .ai-chat-bubble i {
@@ -360,7 +367,7 @@
             right: 20px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
             padding: 0.75rem 1rem;
             max-width: 260px;
             font-size: 0.85rem;
@@ -368,6 +375,7 @@
             align-items: flex-start;
             gap: 0.5rem;
             z-index: 2600;
+            border-radius: 10px;
         }
 
         .ai-chat-teaser--hidden {
@@ -386,22 +394,31 @@
             position: fixed;
             bottom: 90px;
             right: 20px;
-            width: 350px;
+            width: 360px;
             max-height: 75vh;
             display: none;
             flex-direction: column;
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
             z-index: 2700;
+            border-radius: 16px;
+            overflow: hidden;
+            transform-origin: bottom right;
+            transform: translateY(10px) scale(0.96);
+            opacity: 0;
+            transition: opacity 0.18s ease-out, transform 0.18s ease-out;
         }
 
         .ai-chat-window--open {
             display: flex;
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
 
         .ai-chat-window--hidden {
             display: none;
+            opacity: 0;
         }
 
         .ai-chat-header {
@@ -431,36 +448,45 @@
             color: #ffffff;
             cursor: pointer;
             padding: 0.2rem;
+            border-radius: 4px;
+        }
+
+        .ai-chat-actions button:hover {
+            background: rgba(255, 255, 255, 0.12);
         }
 
         .ai-chat-body {
             display: flex;
             flex-direction: column;
-            padding: 0.75rem 0.75rem 0;
-            gap: 0.5rem;
+            padding: 0.75rem 0.75rem 0.75rem;
+            gap: 0.65rem;
             font-size: 0.85rem;
+            background: #f9f9f9;
         }
 
         .ai-chat-greeting {
             color: var(--text-secondary);
             font-style: italic;
+            padding: 0.35rem 0.4rem 0.5rem;
         }
 
         .ai-chat-messages {
-            margin-top: 0.5rem;
+            margin-top: 0.25rem;
             padding-right: 0.25rem;
             max-height: 260px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 0.35rem;
+            gap: 0.5rem;
         }
 
         .ai-chat-message {
-            padding: 0.45rem 0.6rem;
-            border-radius: 8px;
+            padding: 0.5rem 0.7rem;
+            border-radius: 12px;
             max-width: 85%;
             word-wrap: break-word;
+            font-size: 0.83rem;
+            line-height: 1.45;
         }
 
         .ai-chat-message--user {
@@ -471,31 +497,39 @@
 
         .ai-chat-message--bot {
             margin-right: auto;
-            background: #f4f4f4;
+            background: #ffffff;
             color: var(--text-primary);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
         }
 
         .ai-chat-message--outfit {
-            background: #fafafa;
-            border-radius: 8px;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 0.8rem 0.8rem 0.6rem;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+            margin-top: 0.15rem;
+        }
+
+        .ai-chat-message--outfit:hover {
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.09);
         }
 
         .ai-outfit-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.75rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
         }
 
         .ai-outfit-prenda {
-            background: #ffffff;
-            border: 1px solid #eee;
-            padding: 0.4rem;
+            background: #fafafa;
+            border: 1px solid #eeeeee;
+            padding: 0.45rem 0.4rem 0.4rem;
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
+            border-radius: 8px;
         }
 
         .ai-outfit-prenda-titulo {
@@ -513,17 +547,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 6px;
         }
 
         .ai-outfit-prenda-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
         .ai-outfit-prenda-placeholder {
             font-size: 0.75rem;
             color: var(--text-secondary);
+            text-align: center;
         }
 
         .ai-outfit-prenda-meta {
@@ -538,64 +575,97 @@
         .ai-outfit-fix-btn {
             margin-top: 0.25rem;
             font-size: 0.7rem;
-            padding: 0.15rem 0.4rem;
+            padding: 0.18rem 0.45rem;
+            border-radius: 999px;
             border: 1px solid var(--border-color);
-            background: #fff;
+            background: #ffffff;
             cursor: pointer;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .ai-outfit-fix-btn:hover {
+            background: #f2f2f2;
         }
 
         .ai-outfit-fix-btn--active {
-            background: var(--text-primary);
-            color: #fff;
+            background: rgba(0, 0, 0, 0.9);
+            color: #ffffff;
+            border-color: rgba(0, 0, 0, 0.9);
         }
 
         .ai-outfit-explicacion {
             font-size: 0.8rem;
             margin-bottom: 0.5rem;
+            color: var(--text-primary);
         }
 
         .ai-outfit-warning {
             font-size: 0.75rem;
             color: #c0392b;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.45rem;
         }
 
         .ai-outfit-actions {
             display: flex;
             justify-content: flex-end;
             gap: 0.5rem;
-            margin-top: 0.25rem;
+            margin-top: 0.3rem;
         }
 
         .ai-outfit-btn {
-            font-size: 0.75rem;
-            padding: 0.3rem 0.6rem;
+            font-size: 0.76rem;
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
             border: 1px solid var(--border-color);
-            background: #fff;
+            background: #ffffff;
             cursor: pointer;
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+        }
+
+        .ai-outfit-btn:hover {
+            background: #f2f2f2;
+        }
+
+        .ai-outfit-btn:active {
+            transform: translateY(1px);
         }
 
         .ai-outfit-btn--primary {
             background: var(--text-primary);
-            color: #fff;
+            color: #ffffff;
             border-color: var(--text-primary);
         }
 
+        .ai-outfit-btn--primary:hover {
+            background: #000000;
+            border-color: #000000;
+        }
+
         .ai-outfit-guardar-form {
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid #eee;
+            margin-top: 0.6rem;
+            padding-top: 0.6rem;
+            border-top: 1px solid #eeeeee;
             display: flex;
             flex-direction: column;
-            gap: 0.35rem;
+            gap: 0.4rem;
         }
 
         .ai-outfit-guardar-form input,
         .ai-outfit-guardar-form textarea {
             width: 100%;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             border: 1px solid var(--border-color);
-            padding: 0.3rem 0.4rem;
+            padding: 0.35rem 0.45rem;
+            border-radius: 6px;
+            font-family: var(--font-body);
         }
 
         .ai-outfit-error {
@@ -610,15 +680,36 @@
         }
 
         .ai-chat-recomendar-btn {
-            font-size: 0.75rem;
-            padding: 0.3rem 0.6rem;
+            font-size: 0.78rem;
+            padding: 0.4rem 0.8rem;
             margin-right: 0.4rem;
+            border-radius: 999px;
             border: 1px solid var(--border-color);
-            background: #fff;
+            background: #ffffff;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .ai-chat-recomendar-btn:hover {
+            background: #f2f2f2;
+        }
+
+        .ai-chat-recomendar-btn:disabled,
+        .ai-outfit-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         @media (max-width: 500px) {
+            .ai-chat-window {
+                right: 10px;
+                bottom: 80px;
+                width: calc(100% - 20px);
+            }
+
             .ai-outfit-grid {
                 grid-template-columns: 1fr;
             }
@@ -1324,170 +1415,6 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        mostrarCategorias();
-
-        // Inicializar comportamiento de marca (formulario de creación)
-        const selectMarca = document.getElementById('marcaSelect');
-        const inputMarcaOtra = document.getElementById('marcaOtraInput');
-        const hiddenMarcaFinal = document.getElementById('marcaFinal');
-
-        if (selectMarca && inputMarcaOtra && hiddenMarcaFinal) {
-            selectMarca.addEventListener('change', function () {
-                if (this.value === 'Otra') {
-                    inputMarcaOtra.style.display = 'block';
-                    hiddenMarcaFinal.value = '';
-                } else {
-                    inputMarcaOtra.style.display = 'none';
-                    inputMarcaOtra.value = '';
-                    hiddenMarcaFinal.value = this.value;
-                }
-            });
-
-            inputMarcaOtra.addEventListener('input', function () {
-                hiddenMarcaFinal.value = this.value.trim();
-            });
-        }
-
-        // Inicializar comportamiento de color (formulario de creación)
-        const selectColor = document.getElementById('colorSelect');
-        const inputColorOtro = document.getElementById('colorOtroInput');
-        const hiddenColorFinal = document.getElementById('colorFinal');
-
-        if (selectColor && inputColorOtro && hiddenColorFinal) {
-            selectColor.addEventListener('change', function () {
-                if (this.value === 'Otro') {
-                    inputColorOtro.style.display = 'block';
-                    hiddenColorFinal.value = '';
-                } else {
-                    inputColorOtro.style.display = 'none';
-                    inputColorOtro.value = '';
-                    hiddenColorFinal.value = this.value;
-                }
-            });
-
-            inputColorOtro.addEventListener('input', function () {
-                hiddenColorFinal.value = this.value.trim();
-            });
-        }
-    });
-
-    // --- Lógica modal edición prendas ---
-    const editModalOverlay = document.getElementById('editModalOverlay');
-    const closeEditModalBtn = document.getElementById('closeEditModalBtn');
-    const editModalImage = document.getElementById('editModalImage');
-    const editIdInput = document.getElementById('editId');
-    const editTipoPrendaInput = document.getElementById('editTipoPrenda');
-    const editNombreInput = document.getElementById('editNombre');
-    const editMarcaInput = document.getElementById('editMarca');
-    const editTallaSelect = document.getElementById('editTalla');
-    const editColorInput = document.getElementById('editColor');
-    const editModalError = document.getElementById('editModalError');
-    const editPrendaForm = document.getElementById('editPrendaForm');
-
-    function abrirModalEdicion(card) {
-        const id = card.querySelector('.card-id')?.textContent?.trim() || '';
-        const nombre = card.querySelector('.card-nombre')?.textContent?.trim() || '';
-        const marca = card.querySelector('.card-marca')?.textContent?.trim() || '';
-        const talla = card.querySelector('.card-talla')?.textContent?.trim() || '';
-        const color = card.querySelector('.card-color')?.textContent?.trim() || '';
-        const badgeSuperior = card.querySelector('.card-badge-superior');
-        const badgeInferior = card.querySelector('.card-badge-inferior');
-        const badgeCalzado = card.querySelector('.card-badge-calzado');
-        const imgEl = card.querySelector('img');
-
-        editIdInput.value = id;
-        editNombreInput.value = nombre;
-
-        // Inicializar marca
-        const selectMarcaEdit = document.getElementById('editMarcaSelect');
-        const inputMarcaOtraEdit = document.getElementById('editMarcaOtraInput');
-
-        if (selectMarcaEdit && inputMarcaOtraEdit && editMarcaInput) {
-            let marcaEncontrada = false;
-            for (let i = 0; i < selectMarcaEdit.options.length; i++) {
-                if (selectMarcaEdit.options[i].value === marca) {
-                    selectMarcaEdit.selectedIndex = i;
-                    marcaEncontrada = true;
-                    inputMarcaOtraEdit.style.display = 'none';
-                    inputMarcaOtraEdit.value = '';
-                    break;
-                }
-            }
-
-            if (!marcaEncontrada && marca) {
-                for (let i = 0; i < selectMarcaEdit.options.length; i++) {
-                    if (selectMarcaEdit.options[i].value === 'Otra') {
-                        selectMarcaEdit.selectedIndex = i;
-                        inputMarcaOtraEdit.style.display = 'block';
-                        inputMarcaOtraEdit.value = marca;
-                        break;
-                    }
-                }
-            }
-            editMarcaInput.value = marca;
-        }
-
-        // Inicializar color
-        const selectColorEdit = document.getElementById('editColorSelect');
-        const inputColorOtraEdit = document.getElementById('editColorOtraInput');
-
-        if (selectColorEdit && inputColorOtraEdit && editColorInput) {
-            let colorEncontrado = false;
-            for (let i = 0; i < selectColorEdit.options.length; i++) {
-                if (selectColorEdit.options[i].value === color) {
-                    selectColorEdit.selectedIndex = i;
-                    colorEncontrado = true;
-                    inputColorOtraEdit.style.display = 'none';
-                    inputColorOtraEdit.value = '';
-                    break;
-                }
-            }
-
-            if (!colorEncontrado && color) {
-                for (let i = 0; i < selectColorEdit.options.length; i++) {
-                    if (selectColorEdit.options[i].value === 'Otro') {
-                        selectColorEdit.selectedIndex = i;
-                        inputColorOtraEdit.style.display = 'block';
-                        inputColorOtraEdit.value = color;
-                        break;
-                    }
-                }
-            }
-            editColorInput.value = color || '';
-        }
-
-        if (badgeSuperior) {
-            editTipoPrendaInput.value = 'superior';
-        } else if (badgeInferior) {
-            editTipoPrendaInput.value = 'inferior';
-        } else if (badgeCalzado) {
-            editTipoPrendaInput.value = 'calzado';
-        } else {
-            editTipoPrendaInput.value = '';
-        }
-
-        // rellenar tallas del modal según tipo y seleccionar la actual
-        rellenarTallasEdicion(editTipoPrendaInput.value, talla);
-
-
-        if (editModalError) {
-            editModalError.style.display = 'none';
-            editModalError.textContent = '';
-        }
-
-        if (imgEl && imgEl.src) {
-            editModalImage.src = imgEl.src;
-        } else {
-            editModalImage.src = '/images/placeholder_cloth.png';
-        }
-
-        editModalOverlay.style.display = 'flex';
-    }
-
-    function cerrarModalEdicion() {
-        editModalOverlay.style.display = 'none';
-    }
 
     document.addEventListener('click', function (e) {
         const card = e.target.closest('.garment-card');
