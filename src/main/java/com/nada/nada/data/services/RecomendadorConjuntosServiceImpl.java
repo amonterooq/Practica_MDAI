@@ -5,7 +5,7 @@ import com.nada.nada.data.model.Prenda;
 import com.nada.nada.data.model.PrendaCalzado;
 import com.nada.nada.data.model.PrendaInferior;
 import com.nada.nada.data.model.PrendaSuperior;
-import com.nada.nada.data.services.RecomendadorConjuntosService;
+import com.nada.nada.dto.chat.RecomendacionConjuntoRequestDto;
 import com.nada.nada.dto.chat.RecomendacionConjuntoResponseDto;
 import com.nada.nada.dto.chat.RecomendacionPrendaDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +39,25 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
                                                                 Long superiorFijoId,
                                                                 Long inferiorFijoId,
                                                                 Long calzadoFijoId) {
+        RecomendacionConjuntoRequestDto prefs = new RecomendacionConjuntoRequestDto();
+        prefs.setSuperiorFijoId(superiorFijoId);
+        prefs.setInferiorFijoId(inferiorFijoId);
+        prefs.setCalzadoFijoId(calzadoFijoId);
+        return recomendarConjunto(usuarioId, prefs);
+    }
+
+    @Override
+    public RecomendacionConjuntoResponseDto recomendarConjunto(Long usuarioId,
+                                                                RecomendacionConjuntoRequestDto preferencias) {
+        Long superiorFijoId = preferencias != null ? preferencias.getSuperiorFijoId() : null;
+        Long inferiorFijoId = preferencias != null ? preferencias.getInferiorFijoId() : null;
+        Long calzadoFijoId = preferencias != null ? preferencias.getCalzadoFijoId() : null;
+        String modo = preferencias != null ? preferencias.getModo() : null;
+        String colorFiltro = preferencias != null ? preferencias.getColorFiltro() : null;
+        String marcaFiltro = preferencias != null ? preferencias.getMarcaFiltro() : null;
+        List<Long> prendasEvitarIds = preferencias != null ? preferencias.getPrendasEvitarIds() : null;
+        List<String> conjuntosUsados = preferencias != null ? preferencias.getConjuntosUsados() : null;
+
         RecomendacionConjuntoResponseDto dto = new RecomendacionConjuntoResponseDto();
 
         if (usuarioId == null) {
@@ -48,6 +67,27 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         }
 
         List<Prenda> prendasUsuario = prendaService.buscarPrendasPorUsuarioId(usuarioId);
+
+        // Filtro por color/marca cuando aplique el modo
+        if (modo != null && modo.equalsIgnoreCase("COLOR") && colorFiltro != null && !colorFiltro.isBlank()) {
+            prendasUsuario = prendasUsuario.stream()
+                    .filter(p -> colorFiltro.equalsIgnoreCase(p.getColor()))
+                    .collect(Collectors.toList());
+        }
+        if (modo != null && modo.equalsIgnoreCase("MARCA") && marcaFiltro != null && !marcaFiltro.isBlank()) {
+            String mf = marcaFiltro.toLowerCase();
+            prendasUsuario = prendasUsuario.stream()
+                    .filter(p -> p.getMarca() != null && p.getMarca().toLowerCase().contains(mf))
+                    .collect(Collectors.toList());
+        }
+
+        // Para "SIN_REPETIR": evitar prendas que el chat ya ha usado en esta sesión
+        if (modo != null && modo.equalsIgnoreCase("SIN_REPETIR") && prendasEvitarIds != null && !prendasEvitarIds.isEmpty()) {
+            Set<Long> evitar = new HashSet<>(prendasEvitarIds);
+            prendasUsuario = prendasUsuario.stream()
+                    .filter(p -> p.getId() == null || !evitar.contains(p.getId()))
+                    .collect(Collectors.toList());
+        }
 
         List<PrendaSuperior> superiores = prendasUsuario.stream()
                 .filter(p -> p instanceof PrendaSuperior)
@@ -80,14 +120,19 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
             return dto;
         }
 
-        // --- NUEVO: evitar recomendar conjuntos ya existentes ---
+        // Evitar recomendar conjuntos ya existentes
         Set<String> combinacionesExistentes = cargarCombinacionesExistentes(usuarioId);
+
+        // En modo SIN_REPETIR, también evitamos las combinaciones ya propuestas en esta sesión
+        if (modo != null && modo.equalsIgnoreCase("SIN_REPETIR") && conjuntosUsados != null && !conjuntosUsados.isEmpty()) {
+            combinacionesExistentes = new HashSet<>(combinacionesExistentes); // copiar para no modificar el original
+            combinacionesExistentes.addAll(conjuntosUsados);
+        }
 
         PrendaSuperior superior = null;
         PrendaInferior inferior = null;
         PrendaCalzado calzado = null;
 
-        // intentamos unas cuantas veces encontrar una combinación nueva
         final int MAX_INTENTOS = 30;
         int intentos = 0;
         boolean encontradaNueva = false;
@@ -113,7 +158,11 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         }
 
         if (!encontradaNueva) {
-            dto.setMensaje("Ya tienes guardados todos los conjuntos posibles con tu armario actual. Prueba a añadir nuevas prendas para más combinaciones.");
+            if (modo != null && modo.equalsIgnoreCase("SIN_REPETIR")) {
+                dto.setMensaje("Ya no quedan más combinaciones diferentes con tus prendas y los filtros actuales.");
+            } else {
+                dto.setMensaje("Ya tienes guardados todos los conjuntos posibles con tu armario actual. Prueba a añadir nuevas prendas para más combinaciones.");
+            }
             return dto;
         }
 

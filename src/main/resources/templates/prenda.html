@@ -394,8 +394,8 @@
             position: fixed;
             bottom: 90px;
             right: 20px;
-            width: 360px;
-            max-height: 75vh;
+            width: 420px;           /* antes 360px */
+            max-height: 80vh;       /* antes 75vh */
             display: none;
             flex-direction: column;
             background: var(--card-bg);
@@ -473,7 +473,7 @@
         .ai-chat-messages {
             margin-top: 0.25rem;
             padding-right: 0.25rem;
-            max-height: 260px;
+            max-height: 320px;      /* antes 260px */
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -517,9 +517,8 @@
 
         .ai-outfit-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 0.75rem;
-            margin-bottom: 0.6rem;
         }
 
         .ai-outfit-prenda {
@@ -611,9 +610,15 @@
 
         .ai-outfit-actions {
             display: flex;
+            flex-wrap: wrap;             /* permitir que los botones bajen de línea */
             justify-content: flex-end;
             gap: 0.5rem;
             margin-top: 0.3rem;
+        }
+
+        /* Grupo de botones tipo chips dentro del chat (modos, filtros, etc.) */
+        .ai-outfit-actions.ai-outfit-actions--chips {
+            justify-content: flex-start;  /* alineados al inicio para menús de modos */
         }
 
         .ai-outfit-btn {
@@ -626,6 +631,10 @@
             color: var(--text-primary);
             display: inline-flex;
             align-items: center;
+            justify-content: center;
+            white-space: nowrap;         /* chip en una línea */
+            max-width: 100%;             /* que nunca se salga del contenedor */
+            box-sizing: border-box;
             gap: 0.25rem;
             transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
         }

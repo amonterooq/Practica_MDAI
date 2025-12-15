@@ -14,11 +14,29 @@ document.addEventListener('DOMContentLoaded', function () {
     let isOpen = false;
     let isMinimized = false;
 
-    // Estado para recomendaciones de conjuntos
+    // Estado para recomendaciones de conjuntos (fijar prendas)
     let prendasFijas = {
         superiorId: null,
         inferiorId: null,
         calzadoId: null
+    };
+
+    // Estado del modo actual y filtros de la sesión del chat
+    let estadoModo = {
+        modo: null,
+        colorSeleccionado: null,
+        marcaSeleccionada: null,
+        tiempo: null,
+        ocasion: null,
+        prendasEvitar: new Set(),  // ids para modo SIN_REPETIR (no se usa ya para lógica fuerte)
+        conjuntosUsados: new Set() // claves "supId-infId-calId" ya mostradas en esta sesión
+    };
+
+    // Cache local para opciones reales de color/marca
+    let cacheOpcionesArmario = {
+        colores: [],
+        marcas: [],
+        cargado: false
     };
 
     const showWindow = () => {
@@ -55,32 +73,235 @@ document.addEventListener('DOMContentLoaded', function () {
         scrollToBottom();
     };
 
-    const crearBotonRecomendar = () => {
-        // Evitar duplicar el botón si ya existe
-        if (document.getElementById('ai-chat-recomendar-btn')) {
-            return;
+    const resetModo = () => {
+        estadoModo.modo = null;
+        estadoModo.colorSeleccionado = null;
+        estadoModo.marcaSeleccionada = null;
+        estadoModo.tiempo = null;
+        estadoModo.ocasion = null;
+        estadoModo.prendasEvitar = new Set();
+    };
+
+    const crearGrupoBotones = (opciones, onSelect) => {
+        const group = document.createElement('div');
+        group.className = 'ai-outfit-actions';
+        group.style.marginTop = '0.4rem';
+        opciones.forEach(op => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'ai-outfit-btn';
+            btn.textContent = op.label;
+            btn.addEventListener('click', function () {
+                onSelect(op, group, btn);
+            });
+            group.appendChild(btn);
+        });
+        return group;
+    };
+
+    const marcarSeleccionEnGrupo = (groupEl, btnSeleccionado) => {
+        Array.from(groupEl.querySelectorAll('button')).forEach(b => {
+            b.disabled = true;
+            b.classList.remove('ai-outfit-btn--primary');
+        });
+        if (btnSeleccionado) {
+            btnSeleccionado.classList.add('ai-outfit-btn--primary');
         }
-        const body = windowEl.querySelector('.ai-chat-body');
-        if (!body) return;
+    };
 
-        const actions = document.createElement('div');
-        actions.style.marginTop = '0.5rem';
-        actions.style.display = 'flex';
-        actions.style.justifyContent = 'flex-end';
+    // --- Menú principal de modos ---
+    const mostrarMenuModos = () => {
+        const card = document.createElement('div');
+        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
 
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.id = 'ai-chat-recomendar-btn';
-        btn.className = 'ai-chat-recomendar-btn';
-        btn.textContent = 'Recomendar conjunto';
-        btn.addEventListener('click', function () {
+        const titulo = document.createElement('div');
+        titulo.className = 'ai-outfit-explicacion';
+        titulo.textContent = '¿Cómo quieres que te recomiende hoy?';
+        card.appendChild(titulo);
+
+        const modos = [
+            { value: 'SORPRESA', label: 'Conjunto sorpresa' },
+            { value: 'COLOR', label: 'Por color' },
+            { value: 'MARCA', label: 'Por marca' },
+            { value: 'TIEMPO', label: 'Por tiempo' },
+            { value: 'OCASION', label: 'Por ocasión' },
+            { value: 'SIN_REPETIR', label: 'Sin repetir' },
+            { value: 'COMPLETAR', label: 'Completar esta prenda' }
+        ];
+
+        const group = crearGrupoBotones(modos, (op, groupEl, btn) => {
+            marcarSeleccionEnGrupo(groupEl, btn);
+            estadoModo.modo = op.value;
+            if (op.value === 'SORPRESA' || op.value === 'SIN_REPETIR') {
+                solicitarRecomendacion();
+            } else if (op.value === 'COLOR') {
+                preguntarColor();
+            } else if (op.value === 'MARCA') {
+                preguntarMarca();
+            } else if (op.value === 'TIEMPO') {
+                preguntarTiempo();
+            } else if (op.value === 'OCASION') {
+                preguntarOcasion();
+            } else if (op.value === 'COMPLETAR') {
+                appendMessage('Fija primero la prenda que quieras mantener (superior, inferior o calzado) y luego pulsa "Otra sugerencia".', 'bot');
+                solicitarRecomendacion();
+            }
+        });
+
+        card.appendChild(group);
+        messagesContainer.appendChild(card);
+        scrollToBottom();
+    };
+
+    // --- Preguntas por modo ---
+    const preguntarColor = () => {
+        const card = document.createElement('div');
+        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+        const titulo = document.createElement('div');
+        titulo.className = 'ai-outfit-explicacion';
+        titulo.textContent = 'Elige un color de tu armario';
+        card.appendChild(titulo);
+
+        const renderOpciones = (colores) => {
+            if (!colores || colores.length === 0) {
+                const msg = document.createElement('div');
+                msg.className = 'ai-outfit-warning';
+                msg.textContent = 'No he encontrado colores guardados en tu armario.';
+                card.appendChild(msg);
+                messagesContainer.appendChild(card);
+                scrollToBottom();
+                return;
+            }
+            const opciones = colores.slice(0, 12).map(c => ({ value: c, label: c }));
+            const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+                estadoModo.colorSeleccionado = op.value;
+                marcarSeleccionEnGrupo(groupEl, btn);
+                solicitarRecomendacion();
+            });
+            card.appendChild(group);
+            messagesContainer.appendChild(card);
+            scrollToBottom();
+        };
+
+        if (cacheOpcionesArmario.cargado) {
+            renderOpciones(cacheOpcionesArmario.colores);
+        } else {
+            fetch('/api/chat/opciones-armario', { method: 'GET' })
+                .then(r => r.ok ? r.json() : { colores: [], marcas: [] })
+                .then(data => {
+                    cacheOpcionesArmario.colores = data.colores || [];
+                    cacheOpcionesArmario.marcas = data.marcas || [];
+                    cacheOpcionesArmario.cargado = true;
+                    renderOpciones(cacheOpcionesArmario.colores);
+                })
+                .catch(() => {
+                    renderOpciones([]);
+                });
+        }
+    };
+
+    const preguntarMarca = () => {
+        const card = document.createElement('div');
+        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+        const titulo = document.createElement('div');
+        titulo.className = 'ai-outfit-explicacion';
+        titulo.textContent = 'Elige una marca de tu armario';
+        card.appendChild(titulo);
+
+        const renderOpciones = (marcas) => {
+            if (!marcas || marcas.length === 0) {
+                const msg = document.createElement('div');
+                msg.className = 'ai-outfit-warning';
+                msg.textContent = 'No he encontrado marcas guardadas en tu armario.';
+                card.appendChild(msg);
+                messagesContainer.appendChild(card);
+                scrollToBottom();
+                return;
+            }
+            const opciones = marcas.slice(0, 12).map(m => ({ value: m, label: m }));
+            const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+                estadoModo.marcaSeleccionada = op.value;
+                marcarSeleccionEnGrupo(groupEl, btn);
+                solicitarRecomendacion();
+            });
+            card.appendChild(group);
+            messagesContainer.appendChild(card);
+            scrollToBottom();
+        };
+
+        if (cacheOpcionesArmario.cargado) {
+            renderOpciones(cacheOpcionesArmario.marcas);
+        } else {
+            fetch('/api/chat/opciones-armario', { method: 'GET' })
+                .then(r => r.ok ? r.json() : { colores: [], marcas: [] })
+                .then(data => {
+                    cacheOpcionesArmario.colores = data.colores || [];
+                    cacheOpcionesArmario.marcas = data.marcas || [];
+                    cacheOpcionesArmario.cargado = true;
+                    renderOpciones(cacheOpcionesArmario.marcas);
+                })
+                .catch(() => {
+                    renderOpciones([]);
+                });
+        }
+    };
+
+    const preguntarTiempo = () => {
+        const card = document.createElement('div');
+        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+        const titulo = document.createElement('div');
+        titulo.className = 'ai-outfit-explicacion';
+        titulo.textContent = '¿Cómo está el tiempo?';
+        card.appendChild(titulo);
+
+        const opciones = [
+            { value: 'FRIO', label: 'Frío' },
+            { value: 'TEMPLADO', label: 'Templado' },
+            { value: 'CALOR', label: 'Calor' }
+        ];
+
+        const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+            estadoModo.tiempo = op.value;
+            marcarSeleccionEnGrupo(groupEl, btn);
             solicitarRecomendacion();
         });
 
-        actions.appendChild(btn);
-        body.appendChild(actions);
+        card.appendChild(group);
+        messagesContainer.appendChild(card);
+        scrollToBottom();
     };
 
+    const preguntarOcasion = () => {
+        const card = document.createElement('div');
+        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+        const titulo = document.createElement('div');
+        titulo.className = 'ai-outfit-explicacion';
+        titulo.textContent = '¿Para qué ocasión es el conjunto?';
+        card.appendChild(titulo);
+
+        const opciones = [
+            { value: 'TRABAJO', label: 'Trabajo' },
+            { value: 'FIESTA', label: 'Fiesta' },
+            { value: 'DEPORTE', label: 'Deporte' },
+            { value: 'CASUAL', label: 'Casual' }
+        ];
+
+        const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+            estadoModo.ocasion = op.value;
+            marcarSeleccionEnGrupo(groupEl, btn);
+            solicitarRecomendacion();
+        });
+
+        card.appendChild(group);
+        messagesContainer.appendChild(card);
+        scrollToBottom();
+    };
+
+    // --- Render de columnas de prenda, manteniendo botón de fijar ---
     const renderPrendaColumn = (prenda, tipoClave) => {
         const col = document.createElement('div');
         col.className = 'ai-outfit-prenda';
@@ -153,6 +374,12 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const appendOutfitCard = (recomendacion) => {
+        // Actualizar estado de "sin repetir": añadir conjunto usado (trío completo)
+        if (estadoModo.modo === 'SIN_REPETIR' && recomendacion.superior && recomendacion.inferior && recomendacion.calzado) {
+            const clave = `${recomendacion.superior.id}-${recomendacion.inferior.id}-${recomendacion.calzado.id}`;
+            estadoModo.conjuntosUsados.add(clave);
+        }
+
         const wrapper = document.createElement('div');
         wrapper.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
 
@@ -187,6 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
         otraBtn.className = 'ai-outfit-btn';
         otraBtn.textContent = 'Otra sugerencia';
         otraBtn.addEventListener('click', function () {
+            // repetir el mismo modo + filtros + prendas fijadas
             solicitarRecomendacion();
         });
 
@@ -311,6 +539,7 @@ document.addEventListener('DOMContentLoaded', function () {
         scrollToBottom();
     };
 
+    // --- Petición al backend teniendo en cuenta modo y filtros ---
     const solicitarRecomendacion = () => {
         const typingId = `typing-${Date.now()}`;
         const typingMsg = document.createElement('div');
@@ -320,16 +549,25 @@ document.addEventListener('DOMContentLoaded', function () {
         messagesContainer.appendChild(typingMsg);
         scrollToBottom();
 
+        const bodyRequest = {
+            superiorFijoId: prendasFijas.superiorId,
+            inferiorFijoId: prendasFijas.inferiorId,
+            calzadoFijoId: prendasFijas.calzadoId,
+            modo: estadoModo.modo,
+            colorFiltro: estadoModo.colorSeleccionado,
+            marcaFiltro: estadoModo.marcaSeleccionada,
+            tiempo: estadoModo.tiempo,
+            ocasion: estadoModo.ocasion,
+            prendasEvitarIds: Array.from(estadoModo.prendasEvitar),
+            conjuntosUsados: Array.from(estadoModo.conjuntosUsados)
+        };
+
         fetch('/api/chat/recomendar-conjunto', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                superiorFijoId: prendasFijas.superiorId,
-                inferiorFijoId: prendasFijas.inferiorId,
-                calzadoFijoId: prendasFijas.calzadoId
-            })
+            body: JSON.stringify(bodyRequest)
         })
             .then(function (response) {
                 if (!response.ok) {
@@ -360,7 +598,52 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     };
 
-    // Eventos de abrir/cerrar/minimizar ventana
+    // --- Botones globales del widget ---
+    const crearBotonRecomendar = () => {
+        if (document.getElementById('ai-chat-recomendar-btn')) {
+            return;
+        }
+        const body = windowEl.querySelector('.ai-chat-body');
+        if (!body) return;
+
+        const actions = document.createElement('div');
+        actions.style.marginTop = '0.5rem';
+        actions.style.display = 'flex';
+        actions.style.justifyContent = 'space-between';
+        actions.style.alignItems = 'center';
+
+        const leftGroup = document.createElement('div');
+        const rightGroup = document.createElement('div');
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = 'ai-chat-recomendar-btn';
+        btn.className = 'ai-chat-recomendar-btn';
+        btn.textContent = 'Recomiéndame…';
+        btn.addEventListener('click', function () {
+            mostrarMenuModos();
+        });
+
+        const desfijarBtn = document.createElement('button');
+        desfijarBtn.type = 'button';
+        desfijarBtn.className = 'ai-chat-recomendar-btn';
+        desfijarBtn.textContent = 'Desfijar todo';
+        desfijarBtn.addEventListener('click', function () {
+            prendasFijas.superiorId = null;
+            prendasFijas.inferiorId = null;
+            prendasFijas.calzadoId = null;
+            appendMessage('He quitado todas las prendas fijadas. Las siguientes sugerencias serán totalmente libres (según el modo que elijas).', 'bot');
+        });
+
+        leftGroup.appendChild(btn);
+        rightGroup.appendChild(desfijarBtn);
+
+        actions.appendChild(leftGroup);
+        actions.appendChild(rightGroup);
+        body.appendChild(actions);
+    };
+
+    // --- Eventos de abrir/cerrar/minimizar ventana ---
     bubble.addEventListener('click', function () {
         if (!isOpen || isMinimized) {
             windowEl.classList.remove('ai-chat-window--minimized');
@@ -394,6 +677,5 @@ document.addEventListener('DOMContentLoaded', function () {
         teaser.classList.remove('ai-chat-teaser--hidden');
     }
 
-    // Crear botón para recomendaciones de conjuntos cuando esté todo listo
     crearBotonRecomendar();
 });

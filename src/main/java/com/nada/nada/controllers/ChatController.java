@@ -1,7 +1,6 @@
 package com.nada.nada.controllers;
 
 import com.nada.nada.data.model.Conjunto;
-import com.nada.nada.data.model.Prenda;
 import com.nada.nada.data.model.PrendaCalzado;
 import com.nada.nada.data.model.PrendaInferior;
 import com.nada.nada.data.model.PrendaSuperior;
@@ -14,6 +13,10 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -56,6 +59,21 @@ public class ChatController {
         return ResponseEntity.ok(new ChatResponseDto(reply));
     }
 
+    @GetMapping("/opciones-armario")
+    public ResponseEntity<?> obtenerOpcionesArmario(HttpSession session) {
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuarioLogueado == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Long usuarioId = usuarioLogueado.getId();
+        List<String> colores = prendaService.obtenerColoresDelUsuario(usuarioId);
+        List<String> marcas = prendaService.obtenerMarcasDelUsuario(usuarioId);
+        Map<String, Object> body = new HashMap<>();
+        body.put("colores", colores);
+        body.put("marcas", marcas);
+        return ResponseEntity.ok(body);
+    }
+
     @PostMapping("/recomendar-conjunto")
     public ResponseEntity<RecomendacionConjuntoResponseDto> recomendarConjunto(@RequestBody RecomendacionConjuntoRequestDto request,
                                                                                HttpSession session) {
@@ -67,12 +85,7 @@ public class ChatController {
         }
 
         Long usuarioId = usuarioLogueado.getId();
-        RecomendacionConjuntoResponseDto dto = recomendadorConjuntosService.recomendarConjunto(
-                usuarioId,
-                request != null ? request.getSuperiorFijoId() : null,
-                request != null ? request.getInferiorFijoId() : null,
-                request != null ? request.getCalzadoFijoId() : null
-        );
+        RecomendacionConjuntoResponseDto dto = recomendadorConjuntosService.recomendarConjunto(usuarioId, request);
 
         return ResponseEntity.ok(dto);
     }
