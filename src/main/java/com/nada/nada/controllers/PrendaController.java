@@ -61,6 +61,9 @@ public class PrendaController {
             return "redirect:/usuarios/login";
         }
 
+        // Añadimos el username al modelo para el saludo del chat IA
+        model.addAttribute("username", usuarioLogueado.getUsername());
+
         // Obtener id de usuario para filtrar prendas
         Long usuarioId = usuarioLogueado.getId();
 
