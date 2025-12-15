@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeBtn = document.getElementById('ai-chat-close');
     const minimizeBtn = document.getElementById('ai-chat-minimize');
     const messagesContainer = document.querySelector('.ai-chat-messages');
+    const greetingEl = document.querySelector('.ai-chat-greeting');
 
     if (!bubble || !windowEl || !messagesContainer) {
         return;
@@ -29,8 +30,14 @@ document.addEventListener('DOMContentLoaded', function () {
         tiempo: null,
         ocasion: null,
         prendasEvitar: new Set(),  // ids para modo SIN_REPETIR (no se usa ya para lógica fuerte)
-        conjuntosUsados: new Set() // claves "supId-infId-calId" ya mostradas en esta sesión
+        conjuntosUsados: new Set(), // claves "supId-infId-calId" ya mostradas en esta sesión
+        hayRecomendacionActiva: false,
+        cargandoRecomendacion: false
     };
+
+    // Referencia a la última card de recomendación para poder reemplazarla
+    let ultimaCardRecomendacion = null;
+    let barraAccionesGlobal = null;
 
     // Cache local para opciones reales de color/marca
     let cacheOpcionesArmario = {
@@ -38,6 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
         marcas: [],
         cargado: false
     };
+
+    let historialRecomendaciones = []; // pila de recomendaciones dentro del modo actual
+    let inicioBtn = null; // botón/icono para volver a la pantalla principal limpia
 
     const showWindow = () => {
         windowEl.classList.add('ai-chat-window--open');
@@ -80,11 +90,45 @@ document.addEventListener('DOMContentLoaded', function () {
         estadoModo.tiempo = null;
         estadoModo.ocasion = null;
         estadoModo.prendasEvitar = new Set();
+        estadoModo.conjuntosUsados = new Set();
+        estadoModo.hayRecomendacionActiva = false;
+        estadoModo.cargandoRecomendacion = false;
+        prendasFijas.superiorId = null;
+        prendasFijas.inferiorId = null;
+        prendasFijas.calzadoId = null;
+        historialRecomendaciones = []; // limpiar historial al cambiar de modo
+    };
+
+    const limpiarRecomendacionActiva = () => {
+        if (ultimaCardRecomendacion && ultimaCardRecomendacion.parentNode) {
+            ultimaCardRecomendacion.parentNode.removeChild(ultimaCardRecomendacion);
+        }
+        ultimaCardRecomendacion = null;
+        estadoModo.hayRecomendacionActiva = false;
+        estadoModo.cargandoRecomendacion = false;
+        // volver a mostrar la barra de acciones global cuando no hay recomendación
+        if (barraAccionesGlobal) {
+            barraAccionesGlobal.style.display = 'flex';
+        }
+    };
+
+    const mostrarPantallaInicio = () => {
+        // Limpiar mensajes del chat y cualquier recomendación visible
+        messagesContainer.innerHTML = '';
+        limpiarRecomendacionActiva();
+        resetModo();
+        // Mostrar de nuevo el saludo sólo en pantalla inicial
+        if (greetingEl) {
+            greetingEl.classList.remove('ai-chat-greeting--hidden');
+        }
+        if (barraAccionesGlobal) {
+            barraAccionesGlobal.style.display = 'flex';
+        }
     };
 
     const crearGrupoBotones = (opciones, onSelect) => {
         const group = document.createElement('div');
-        group.className = 'ai-outfit-actions';
+        group.className = 'ai-outfit-actions ai-outfit-actions--chips';
         group.style.marginTop = '0.4rem';
         opciones.forEach(op => {
             const btn = document.createElement('button');
@@ -109,15 +153,59 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    // --- Menú principal de modos ---
     const mostrarMenuModos = () => {
+        limpiarRecomendacionActiva();
+        resetModo();
+
+        // Ocultar el saludo al entrar en el flujo de recomendaciones
+        if (greetingEl) {
+            greetingEl.classList.add('ai-chat-greeting--hidden');
+        }
+
+        // Ocultar el botón global "Recomiéndame…" al entrar en el flujo
+        if (barraAccionesGlobal) {
+            barraAccionesGlobal.style.display = 'none';
+        }
+
         const card = document.createElement('div');
         card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+        const headerRow = document.createElement('div');
+        headerRow.style.display = 'flex';
+        headerRow.style.justifyContent = 'space-between';
+        headerRow.style.alignItems = 'center';
+        headerRow.style.gap = '0.5rem';
 
         const titulo = document.createElement('div');
         titulo.className = 'ai-outfit-explicacion';
         titulo.textContent = '¿Cómo quieres que te recomiende hoy?';
-        card.appendChild(titulo);
+        headerRow.appendChild(titulo);
+
+        // Icono pequeño de "Inicio" a la derecha del título
+        if (!inicioBtn) {
+            inicioBtn = document.createElement('button');
+            inicioBtn.type = 'button';
+            inicioBtn.className = 'ai-outfit-btn';
+            inicioBtn.innerText = '🏠';
+            inicioBtn.title = 'Volver al menú de modos';
+            inicioBtn.style.padding = '0.25rem 0.5rem';
+            inicioBtn.addEventListener('click', function () {
+                // Desde cualquier punto del flujo, el icono de casa
+                // debe traer de vuelta al menú de modos, sin ir al
+                // estado de saludo inicial.
+                limpiarRecomendacionActiva();
+                resetModo();
+                messagesContainer.innerHTML = '';
+                mostrarMenuModos();
+            });
+        }
+        const inicioIconWrapper = document.createElement('div');
+        inicioIconWrapper.style.display = 'flex';
+        inicioIconWrapper.style.alignItems = 'center';
+        inicioIconWrapper.appendChild(inicioBtn);
+        headerRow.appendChild(inicioIconWrapper);
+
+        card.appendChild(headerRow);
 
         const modos = [
             { value: 'SORPRESA', label: 'Conjunto sorpresa' },
@@ -135,13 +223,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (op.value === 'SORPRESA' || op.value === 'SIN_REPETIR') {
                 solicitarRecomendacion();
             } else if (op.value === 'COLOR') {
-                preguntarColor();
+                solicitarRecomendacionConPregunta(preguntarColor);
             } else if (op.value === 'MARCA') {
-                preguntarMarca();
+                solicitarRecomendacionConPregunta(preguntarMarca);
             } else if (op.value === 'TIEMPO') {
-                preguntarTiempo();
+                solicitarRecomendacionConPregunta(preguntarTiempo);
             } else if (op.value === 'OCASION') {
-                preguntarOcasion();
+                solicitarRecomendacionConPregunta(preguntarOcasion);
             } else if (op.value === 'COMPLETAR') {
                 appendMessage('Fija primero la prenda que quieras mantener (superior, inferior o calzado) y luego pulsa "Otra sugerencia".', 'bot');
                 solicitarRecomendacion();
@@ -149,8 +237,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         card.appendChild(group);
+
+
         messagesContainer.appendChild(card);
         scrollToBottom();
+    };
+
+    const solicitarRecomendacionConPregunta = (fnPregunta) => {
+        fnPregunta();
     };
 
     // --- Preguntas por modo ---
@@ -373,11 +467,56 @@ document.addEventListener('DOMContentLoaded', function () {
         return col;
     };
 
-    const appendOutfitCard = (recomendacion) => {
-        // Actualizar estado de "sin repetir": añadir conjunto usado (trío completo)
-        if (estadoModo.modo === 'SIN_REPETIR' && recomendacion.superior && recomendacion.inferior && recomendacion.calzado) {
+    const crearBotonVolver = () => {
+        const volverBtn = document.createElement('button');
+        volverBtn.type = 'button';
+        volverBtn.className = 'ai-outfit-btn ai-outfit-btn--ghost';
+        volverBtn.textContent = 'Volver';
+
+        if (historialRecomendaciones.length <= 1) {
+            volverBtn.disabled = true;
+            volverBtn.title = 'No hay una recomendación anterior a la que volver';
+        }
+
+        volverBtn.addEventListener('click', function () {
+            if (historialRecomendaciones.length <= 1) {
+                return; // nada a lo que volver
+            }
+            // Quitar la recomendación actual del historial
+            historialRecomendaciones.pop();
+            const anterior = historialRecomendaciones[historialRecomendaciones.length - 1];
+            if (anterior) {
+                // Renderizar de nuevo la recomendación anterior sin resetear modo
+                appendOutfitCard(anterior, { fromHistory: true });
+            }
+        });
+        return volverBtn;
+    };
+
+    const appendOutfitCard = (recomendacion, opciones = {}) => {
+        const fromHistory = opciones.fromHistory === true;
+
+        // Reemplazar card anterior si existe
+        limpiarRecomendacionActiva();
+
+        // Ocultar barra global mientras hay recomendación activa
+        if (barraAccionesGlobal) {
+            barraAccionesGlobal.style.display = 'none';
+        }
+        // Ocultar el saludo cuando se está mostrando una recomendación
+        if (greetingEl) {
+            greetingEl.classList.add('ai-chat-greeting--hidden');
+        }
+
+        // Actualizar estado de "sin repetir": solo añadimos al historial de conjuntosUsados si es una nueva recomendación
+        if (!fromHistory && recomendacion && recomendacion.superior && recomendacion.inferior && recomendacion.calzado) {
             const clave = `${recomendacion.superior.id}-${recomendacion.inferior.id}-${recomendacion.calzado.id}`;
             estadoModo.conjuntosUsados.add(clave);
+        }
+
+        // Guardar en historial si es una recomendación nueva (no un render desde historial)
+        if (!fromHistory && recomendacion) {
+            historialRecomendaciones.push(recomendacion);
         }
 
         const wrapper = document.createElement('div');
@@ -392,7 +531,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const explanation = document.createElement('div');
         explanation.className = 'ai-outfit-explicacion';
-        explanation.textContent = recomendacion.mensaje || '';
+        if (estadoModo.modo === 'SORPRESA') {
+            explanation.textContent = 'Sorpresa inteligente: combinación equilibrada y variada';
+        } else {
+            explanation.textContent = recomendacion.mensaje || '';
+        }
         wrapper.appendChild(explanation);
 
         if (Array.isArray(recomendacion.faltantes) && recomendacion.faltantes.length > 0) {
@@ -409,13 +552,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const actions = document.createElement('div');
         actions.className = 'ai-outfit-actions';
 
+        // Botón Volver como acción de navegación más discreta
+        const volverBtn = crearBotonVolver();
+        actions.appendChild(volverBtn);
+
         const otraBtn = document.createElement('button');
         otraBtn.type = 'button';
         otraBtn.className = 'ai-outfit-btn';
         otraBtn.textContent = 'Otra sugerencia';
         otraBtn.addEventListener('click', function () {
-            // repetir el mismo modo + filtros + prendas fijadas
-            solicitarRecomendacion();
+            if (estadoModo.cargandoRecomendacion) return;
+            estadoModo.cargandoRecomendacion = true;
+            otraBtn.disabled = true;
+            solicitarRecomendacion().finally(() => {
+                estadoModo.cargandoRecomendacion = false;
+            });
         });
 
         const guardarBtn = document.createElement('button');
@@ -432,6 +583,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
         actions.appendChild(otraBtn);
         actions.appendChild(guardarBtn);
+        wrapper.appendChild(actions);
+
+        messagesContainer.appendChild(wrapper);
+        ultimaCardRecomendacion = wrapper;
+        estadoModo.hayRecomendacionActiva = true;
+        estadoModo.cargandoRecomendacion = false;
+        scrollToBottom();
+    };
+
+    const mostrarErrorRecomendacion = (mensaje) => {
+        // No limpiamos la recomendación activa aquí para no perder el último conjunto válido.
+        // Simplemente mostramos un aviso adicional con opciones para salir o cambiar de modo.
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+        const texto = document.createElement('div');
+        texto.className = 'ai-outfit-warning';
+        texto.textContent = mensaje;
+        wrapper.appendChild(texto);
+
+        const actions = document.createElement('div');
+        actions.className = 'ai-outfit-actions';
+        actions.style.justifyContent = 'flex-start';
+
+        const volverBtn = document.createElement('button');
+        volverBtn.type = 'button';
+        volverBtn.className = 'ai-outfit-btn';
+        volverBtn.textContent = 'Volver al menú';
+        volverBtn.addEventListener('click', function () {
+            limpiarRecomendacionActiva();
+            mostrarMenuModos();
+        });
+
+        const cambiarBtn = document.createElement('button');
+        cambiarBtn.type = 'button';
+        cambiarBtn.className = 'ai-outfit-btn';
+        cambiarBtn.textContent = 'Cambiar modo';
+        cambiarBtn.addEventListener('click', function () {
+            limpiarRecomendacionActiva();
+            resetModo();
+            mostrarMenuModos();
+        });
+
+        actions.appendChild(volverBtn);
+        actions.appendChild(cambiarBtn);
         wrapper.appendChild(actions);
 
         messagesContainer.appendChild(wrapper);
@@ -562,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function () {
             conjuntosUsados: Array.from(estadoModo.conjuntosUsados)
         };
 
-        fetch('/api/chat/recomendar-conjunto', {
+        return fetch('/api/chat/recomendar-conjunto', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -584,8 +781,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typingMsg.parentNode) {
                     typingMsg.parentNode.removeChild(typingMsg);
                 }
-                if (!data) {
-                    appendMessage('No he podido generar una recomendación ahora mismo.', 'bot');
+                if (!data || (!data.superior && !data.inferior && !data.calzado)) {
+                    mostrarErrorRecomendacion('No se ha podido generar un nuevo conjunto. Prueba a volver al menú o a cambiar de modo.');
                     return;
                 }
                 appendOutfitCard(data);
@@ -594,13 +791,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typingMsg.parentNode) {
                     typingMsg.parentNode.removeChild(typingMsg);
                 }
-                appendMessage(err.message || 'Ha ocurrido un error al generar la recomendación.', 'bot');
+                mostrarErrorRecomendacion(err.message || 'No se ha podido generar un nuevo conjunto. Prueba a volver al menú o a cambiar de modo.');
             });
     };
 
-    // --- Botones globales del widget ---
     const crearBotonRecomendar = () => {
         if (document.getElementById('ai-chat-recomendar-btn')) {
+            barraAccionesGlobal = document.getElementById('ai-chat-recomendar-btn').closest('div');
             return;
         }
         const body = windowEl.querySelector('.ai-chat-body');
@@ -609,11 +806,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const actions = document.createElement('div');
         actions.style.marginTop = '0.5rem';
         actions.style.display = 'flex';
-        actions.style.justifyContent = 'space-between';
+        actions.style.justifyContent = 'center'; // centrado horizontal
         actions.style.alignItems = 'center';
-
-        const leftGroup = document.createElement('div');
-        const rightGroup = document.createElement('div');
+        actions.style.gap = '0.5rem';
 
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -624,23 +819,9 @@ document.addEventListener('DOMContentLoaded', function () {
             mostrarMenuModos();
         });
 
-        const desfijarBtn = document.createElement('button');
-        desfijarBtn.type = 'button';
-        desfijarBtn.className = 'ai-chat-recomendar-btn';
-        desfijarBtn.textContent = 'Desfijar todo';
-        desfijarBtn.addEventListener('click', function () {
-            prendasFijas.superiorId = null;
-            prendasFijas.inferiorId = null;
-            prendasFijas.calzadoId = null;
-            appendMessage('He quitado todas las prendas fijadas. Las siguientes sugerencias serán totalmente libres (según el modo que elijas).', 'bot');
-        });
-
-        leftGroup.appendChild(btn);
-        rightGroup.appendChild(desfijarBtn);
-
-        actions.appendChild(leftGroup);
-        actions.appendChild(rightGroup);
+        actions.appendChild(btn);
         body.appendChild(actions);
+        barraAccionesGlobal = actions;
     };
 
     // --- Eventos de abrir/cerrar/minimizar ventana ---

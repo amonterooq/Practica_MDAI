@@ -113,7 +113,8 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
 
         if (!faltantes.isEmpty()) {
             if (faltantes.size() == 3) {
-                dto.setMensaje("Necesitas al menos una prenda superior, una inferior y calzado para que pueda recomendarte conjuntos.");
+                // Mensaje genérico para todos los modos cuando falta algún tipo de prenda básica
+                dto.setMensaje("Necesitas al menos una prenda superior, una inferior y calzado.");
             } else {
                 dto.setMensaje("Aún te faltan prendas para crear conjuntos completos: " + String.join(", ", faltantes) + ".");
             }
@@ -123,9 +124,10 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         // Evitar recomendar conjuntos ya existentes
         Set<String> combinacionesExistentes = cargarCombinacionesExistentes(usuarioId);
 
-        // En modo SIN_REPETIR, también evitamos las combinaciones ya propuestas en esta sesión
-        if (modo != null && modo.equalsIgnoreCase("SIN_REPETIR") && conjuntosUsados != null && !conjuntosUsados.isEmpty()) {
-            combinacionesExistentes = new HashSet<>(combinacionesExistentes); // copiar para no modificar el original
+        // En modo SIN_REPETIR y SORPRESA, también evitamos las combinaciones ya propuestas en esta sesión
+        if (modo != null && (modo.equalsIgnoreCase("SIN_REPETIR") || modo.equalsIgnoreCase("SORPRESA"))
+                && conjuntosUsados != null && !conjuntosUsados.isEmpty()) {
+            combinacionesExistentes = new HashSet<>(combinacionesExistentes);
             combinacionesExistentes.addAll(conjuntosUsados);
         }
 
@@ -160,6 +162,8 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         if (!encontradaNueva) {
             if (modo != null && modo.equalsIgnoreCase("SIN_REPETIR")) {
                 dto.setMensaje("Ya no quedan más combinaciones diferentes con tus prendas y los filtros actuales.");
+            } else if (modo != null && modo.equalsIgnoreCase("SORPRESA")) {
+                dto.setMensaje("No existen más combinaciones posibles, creo que ya es hora de ir de compras.");
             } else {
                 dto.setMensaje("Ya tienes guardados todos los conjuntos posibles con tu armario actual. Prueba a añadir nuevas prendas para más combinaciones.");
             }
@@ -171,13 +175,16 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         dto.setCalzado(mapearPrendaCalzado(calzado));
 
         StringBuilder explicacion = new StringBuilder();
-        explicacion.append("He combinado una parte superior, una inferior y un calzado de tu armario.");
-
-        if (superior != null && inferior != null && Objects.equals(superior.getColor(), inferior.getColor())) {
-            explicacion.append(" Los tonos de la parte superior y la inferior combinan entre sí.");
-        }
-        if (calzado != null && inferior != null && Objects.equals(calzado.getColor(), inferior.getColor())) {
-            explicacion.append(" El calzado también mantiene la gama de colores de la parte inferior.");
+        if (modo != null && modo.equalsIgnoreCase("SORPRESA")) {
+            explicacion.append("Sorpresa inteligente: combinación equilibrada y variada");
+        } else {
+            explicacion.append("He combinado una parte superior, una inferior y un calzado de tu armario.");
+            if (superior != null && inferior != null && Objects.equals(superior.getColor(), inferior.getColor())) {
+                explicacion.append(" Los tonos de la parte superior y la inferior combinan entre sí.");
+            }
+            if (calzado != null && inferior != null && Objects.equals(calzado.getColor(), inferior.getColor())) {
+                explicacion.append(" El calzado también mantiene la gama de colores de la parte inferior.");
+            }
         }
 
         dto.setMensaje(explicacion.toString());
