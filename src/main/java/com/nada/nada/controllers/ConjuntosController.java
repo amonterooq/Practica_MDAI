@@ -246,15 +246,18 @@ public class ConjuntosController {
                 Post post = conjunto.getPost();
                 Long postId = (post != null ? post.getId() : null);
 
+                // IMPORTANTE: Eliminar los likes ANTES de desvincular el post
+                // porque orphanRemoval borrará el post automáticamente al hacer setPost(null)
+                if (postId != null) {
+                    postService.eliminarLikesDelPost(postId);
+                }
+
                 if (post != null) {
                     post.setConjunto(null);
                 }
                 conjunto.setPost(null);
                 conjuntoService.guardarConjunto(conjunto);
 
-                if (postId != null) {
-                    postService.eliminarPost(postId);
-                }
                 redirectAttributes.addFlashAttribute("success", "Publicación del conjunto eliminada.");
             }
         } catch (Exception e) {
