@@ -33,15 +33,17 @@ public class ConjuntoServiceImpl implements ConjuntoService {
     private final PrendaInferiorRepository prendaInferiorRepository;
     private final PrendaCalzadoRepository prendaCalzadoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PostService postService;
 
     @Autowired
     public ConjuntoServiceImpl(ConjuntoRepository conjuntoRepository, PrendaSuperiorRepository prendaSuperiorRepository, PrendaInferiorRepository prendaInferiorRepository,
-                               PrendaCalzadoRepository prendaCalzadoRepository, UsuarioRepository usuarioRepository) {
+                               PrendaCalzadoRepository prendaCalzadoRepository, UsuarioRepository usuarioRepository, PostService postService) {
         this.conjuntoRepository = conjuntoRepository;
         this.prendaSuperiorRepository = prendaSuperiorRepository;
         this.prendaInferiorRepository = prendaInferiorRepository;
         this.prendaCalzadoRepository = prendaCalzadoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.postService = postService;
     }
 
     @Override
@@ -96,15 +98,31 @@ public class ConjuntoServiceImpl implements ConjuntoService {
             return false;
         }
         try {
-            conjuntoRepository.deleteById(id);
-            return true;
-        } catch (EmptyResultDataAccessException erdae) {
-            // Ya fue eliminado o no existía
+            Optional<Conjunto> conjuntoOpt = conjuntoRepository.findById(id);
+            if (conjuntoOpt.isPresent()) {
+                Conjunto conjunto = conjuntoOpt.get();
+
+                // Si el conjunto tiene un post asociado, limpiar sus likes antes de borrar
+                // El orphanRemoval de Conjunto borrará el post automáticamente al hacer setPost(null)
+                if (conjunto.getPost() != null) {
+                    Long postId = conjunto.getPost().getId();
+
+                    // Eliminar los likes usando el servicio
+                    postService.eliminarLikesDelPost(postId);
+
+                    // NO llamar a eliminarPost aquí, el orphanRemoval ya lo hará
+                }
+
+                // Al borrar el conjunto, orphanRemoval borra automáticamente el post asociado
+                conjuntoRepository.delete(conjunto);
+                return true;
+            }
             return false;
-        } catch (DataIntegrityViolationException dive) {
-            throw new RuntimeException("No se pudo eliminar el conjunto por violación de integridad: " + dive.getMessage(), dive);
+        } catch (EmptyResultDataAccessException erdae) {
+            return false;
         } catch (Exception e) {
-            throw new RuntimeException("Error inesperado al eliminar el conjunto", e);
+            logger.error("Error al borrar el conjunto con id: " + id, e);
+            throw new RuntimeException("Error al borrar el conjunto", e);
         }
     }
 

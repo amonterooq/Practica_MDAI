@@ -3,6 +3,7 @@ package com.nada.nada.data.services;
 import com.nada.nada.data.model.Post;
 import com.nada.nada.data.model.Usuario;
 import com.nada.nada.data.repository.PostRepository;
+import com.nada.nada.data.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +16,12 @@ import java.util.Optional;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository) {
+    public PostServiceImpl(PostRepository postRepository, UsuarioRepository usuarioRepository) {
         this.postRepository = postRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -45,7 +48,6 @@ public class PostServiceImpl implements PostService {
             throw new IllegalArgumentException("El post no puede ser nulo");
         }
 
-        // Aquí se podrían añadir validaciones específicas según los campos de Post
         return postRepository.save(post);
     }
 
@@ -57,10 +59,13 @@ public class PostServiceImpl implements PostService {
         }
 
         if (!postRepository.existsById(id)) {
-            // Igual que en eliminarUsuario: no hace nada si el post no existe
             return;
         }
 
+        // Primero eliminar los likes
+        eliminarLikesDelPost(id);
+
+        // Ahora borrar el post
         postRepository.deleteById(id);
     }
 
@@ -105,7 +110,32 @@ public class PostServiceImpl implements PostService {
         return postRepository.findByIdWithLikes(postId)
                 .map(post -> post.getUsuariosQueDieronLike().stream()
                         .map(Usuario::getId)
-                        .anyMatch(id -> id != null && id.equals(usuarioId)))
+                        .anyMatch(uid -> uid != null && uid.equals(usuarioId)))
                 .orElse(false);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarLikesDelPost(Long postId) {
+        if (postId == null || postId <= 0) {
+            return;
+        }
+
+        // Cargar el post con sus likes
+        Optional<Post> postOpt = postRepository.findByIdWithLikes(postId);
+        if (postOpt.isEmpty()) {
+            return;
+        }
+
+        Post post = postOpt.get();
+
+        // Recorrer los usuarios que dieron like y eliminar el post de sus listas
+        // Copiamos la lista para evitar ConcurrentModificationException
+        List<Usuario> usuarios = new ArrayList<>(post.getUsuariosQueDieronLike());
+        for (Usuario usuario : usuarios) {
+            usuario.getPostsLikeados().remove(post);
+            usuarioRepository.save(usuario);
+        }
+        post.getUsuariosQueDieronLike().clear();
     }
 }

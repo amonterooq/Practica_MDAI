@@ -13,4 +13,7 @@ public interface PostService {
     public List<Post> buscarPostsPorUsuario(Long usuarioId);
     public int contarLikes(Long postId);
     public boolean usuarioHaDadoLike(Long postId, Long usuarioId);
+
+    // Elimina solo los likes de un post (para usar antes de orphanRemoval)
+    public void eliminarLikesDelPost(Long postId);
 }
