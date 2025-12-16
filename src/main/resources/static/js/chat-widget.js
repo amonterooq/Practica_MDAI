@@ -78,10 +78,29 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const appendMessage = (text, type) => {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('ai-chat-message-wrapper', `ai-chat-message-wrapper--${type}`);
+
         const msg = document.createElement('div');
         msg.classList.add('ai-chat-message', `ai-chat-message--${type}`);
         msg.textContent = text;
-        messagesContainer.appendChild(msg);
+
+        wrapper.appendChild(msg);
+        messagesContainer.appendChild(wrapper);
+        scrollToBottom();
+    };
+
+    // Nueva función para mostrar la selección del usuario como burbuja
+    const appendUserSelection = (text) => {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('ai-chat-message-wrapper', 'ai-chat-message-wrapper--user');
+
+        const msg = document.createElement('div');
+        msg.classList.add('ai-chat-message', 'ai-chat-message--user');
+        msg.textContent = text;
+
+        wrapper.appendChild(msg);
+        messagesContainer.appendChild(wrapper);
         scrollToBottom();
     };
 
@@ -196,6 +215,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const group = crearGrupoBotones(modos, (op, groupEl, btn) => {
             marcarSeleccionEnGrupo(groupEl, btn);
             estadoModo.modo = op.value;
+
+            // Mostrar la selección del usuario como burbuja
+            appendUserSelection(op.label);
+
             if (op.value === 'SORPRESA' || op.value === 'SIN_REPETIR') {
                 solicitarRecomendacion();
             } else if (op.value === 'COLOR') {
@@ -248,6 +271,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
                 estadoModo.colorSeleccionado = op.value;
                 marcarSeleccionEnGrupo(groupEl, btn);
+
+                // Mostrar la selección del usuario como burbuja
+                appendUserSelection(`Color: ${op.value}`);
+
                 // Paso 2: Preguntar tipo de combinación
                 preguntarTipoCombinacion('COLOR');
             });
@@ -295,6 +322,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
                 estadoModo.marcaSeleccionada = op.value;
                 marcarSeleccionEnGrupo(groupEl, btn);
+
+                // Mostrar la selección del usuario como burbuja
+                appendUserSelection(`Marca: ${op.value}`);
+
                 // Paso 2: Preguntar tipo de combinación
                 preguntarTipoCombinacion('MARCA');
             });
@@ -338,6 +369,9 @@ document.addEventListener('DOMContentLoaded', function () {
             estadoModo.tipoCombinacion = op.value;
             marcarSeleccionEnGrupo(groupEl, btn);
 
+            // Mostrar la selección del usuario como burbuja
+            appendUserSelection(op.label);
+
             if (op.value === 'TODO') {
                 // Ir directamente a solicitar recomendación
                 solicitarRecomendacion();
@@ -373,6 +407,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
             estadoModo.intensidad = op.value;
             marcarSeleccionEnGrupo(groupEl, btn);
+
+            // Mostrar la selección del usuario como burbuja
+            appendUserSelection(op.label);
+
             // Ahora sí, solicitar recomendación
             solicitarRecomendacion();
         });
@@ -400,6 +438,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
             estadoModo.tiempo = op.value;
             marcarSeleccionEnGrupo(groupEl, btn);
+
+            // Mostrar la selección del usuario como burbuja
+            appendUserSelection(`Tiempo: ${op.label}`);
+
             solicitarRecomendacion();
         });
 
@@ -427,6 +469,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
             estadoModo.ocasion = op.value;
             marcarSeleccionEnGrupo(groupEl, btn);
+
+            // Mostrar la selección del usuario como burbuja
+            appendUserSelection(`Ocasión: ${op.label}`);
+
             solicitarRecomendacion();
         });
 
@@ -534,12 +580,20 @@ document.addEventListener('DOMContentLoaded', function () {
             historialRecomendaciones.push(recomendacion);
         }
 
+        // Crear wrapper para la recomendación completa
+        const outerWrapper = document.createElement('div');
+        outerWrapper.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+        outerWrapper.style.marginTop = '1rem';
+        outerWrapper.style.marginBottom = '1rem';
+
         const wrapper = document.createElement('div');
         wrapper.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
         wrapper.style.display = 'flex';
         wrapper.style.flexDirection = 'column';
         wrapper.style.alignItems = 'center';
         wrapper.style.textAlign = 'center';
+        wrapper.style.padding = '1rem';
+        wrapper.style.borderRadius = '12px';
 
         const grid = document.createElement('div');
         grid.className = 'ai-outfit-grid';
@@ -609,6 +663,8 @@ document.addEventListener('DOMContentLoaded', function () {
         modosInlineBtn.className = 'ai-outfit-btn ai-outfit-btn--ghost';
         modosInlineBtn.textContent = 'Modos';
         modosInlineBtn.addEventListener('click', function () {
+            // Mostrar burbuja del usuario
+            appendUserSelection('Cambiar de modo');
             mostrarMenuModos();
         });
         actions.appendChild(modosInlineBtn);
@@ -619,6 +675,10 @@ document.addEventListener('DOMContentLoaded', function () {
         otraBtn.textContent = 'Otra sugerencia';
         otraBtn.addEventListener('click', function () {
             if (estadoModo.cargandoRecomendacion) return;
+
+            // Mostrar burbuja del usuario
+            appendUserSelection('Otra sugerencia');
+
             estadoModo.cargandoRecomendacion = true;
             otraBtn.disabled = true;
             solicitarRecomendacion().finally(() => {
@@ -643,6 +703,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         guardarBtn.addEventListener('click', function () {
             if (recomendacion.yaGuardado) return; // Prevenir guardado múltiple
+
+            // Mostrar burbuja del usuario
+            appendUserSelection('Guardar conjunto');
+
             mostrarFormularioGuardado(wrapper, recomendacion, guardarBtn);
         });
 
@@ -654,12 +718,15 @@ document.addEventListener('DOMContentLoaded', function () {
         actions.appendChild(guardarBtn);
         wrapper.appendChild(actions);
 
+        // Añadir el wrapper al outer wrapper
+        outerWrapper.appendChild(wrapper);
+
         // El menú de modos NO se muestra dentro de cada card para mantener el chat limpio.
         // El usuario puede cambiar de modo usando:
         // - El botón "Modos" de la cabecera.
         // - El botón "Modos" lateral de cada card.
 
-        messagesContainer.appendChild(wrapper);
+        messagesContainer.appendChild(outerWrapper);
         ultimaCardRecomendacion = wrapper;
         estadoModo.hayRecomendacionActiva = true;
         estadoModo.cargandoRecomendacion = false;
@@ -679,15 +746,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Preparar el body para guardar
+        const timestamp = new Date().toLocaleString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
         const bodyGuardar = {
-            nombre: 'Conjunto generado', // Podrías pedir el nombre al usuario
-            superiorId: recomendacion.superior.id,
-            inferiorId: recomendacion.inferior.id,
-            calzadoId: recomendacion.calzado.id
+            nombre: 'Conjunto ' + timestamp,
+            prendaSuperiorId: recomendacion.superior.id,
+            prendaInferiorId: recomendacion.inferior.id,
+            prendaCalzadoId: recomendacion.calzado.id
         };
 
-        // Llamar al endpoint de guardado (ajusta según tu API)
-        fetch('/api/conjuntos', {
+        // Llamar al endpoint correcto de guardado
+        fetch('/api/chat/guardar-conjunto', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -696,11 +769,22 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(function (response) {
                 if (!response.ok) {
-                    throw new Error('No se pudo guardar el conjunto');
+                    // Intentar leer el mensaje de error del backend
+                    return response.json().then(data => {
+                        throw new Error(data.mensaje || 'No se pudo guardar el conjunto');
+                    }).catch(() => {
+                        throw new Error('No se pudo guardar el conjunto');
+                    });
                 }
                 return response.json();
             })
             .then(function (data) {
+                // Verificar si el guardado fue exitoso
+                if (data && data.exito === false) {
+                    appendMessage(data.mensaje || 'No se pudo guardar el conjunto.', 'bot');
+                    return;
+                }
+
                 // Marcar la recomendación como guardada
                 recomendacion.yaGuardado = true;
 
@@ -730,6 +814,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const group = crearGrupoBotones(modos, (op, groupEl, btn) => {
                     marcarSeleccionEnGrupo(groupEl, btn);
+
+                    // Mostrar burbuja del usuario
+                    appendUserSelection(op.label);
+
                     resetModo();
                     estadoModo.modo = op.value;
 
@@ -754,7 +842,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 scrollToBottom();
             })
             .catch(function (err) {
-                appendMessage('No se pudo guardar el conjunto. Inténtalo de nuevo.', 'bot');
+                const mensaje = err.message || 'No se pudo guardar el conjunto. Inténtalo de nuevo.';
+                appendMessage(mensaje, 'bot');
             });
     };
 
@@ -784,6 +873,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
                 marcarSeleccionEnGrupo(groupEl, btn);
+
+                // Mostrar burbuja del usuario
+                appendUserSelection(op.label);
 
                 if (op.value === 'PROBAR_COMBINADO') {
                     // Cambiar a combinado y preguntar intensidad
@@ -826,6 +918,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const group = crearGrupoBotones(modos, (op, groupEl, btn) => {
                 marcarSeleccionEnGrupo(groupEl, btn);
+
+                // Mostrar burbuja del usuario
+                appendUserSelection(op.label);
+
                 resetModo();
                 estadoModo.modo = op.value;
 
