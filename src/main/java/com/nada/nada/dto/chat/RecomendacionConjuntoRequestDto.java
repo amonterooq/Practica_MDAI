@@ -21,6 +21,10 @@ public class RecomendacionConjuntoRequestDto {
     private List<Long> prendasEvitarIds;
     private List<String> conjuntosUsados; // claves "supId-infId-calId" ya servidas al usuario en esta sesión
 
+    // Nuevos campos para el flujo unificado de COLOR/MARCA
+    private String tipoCombinacion; // TODO, COMBINADO
+    private String intensidad;      // PROTAGONISTA, TOQUE
+
     public RecomendacionConjuntoRequestDto() {
     }
 
@@ -102,5 +106,21 @@ public class RecomendacionConjuntoRequestDto {
 
     public void setConjuntosUsados(List<String> conjuntosUsados) {
         this.conjuntosUsados = conjuntosUsados;
+    }
+
+    public String getTipoCombinacion() {
+        return tipoCombinacion;
+    }
+
+    public void setTipoCombinacion(String tipoCombinacion) {
+        this.tipoCombinacion = tipoCombinacion;
+    }
+
+    public String getIntensidad() {
+        return intensidad;
+    }
+
+    public void setIntensidad(String intensidad) {
+        this.intensidad = intensidad;
     }
 }

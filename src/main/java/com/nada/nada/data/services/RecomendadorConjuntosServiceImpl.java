@@ -57,6 +57,8 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         String marcaFiltro = preferencias != null ? preferencias.getMarcaFiltro() : null;
         List<Long> prendasEvitarIds = preferencias != null ? preferencias.getPrendasEvitarIds() : null;
         List<String> conjuntosUsados = preferencias != null ? preferencias.getConjuntosUsados() : null;
+        String tipoCombinacion = preferencias != null ? preferencias.getTipoCombinacion() : null;
+        String intensidad = preferencias != null ? preferencias.getIntensidad() : null;
 
         RecomendacionConjuntoResponseDto dto = new RecomendacionConjuntoResponseDto();
 
@@ -68,13 +70,29 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
 
         List<Prenda> prendasUsuario = prendaService.buscarPrendasPorUsuarioId(usuarioId);
 
-        // Filtro por color/marca cuando aplique el modo
-        if (modo != null && modo.equalsIgnoreCase("COLOR") && colorFiltro != null && !colorFiltro.isBlank()) {
+        // Lógica para COLOR y MARCA con tipoCombinacion
+        boolean esModoColor = modo != null && modo.equalsIgnoreCase("COLOR");
+        boolean esModoMarca = modo != null && modo.equalsIgnoreCase("MARCA");
+        boolean esTodo = tipoCombinacion != null && tipoCombinacion.equalsIgnoreCase("TODO");
+        boolean esCombinado = tipoCombinacion != null && tipoCombinacion.equalsIgnoreCase("COMBINADO");
+
+        // Si es modo COLOR o MARCA con tipoCombinacion = TODO, filtrar todas las prendas
+        if (esModoColor && esTodo && colorFiltro != null && !colorFiltro.isBlank()) {
             prendasUsuario = prendasUsuario.stream()
                     .filter(p -> colorFiltro.equalsIgnoreCase(p.getColor()))
                     .collect(Collectors.toList());
+        } else if (esModoMarca && esTodo && marcaFiltro != null && !marcaFiltro.isBlank()) {
+            String mf = marcaFiltro.toLowerCase();
+            prendasUsuario = prendasUsuario.stream()
+                    .filter(p -> p.getMarca() != null && p.getMarca().toLowerCase().contains(mf))
+                    .collect(Collectors.toList());
         }
-        if (modo != null && modo.equalsIgnoreCase("MARCA") && marcaFiltro != null && !marcaFiltro.isBlank()) {
+        // Si es modo COLOR/MARCA antiguo sin tipoCombinacion (compatibilidad)
+        else if (esModoColor && colorFiltro != null && !colorFiltro.isBlank() && tipoCombinacion == null) {
+            prendasUsuario = prendasUsuario.stream()
+                    .filter(p -> colorFiltro.equalsIgnoreCase(p.getColor()))
+                    .collect(Collectors.toList());
+        } else if (esModoMarca && marcaFiltro != null && !marcaFiltro.isBlank() && tipoCombinacion == null) {
             String mf = marcaFiltro.toLowerCase();
             prendasUsuario = prendasUsuario.stream()
                     .filter(p -> p.getMarca() != null && p.getMarca().toLowerCase().contains(mf))
@@ -142,9 +160,116 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         while (intentos < MAX_INTENTOS && !encontradaNueva) {
             intentos++;
 
-            PrendaSuperior candidatoSup = elegirSuperior(superiores, superiorFijoId);
-            PrendaInferior candidatoInf = elegirInferior(inferiores, inferiorFijoId);
-            PrendaCalzado candidatoCal = elegirCalzado(calzados, calzadoFijoId);
+            PrendaSuperior candidatoSup;
+            PrendaInferior candidatoInf;
+            PrendaCalzado candidatoCal;
+
+            // Lógica especial para modo COMBINADO (COLOR o MARCA)
+            if ((esModoColor || esModoMarca) && esCombinado && intensidad != null) {
+                boolean esProtagonista = intensidad.equalsIgnoreCase("PROTAGONISTA");
+                boolean esToque = intensidad.equalsIgnoreCase("TOQUE");
+
+                List<PrendaSuperior> superioresDelCriterio = new ArrayList<>();
+                List<PrendaInferior> inferioresDelCriterio = new ArrayList<>();
+                List<PrendaCalzado> calzadosDelCriterio = new ArrayList<>();
+
+                List<PrendaSuperior> superioresOtros = new ArrayList<>();
+                List<PrendaInferior> inferioresOtros = new ArrayList<>();
+                List<PrendaCalzado> calzadosOtros = new ArrayList<>();
+
+                // Separar prendas del criterio vs otras
+                for (PrendaSuperior s : superiores) {
+                    boolean cumpleCriterio = false;
+                    if (esModoColor && colorFiltro != null) {
+                        cumpleCriterio = colorFiltro.equalsIgnoreCase(s.getColor());
+                    } else if (esModoMarca && marcaFiltro != null) {
+                        cumpleCriterio = s.getMarca() != null && s.getMarca().toLowerCase().contains(marcaFiltro.toLowerCase());
+                    }
+                    if (cumpleCriterio) {
+                        superioresDelCriterio.add(s);
+                    } else {
+                        superioresOtros.add(s);
+                    }
+                }
+
+                for (PrendaInferior i : inferiores) {
+                    boolean cumpleCriterio = false;
+                    if (esModoColor && colorFiltro != null) {
+                        cumpleCriterio = colorFiltro.equalsIgnoreCase(i.getColor());
+                    } else if (esModoMarca && marcaFiltro != null) {
+                        cumpleCriterio = i.getMarca() != null && i.getMarca().toLowerCase().contains(marcaFiltro.toLowerCase());
+                    }
+                    if (cumpleCriterio) {
+                        inferioresDelCriterio.add(i);
+                    } else {
+                        inferioresOtros.add(i);
+                    }
+                }
+
+                for (PrendaCalzado c : calzados) {
+                    boolean cumpleCriterio = false;
+                    if (esModoColor && colorFiltro != null) {
+                        cumpleCriterio = colorFiltro.equalsIgnoreCase(c.getColor());
+                    } else if (esModoMarca && marcaFiltro != null) {
+                        cumpleCriterio = c.getMarca() != null && c.getMarca().toLowerCase().contains(marcaFiltro.toLowerCase());
+                    }
+                    if (cumpleCriterio) {
+                        calzadosDelCriterio.add(c);
+                    } else {
+                        calzadosOtros.add(c);
+                    }
+                }
+
+                if (esProtagonista) {
+                    // PROTAGONISTA: intentar usar 2 prendas del criterio
+                    int prendasDelCriterio = 0;
+                    candidatoSup = elegirSuperior(superioresDelCriterio.isEmpty() ? superioresOtros : superioresDelCriterio, superiorFijoId);
+                    if (candidatoSup != null && !superioresDelCriterio.isEmpty()) prendasDelCriterio++;
+
+                    candidatoInf = elegirInferior(inferioresDelCriterio.isEmpty() ? inferioresOtros : inferioresDelCriterio, inferiorFijoId);
+                    if (candidatoInf != null && !inferioresDelCriterio.isEmpty()) prendasDelCriterio++;
+
+                    // Si ya tenemos 2, el calzado es de otros; si no, intentar que sea del criterio
+                    if (prendasDelCriterio >= 2) {
+                        candidatoCal = elegirCalzado(calzadosOtros.isEmpty() ? calzadosDelCriterio : calzadosOtros, calzadoFijoId);
+                    } else {
+                        candidatoCal = elegirCalzado(calzadosDelCriterio.isEmpty() ? calzadosOtros : calzadosDelCriterio, calzadoFijoId);
+                    }
+                } else if (esToque) {
+                    // TOQUE: usar exactamente 1 prenda del criterio
+                    // Elegir aleatoriamente qué tipo será del criterio
+                    int tipoDelCriterio = random.nextInt(3); // 0=superior, 1=inferior, 2=calzado
+
+                    if (tipoDelCriterio == 0 && !superioresDelCriterio.isEmpty()) {
+                        candidatoSup = elegirSuperior(superioresDelCriterio, superiorFijoId);
+                        candidatoInf = elegirInferior(inferioresOtros.isEmpty() ? inferioresDelCriterio : inferioresOtros, inferiorFijoId);
+                        candidatoCal = elegirCalzado(calzadosOtros.isEmpty() ? calzadosDelCriterio : calzadosOtros, calzadoFijoId);
+                    } else if (tipoDelCriterio == 1 && !inferioresDelCriterio.isEmpty()) {
+                        candidatoSup = elegirSuperior(superioresOtros.isEmpty() ? superioresDelCriterio : superioresOtros, superiorFijoId);
+                        candidatoInf = elegirInferior(inferioresDelCriterio, inferiorFijoId);
+                        candidatoCal = elegirCalzado(calzadosOtros.isEmpty() ? calzadosDelCriterio : calzadosOtros, calzadoFijoId);
+                    } else if (!calzadosDelCriterio.isEmpty()) {
+                        candidatoSup = elegirSuperior(superioresOtros.isEmpty() ? superioresDelCriterio : superioresOtros, superiorFijoId);
+                        candidatoInf = elegirInferior(inferioresOtros.isEmpty() ? inferioresDelCriterio : inferioresOtros, inferiorFijoId);
+                        candidatoCal = elegirCalzado(calzadosDelCriterio, calzadoFijoId);
+                    } else {
+                        // Fallback: si no hay suficientes prendas del criterio en la categoría elegida
+                        candidatoSup = elegirSuperior(superiores, superiorFijoId);
+                        candidatoInf = elegirInferior(inferiores, inferiorFijoId);
+                        candidatoCal = elegirCalzado(calzados, calzadoFijoId);
+                    }
+                } else {
+                    // Fallback por si intensidad no está definida correctamente
+                    candidatoSup = elegirSuperior(superiores, superiorFijoId);
+                    candidatoInf = elegirInferior(inferiores, inferiorFijoId);
+                    candidatoCal = elegirCalzado(calzados, calzadoFijoId);
+                }
+            } else {
+                // Lógica normal para otros modos
+                candidatoSup = elegirSuperior(superiores, superiorFijoId);
+                candidatoInf = elegirInferior(inferiores, inferiorFijoId);
+                candidatoCal = elegirCalzado(calzados, calzadoFijoId);
+            }
 
             if (candidatoSup == null || candidatoInf == null || candidatoCal == null) {
                 break;
@@ -160,7 +285,10 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         }
 
         if (!encontradaNueva) {
-            if (modo != null && modo.equalsIgnoreCase("SIN_REPETIR")) {
+            // Caso especial: modo COLOR o MARCA con tipoCombinacion TODO
+            if ((esModoColor || esModoMarca) && esTodo) {
+                dto.setMensaje("No he podido generar un conjunto completo con ese criterio.");
+            } else if (modo != null && modo.equalsIgnoreCase("SIN_REPETIR")) {
                 dto.setMensaje("Ya no quedan más combinaciones diferentes con tus prendas y los filtros actuales.");
             } else if (modo != null && modo.equalsIgnoreCase("SORPRESA")) {
                 dto.setMensaje("No existen más combinaciones posibles, creo que ya es hora de ir de compras.");
