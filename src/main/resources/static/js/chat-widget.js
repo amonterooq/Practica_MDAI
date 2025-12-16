@@ -203,13 +203,12 @@ document.addEventListener('DOMContentLoaded', function () {
         card.appendChild(titulo);
 
         const modos = [
-            { value: 'SORPRESA', label: 'Conjunto sorpresa' },
-            { value: 'COLOR', label: 'Por color' },
-            { value: 'MARCA', label: 'Por marca' },
-            { value: 'TIEMPO', label: 'Por tiempo' },
-            { value: 'OCASION', label: 'Por ocasión' },
-            { value: 'SIN_REPETIR', label: 'Sin repetir' },
-            { value: 'COMPLETAR', label: 'Completar esta prenda' }
+            { value: 'SORPRESA', label: '🎲 Conjunto sorpresa' },
+            { value: 'COLOR', label: '🎨 Por color' },
+            { value: 'MARCA', label: '🏷️ Por marca' },
+            { value: 'TIEMPO', label: '🌤️ Por tiempo' },
+            { value: 'OCASION', label: '🎯 Por ocasión' },
+            { value: 'COMPLETAR', label: '🧩 Completar esta prenda' }
         ];
 
         const group = crearGrupoBotones(modos, (op, groupEl, btn) => {
@@ -219,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Mostrar la selección del usuario como burbuja
             appendUserSelection(op.label);
 
-            if (op.value === 'SORPRESA' || op.value === 'SIN_REPETIR') {
+            if (op.value === 'SORPRESA') {
                 solicitarRecomendacion();
             } else if (op.value === 'COLOR') {
                 solicitarRecomendacionConPregunta(preguntarColor);
@@ -230,8 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (op.value === 'OCASION') {
                 solicitarRecomendacionConPregunta(preguntarOcasion);
             } else if (op.value === 'COMPLETAR') {
-                appendMessage('Fija primero la prenda que quieras mantener (superior, inferior o calzado) y luego pulsa "Otra sugerencia".', 'bot');
-                solicitarRecomendacion();
+                iniciarModoCompletar();
             }
         });
 
@@ -481,6 +479,214 @@ document.addEventListener('DOMContentLoaded', function () {
         scrollToBottom();
     };
 
+    // --- Modo COMPLETAR: flujo conversacional ---
+    const iniciarModoCompletar = () => {
+        // Paso 1: Elegir tipo de prenda
+        appendMessage('Perfecto 😊\nElige la prenda que quieres completar.', 'bot');
+
+        const card = document.createElement('div');
+        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+        const opciones = [
+            { value: 'SUPERIOR', label: '👕 Superior' },
+            { value: 'INFERIOR', label: '👖 Inferior' },
+            { value: 'CALZADO', label: '👟 Calzado' }
+        ];
+
+        const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+            marcarSeleccionEnGrupo(groupEl, btn);
+
+            // Mostrar la selección del usuario como burbuja
+            appendUserSelection(op.label);
+
+            // Paso 2: Mostrar prendas de ese tipo
+            mostrarPrendasParaCompletar(op.value);
+        });
+
+        card.appendChild(group);
+        messagesContainer.appendChild(card);
+        scrollToBottom();
+    };
+
+    const mostrarPrendasParaCompletar = (tipoPrenda) => {
+        // Mensaje del bot
+        appendMessage('Estas son tus prendas.\nElige una y te completo el conjunto.', 'bot');
+
+        // Mostrar indicador de carga
+        const typingId = `typing-${Date.now()}`;
+        const typingMsg = document.createElement('div');
+        typingMsg.classList.add('ai-chat-message', 'ai-chat-message--bot', 'ai-chat-message--typing');
+        typingMsg.id = typingId;
+        typingMsg.textContent = 'Cargando tus prendas...';
+        messagesContainer.appendChild(typingMsg);
+        scrollToBottom();
+
+        // Obtener las prendas del usuario según el tipo
+        fetch('/api/chat/prendas-por-tipo?tipo=' + tipoPrenda, {
+            method: 'GET'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('No se pudieron cargar las prendas');
+            }
+            return response.json();
+        })
+        .then(prendas => {
+            // Remover el indicador de carga
+            if (typingMsg.parentNode) {
+                typingMsg.parentNode.removeChild(typingMsg);
+            }
+
+            if (!prendas || prendas.length === 0) {
+                appendMessage('No tienes prendas de este tipo en tu armario.', 'bot');
+                appendMessage('¿Qué te gustaría hacer ahora?', 'bot');
+
+                const card = document.createElement('div');
+                card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+                const opciones = [
+                    { value: 'ELEGIR_OTRO_TIPO', label: '🔄 Elegir otro tipo' },
+                    { value: 'CAMBIAR_MODO', label: '🧭 Cambiar de modo' }
+                ];
+
+                const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+                    marcarSeleccionEnGrupo(groupEl, btn);
+                    appendUserSelection(op.label);
+
+                    if (op.value === 'ELEGIR_OTRO_TIPO') {
+                        iniciarModoCompletar();
+                    } else {
+                        mostrarMenuModos();
+                    }
+                });
+
+                card.appendChild(group);
+                messagesContainer.appendChild(card);
+                scrollToBottom();
+                return;
+            }
+
+            // Mostrar las prendas en una cuadrícula
+            const card = document.createElement('div');
+            card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            card.style.padding = '1rem';
+
+            const gridContainer = document.createElement('div');
+            gridContainer.style.display = 'grid';
+            gridContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(120px, 1fr))';
+            gridContainer.style.gap = '0.8rem';
+            gridContainer.style.maxHeight = '400px';
+            gridContainer.style.overflowY = 'auto';
+
+            prendas.forEach(prenda => {
+                const prendaCard = document.createElement('div');
+                prendaCard.style.cursor = 'pointer';
+                prendaCard.style.border = '2px solid #e0e0e0';
+                prendaCard.style.borderRadius = '8px';
+                prendaCard.style.padding = '0.5rem';
+                prendaCard.style.textAlign = 'center';
+                prendaCard.style.transition = 'all 0.2s';
+
+                prendaCard.addEventListener('mouseenter', () => {
+                    prendaCard.style.borderColor = '#007bff';
+                    prendaCard.style.transform = 'scale(1.05)';
+                });
+
+                prendaCard.addEventListener('mouseleave', () => {
+                    prendaCard.style.borderColor = '#e0e0e0';
+                    prendaCard.style.transform = 'scale(1)';
+                });
+
+                const img = document.createElement('img');
+                img.src = prenda.imagenUrl || '/images/placeholder_cloth.png';
+                img.alt = prenda.nombre || 'Prenda';
+                img.style.width = '100%';
+                img.style.height = 'auto';
+                img.style.borderRadius = '4px';
+                img.style.marginBottom = '0.3rem';
+                img.onerror = function() {
+                    this.src = '/images/placeholder_cloth.png';
+                };
+
+                const nombre = document.createElement('div');
+                nombre.textContent = prenda.nombre || 'Sin nombre';
+                nombre.style.fontSize = '0.75rem';
+                nombre.style.fontWeight = '500';
+                nombre.style.marginBottom = '0.2rem';
+                nombre.style.overflow = 'hidden';
+                nombre.style.textOverflow = 'ellipsis';
+                nombre.style.whiteSpace = 'nowrap';
+
+                const detalles = document.createElement('div');
+                detalles.style.fontSize = '0.65rem';
+                detalles.style.color = '#666';
+                const partes = [];
+                if (prenda.color) partes.push(prenda.color);
+                if (prenda.marca) partes.push(prenda.marca);
+                detalles.textContent = partes.join(' · ');
+
+                prendaCard.appendChild(img);
+                prendaCard.appendChild(nombre);
+                prendaCard.appendChild(detalles);
+
+                prendaCard.addEventListener('click', () => {
+                    // Mostrar burbuja de selección
+                    appendUserSelection(prenda.nombre || 'Prenda seleccionada');
+
+                    // Fijar la prenda seleccionada según su tipo
+                    if (tipoPrenda === 'SUPERIOR') {
+                        prendasFijas.superiorId = prenda.id;
+                    } else if (tipoPrenda === 'INFERIOR') {
+                        prendasFijas.inferiorId = prenda.id;
+                    } else if (tipoPrenda === 'CALZADO') {
+                        prendasFijas.calzadoId = prenda.id;
+                    }
+
+                    // Solicitar recomendación con la prenda fijada
+                    solicitarRecomendacion();
+                });
+
+                gridContainer.appendChild(prendaCard);
+            });
+
+            card.appendChild(gridContainer);
+            messagesContainer.appendChild(card);
+            scrollToBottom();
+        })
+        .catch(error => {
+            // Remover el indicador de carga
+            if (typingMsg.parentNode) {
+                typingMsg.parentNode.removeChild(typingMsg);
+            }
+
+            appendMessage('No se pudieron cargar las prendas. Inténtalo de nuevo.', 'bot');
+            appendMessage('¿Qué te gustaría hacer ahora?', 'bot');
+
+            const card = document.createElement('div');
+            card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+            const opciones = [
+                { value: 'REINTENTAR', label: '🔄 Reintentar' },
+                { value: 'CAMBIAR_MODO', label: '🧭 Cambiar de modo' }
+            ];
+
+            const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+                marcarSeleccionEnGrupo(groupEl, btn);
+                appendUserSelection(op.label);
+
+                if (op.value === 'REINTENTAR') {
+                    mostrarPrendasParaCompletar(tipoPrenda);
+                } else {
+                    mostrarMenuModos();
+                }
+            });
+
+            card.appendChild(group);
+            messagesContainer.appendChild(card);
+            scrollToBottom();
+        });
+    };
+
     // --- Render de columnas de prenda, manteniendo botón de fijar ---
     const renderPrendaColumn = (prenda, tipoClave) => {
         const col = document.createElement('div');
@@ -609,6 +815,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Generar mensaje explicativo según el modo
         if (estadoModo.modo === 'SORPRESA') {
             explanation.textContent = 'Sorpresa inteligente: combinación equilibrada y variada';
+        } else if (estadoModo.modo === 'COMPLETAR') {
+            explanation.textContent = 'He completado el conjunto a partir de esta prenda.';
         } else if (estadoModo.modo === 'COLOR') {
             if (estadoModo.tipoCombinacion === 'TODO') {
                 explanation.textContent = 'Todo ' + (estadoModo.colorSeleccionado || 'del mismo color');
@@ -961,13 +1169,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
 
                 const modos = [
-                    { value: 'SORPRESA', label: 'Conjunto sorpresa' },
-                    { value: 'COLOR', label: 'Por color' },
-                    { value: 'MARCA', label: 'Por marca' },
-                    { value: 'TIEMPO', label: 'Por tiempo' },
-                    { value: 'OCASION', label: 'Por ocasión' },
-                    { value: 'SIN_REPETIR', label: 'Sin repetir' },
-                    { value: 'COMPLETAR', label: 'Completar esta prenda' }
+                    { value: 'SORPRESA', label: '🎲 Conjunto sorpresa' },
+                    { value: 'COLOR', label: '🎨 Por color' },
+                    { value: 'MARCA', label: '🏷️ Por marca' },
+                    { value: 'TIEMPO', label: '🌤️ Por tiempo' },
+                    { value: 'OCASION', label: '🎯 Por ocasión' },
+                    { value: 'COMPLETAR', label: '🧩 Completar esta prenda' }
                 ];
 
                 const group = crearGrupoBotones(modos, (op, groupEl, btn) => {
@@ -979,7 +1186,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     resetModo();
                     estadoModo.modo = op.value;
 
-                    if (op.value === 'SORPRESA' || op.value === 'SIN_REPETIR') {
+                    if (op.value === 'SORPRESA') {
                         solicitarRecomendacion();
                     } else if (op.value === 'COLOR') {
                         solicitarRecomendacionConPregunta(preguntarColor);
@@ -990,8 +1197,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     } else if (op.value === 'OCASION') {
                         solicitarRecomendacionConPregunta(preguntarOcasion);
                     } else if (op.value === 'COMPLETAR') {
-                        appendMessage('Fija primero la prenda que quieras mantener (superior, inferior o calzado) y luego pulsa "Otra sugerencia".', 'bot');
-                        solicitarRecomendacion();
+                        iniciarModoCompletar();
                     }
                 });
 
@@ -1009,6 +1215,35 @@ document.addEventListener('DOMContentLoaded', function () {
         // Mostrar mensaje de error
         appendMessage(mensaje, 'bot');
 
+        // Caso específico para modo COMPLETAR
+        if (estadoModo.modo === 'COMPLETAR') {
+            appendMessage('¿Qué te gustaría hacer ahora?', 'bot');
+
+            const card = document.createElement('div');
+            card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+            const opciones = [
+                { value: 'ELEGIR_OTRA_PRENDA', label: '🔄 Elegir otra prenda' },
+                { value: 'CAMBIAR_MODO', label: '🧭 Cambiar de modo' }
+            ];
+
+            const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+                marcarSeleccionEnGrupo(groupEl, btn);
+                appendUserSelection(op.label);
+
+                if (op.value === 'ELEGIR_OTRA_PRENDA') {
+                    iniciarModoCompletar();
+                } else {
+                    mostrarMenuModos();
+                }
+            });
+
+            card.appendChild(group);
+            messagesContainer.appendChild(card);
+            scrollToBottom();
+            return;
+        }
+
         // Determinar si es un caso de "TODO no posible" en modos COLOR o MARCA
         const esModoColorOMarca = (estadoModo.modo === 'COLOR' || estadoModo.modo === 'MARCA');
         const esTodoNoDisponible = estadoModo.tipoCombinacion === 'TODO';
@@ -1021,7 +1256,6 @@ document.addEventListener('DOMContentLoaded', function () {
             card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
 
             const criterio = estadoModo.modo === 'COLOR' ? 'color' : 'marca';
-            const valorCriterio = estadoModo.modo === 'COLOR' ? estadoModo.colorSeleccionado : estadoModo.marcaSeleccionada;
 
             const opciones = [
                 { value: 'PROBAR_COMBINADO', label: 'Probar combinado' },
@@ -1065,13 +1299,12 @@ document.addEventListener('DOMContentLoaded', function () {
             card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
 
             const modos = [
-                { value: 'SORPRESA', label: 'Conjunto sorpresa' },
-                { value: 'COLOR', label: 'Por color' },
-                { value: 'MARCA', label: 'Por marca' },
-                { value: 'TIEMPO', label: 'Por tiempo' },
-                { value: 'OCASION', label: 'Por ocasión' },
-                { value: 'SIN_REPETIR', label: 'Sin repetir' },
-                { value: 'COMPLETAR', label: 'Completar esta prenda' }
+                { value: 'SORPRESA', label: '🎲 Conjunto sorpresa' },
+                { value: 'COLOR', label: '🎨 Por color' },
+                { value: 'MARCA', label: '🏷️ Por marca' },
+                { value: 'TIEMPO', label: '🌤️ Por tiempo' },
+                { value: 'OCASION', label: '🎯 Por ocasión' },
+                { value: 'COMPLETAR', label: '🧩 Completar esta prenda' }
             ];
 
             const group = crearGrupoBotones(modos, (op, groupEl, btn) => {
@@ -1083,7 +1316,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 resetModo();
                 estadoModo.modo = op.value;
 
-                if (op.value === 'SORPRESA' || op.value === 'SIN_REPETIR') {
+                if (op.value === 'SORPRESA') {
                     solicitarRecomendacion();
                 } else if (op.value === 'COLOR') {
                     solicitarRecomendacionConPregunta(preguntarColor);
@@ -1094,8 +1327,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else if (op.value === 'OCASION') {
                     solicitarRecomendacionConPregunta(preguntarOcasion);
                 } else if (op.value === 'COMPLETAR') {
-                    appendMessage('Fija primero la prenda que quieras mantener (superior, inferior o calzado) y luego pulsa "Otra sugerencia".', 'bot');
-                    solicitarRecomendacion();
+                    iniciarModoCompletar();
                 }
             });
 
@@ -1115,20 +1347,19 @@ document.addEventListener('DOMContentLoaded', function () {
         card.appendChild(titulo);
 
         const modos = [
-            { value: 'SORPRESA', label: 'Conjunto sorpresa' },
-            { value: 'COLOR', label: 'Por color' },
-            { value: 'MARCA', label: 'Por marca' },
-            { value: 'TIEMPO', label: 'Por tiempo' },
-            { value: 'OCASION', label: 'Por ocasión' },
-            { value: 'SIN_REPETIR', label: 'Sin repetir' },
-            { value: 'COMPLETAR', label: 'Completar esta prenda' }
+            { value: 'SORPRESA', label: '🎲 Conjunto sorpresa' },
+            { value: 'COLOR', label: '🎨 Por color' },
+            { value: 'MARCA', label: '🏷️ Por marca' },
+            { value: 'TIEMPO', label: '🌤️ Por tiempo' },
+            { value: 'OCASION', label: '🎯 Por ocasión' },
+            { value: 'COMPLETAR', label: '🧩 Completar esta prenda' }
         ];
 
         const group = crearGrupoBotones(modos, (op, groupEl, btn) => {
             marcarSeleccionEnGrupo(groupEl, btn);
             resetModo();
             estadoModo.modo = op.value;
-            if (op.value === 'SORPRESA' || op.value === 'SIN_REPETIR') {
+            if (op.value === 'SORPRESA') {
                 solicitarRecomendacion();
             } else if (op.value === 'COLOR') {
                 solicitarRecomendacionConPregunta(preguntarColor);
@@ -1139,8 +1370,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (op.value === 'OCASION') {
                 solicitarRecomendacionConPregunta(preguntarOcasion);
             } else if (op.value === 'COMPLETAR') {
-                appendMessage('Fija primero la prenda que quieras mantener (superior, inferior o calzado) y luego pulsa "Otra sugerencia".', 'bot');
-                solicitarRecomendacion();
+                iniciarModoCompletar();
             }
         });
 

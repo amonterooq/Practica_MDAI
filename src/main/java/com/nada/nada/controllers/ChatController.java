@@ -74,6 +74,72 @@ public class ChatController {
         return ResponseEntity.ok(body);
     }
 
+    @GetMapping("/prendas-por-tipo")
+    public ResponseEntity<?> obtenerPrendasPorTipo(@RequestParam("tipo") String tipo, HttpSession session) {
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuarioLogueado == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Long usuarioId = usuarioLogueado.getId();
+        List<Map<String, Object>> prendas;
+
+        switch (tipo.toUpperCase()) {
+            case "SUPERIOR":
+                prendas = prendaService.buscarPrendasPorUsuarioId(usuarioId).stream()
+                    .filter(p -> p instanceof PrendaSuperior)
+                    .map(p -> {
+                        PrendaSuperior ps = (PrendaSuperior) p;
+                        Map<String, Object> dto = new HashMap<>();
+                        dto.put("id", ps.getId());
+                        dto.put("nombre", ps.getNombre());
+                        dto.put("color", ps.getColor());
+                        dto.put("marca", ps.getMarca());
+                        dto.put("categoria", ps.getCategoria() != null ? ps.getCategoria().getEtiqueta() : null);
+                        dto.put("imagenUrl", ps.getDirImagen());
+                        return dto;
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+                break;
+            case "INFERIOR":
+                prendas = prendaService.buscarPrendasPorUsuarioId(usuarioId).stream()
+                    .filter(p -> p instanceof PrendaInferior)
+                    .map(p -> {
+                        PrendaInferior pi = (PrendaInferior) p;
+                        Map<String, Object> dto = new HashMap<>();
+                        dto.put("id", pi.getId());
+                        dto.put("nombre", pi.getNombre());
+                        dto.put("color", pi.getColor());
+                        dto.put("marca", pi.getMarca());
+                        dto.put("categoria", pi.getCategoriaInferior() != null ? pi.getCategoriaInferior().getEtiqueta() : null);
+                        dto.put("imagenUrl", pi.getDirImagen());
+                        return dto;
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+                break;
+            case "CALZADO":
+                prendas = prendaService.buscarPrendasPorUsuarioId(usuarioId).stream()
+                    .filter(p -> p instanceof PrendaCalzado)
+                    .map(p -> {
+                        PrendaCalzado pc = (PrendaCalzado) p;
+                        Map<String, Object> dto = new HashMap<>();
+                        dto.put("id", pc.getId());
+                        dto.put("nombre", pc.getNombre());
+                        dto.put("color", pc.getColor());
+                        dto.put("marca", pc.getMarca());
+                        dto.put("categoria", pc.getCategoria() != null ? pc.getCategoria().getEtiqueta() : null);
+                        dto.put("imagenUrl", pc.getDirImagen());
+                        return dto;
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+                break;
+            default:
+                return ResponseEntity.badRequest().body(Map.of("error", "Tipo de prenda no válido"));
+        }
+
+        return ResponseEntity.ok(prendas);
+    }
+
     @PostMapping("/recomendar-conjunto")
     public ResponseEntity<RecomendacionConjuntoResponseDto> recomendarConjunto(@RequestBody RecomendacionConjuntoRequestDto request,
                                                                                HttpSession session) {
