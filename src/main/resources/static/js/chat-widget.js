@@ -745,18 +745,176 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Preparar el body para guardar
-        const timestamp = new Date().toLocaleString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
+        // Preguntar cómo quiere nombrar el conjunto
+        appendMessage('¿Cómo quieres nombrar este conjunto?', 'bot');
+
+        const card = document.createElement('div');
+        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+
+        const opciones = [
+            { value: 'MANUAL', label: 'Yo elijo el nombre' },
+            { value: 'AUTO', label: 'Que lo nombre la IA' }
+        ];
+
+        const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+            marcarSeleccionEnGrupo(groupEl, btn);
+
+            // Mostrar burbuja del usuario
+            appendUserSelection(op.label);
+
+            if (op.value === 'MANUAL') {
+                mostrarFormularioNombreManual(recomendacion, guardarBtn);
+            } else {
+                mostrarFormularioNotaOpcional(recomendacion, guardarBtn, null);
+            }
         });
+
+        card.appendChild(group);
+        messagesContainer.appendChild(card);
+        scrollToBottom();
+    };
+
+    const mostrarFormularioNombreManual = (recomendacion, guardarBtn) => {
+        appendMessage('Escribe un nombre para el conjunto:', 'bot');
+
+        const formCard = document.createElement('div');
+        formCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        formCard.style.padding = '1rem';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'ai-chat-input';
+        input.placeholder = 'Ej: Look casual viernes';
+        input.style.width = '100%';
+        input.style.padding = '0.6rem';
+        input.style.border = '1px solid #ddd';
+        input.style.borderRadius = '8px';
+        input.style.fontSize = '0.9rem';
+        input.style.marginBottom = '0.6rem';
+
+        const btnContainer = document.createElement('div');
+        btnContainer.style.display = 'flex';
+        btnContainer.style.gap = '0.5rem';
+        btnContainer.style.justifyContent = 'flex-end';
+
+        const confirmarBtn = document.createElement('button');
+        confirmarBtn.type = 'button';
+        confirmarBtn.className = 'ai-outfit-btn ai-outfit-btn--primary';
+        confirmarBtn.textContent = 'Continuar';
+        confirmarBtn.addEventListener('click', function () {
+            const nombre = input.value.trim();
+            if (!nombre) {
+                input.style.borderColor = '#ff4444';
+                input.placeholder = 'El nombre es obligatorio';
+                return;
+            }
+
+            // Mostrar el nombre elegido como burbuja
+            appendUserSelection('Nombre: ' + nombre);
+
+            // Deshabilitar el formulario
+            input.disabled = true;
+            confirmarBtn.disabled = true;
+
+            // Continuar con la nota opcional
+            mostrarFormularioNotaOpcional(recomendacion, guardarBtn, nombre);
+        });
+
+        btnContainer.appendChild(confirmarBtn);
+        formCard.appendChild(input);
+        formCard.appendChild(btnContainer);
+        messagesContainer.appendChild(formCard);
+        scrollToBottom();
+
+        // Focus en el input
+        setTimeout(() => input.focus(), 100);
+    };
+
+    const mostrarFormularioNotaOpcional = (recomendacion, guardarBtn, nombreManual) => {
+        appendMessage('¿Quieres añadir alguna nota? (opcional)', 'bot');
+
+        const formCard = document.createElement('div');
+        formCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        formCard.style.padding = '1rem';
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'ai-chat-input';
+        textarea.placeholder = 'Ej: Para días soleados de primavera';
+        textarea.style.width = '100%';
+        textarea.style.padding = '0.6rem';
+        textarea.style.border = '1px solid #ddd';
+        textarea.style.borderRadius = '8px';
+        textarea.style.fontSize = '0.9rem';
+        textarea.style.marginBottom = '0.6rem';
+        textarea.style.minHeight = '60px';
+        textarea.style.resize = 'vertical';
+
+        const btnContainer = document.createElement('div');
+        btnContainer.style.display = 'flex';
+        btnContainer.style.gap = '0.5rem';
+        btnContainer.style.justifyContent = 'flex-end';
+
+        const omitirBtn = document.createElement('button');
+        omitirBtn.type = 'button';
+        omitirBtn.className = 'ai-outfit-btn ai-outfit-btn--ghost';
+        omitirBtn.textContent = 'Sin nota';
+        omitirBtn.addEventListener('click', function () {
+            appendUserSelection('Sin nota');
+            textarea.disabled = true;
+            omitirBtn.disabled = true;
+            guardarBtn.disabled = true;
+            guardarConjuntoFinal(recomendacion, guardarBtn, nombreManual, null);
+        });
+
+        const guardarBtnFinal = document.createElement('button');
+        guardarBtnFinal.type = 'button';
+        guardarBtnFinal.className = 'ai-outfit-btn ai-outfit-btn--primary';
+        guardarBtnFinal.textContent = 'Guardar conjunto';
+        guardarBtnFinal.addEventListener('click', function () {
+            const nota = textarea.value.trim();
+            if (nota) {
+                appendUserSelection('Nota: ' + nota);
+            } else {
+                appendUserSelection('Sin nota');
+            }
+            textarea.disabled = true;
+            omitirBtn.disabled = true;
+            guardarBtnFinal.disabled = true;
+            guardarConjuntoFinal(recomendacion, guardarBtn, nombreManual, nota || null);
+        });
+
+        btnContainer.appendChild(omitirBtn);
+        btnContainer.appendChild(guardarBtnFinal);
+        formCard.appendChild(textarea);
+        formCard.appendChild(btnContainer);
+        messagesContainer.appendChild(formCard);
+        scrollToBottom();
+    };
+
+    const guardarConjuntoFinal = (recomendacion, guardarBtn, nombreManual, nota) => {
+        // Determinar el nombre final
+        let nombreFinal;
+        if (nombreManual) {
+            nombreFinal = nombreManual;
+        } else {
+            // Generar nombre automático con IA
+            const timestamp = new Date().toLocaleString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            nombreFinal = 'Conjunto ' + timestamp;
+        }
+
+        // Preparar el body para guardar
         const bodyGuardar = {
-            nombre: 'Conjunto ' + timestamp,
+            nombre: nombreFinal,
             prendaSuperiorId: recomendacion.superior.id,
             prendaInferiorId: recomendacion.inferior.id,
-            prendaCalzadoId: recomendacion.calzado.id
+            prendaCalzadoId: recomendacion.calzado.id,
+            notas: nota || null
         };
 
         // Llamar al endpoint correcto de guardado
