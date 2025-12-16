@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -59,6 +60,7 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         List<String> conjuntosUsados = preferencias != null ? preferencias.getConjuntosUsados() : null;
         String tipoCombinacion = preferencias != null ? preferencias.getTipoCombinacion() : null;
         String intensidad = preferencias != null ? preferencias.getIntensidad() : null;
+        String tiempo = preferencias != null ? preferencias.getTiempo() : null;
 
         RecomendacionConjuntoResponseDto dto = new RecomendacionConjuntoResponseDto();
 
@@ -157,6 +159,60 @@ public class RecomendadorConjuntosServiceImpl implements RecomendadorConjuntosSe
         int intentos = 0;
         boolean encontradaNueva = false;
 
+        // MODO TIEMPO: lógica especial con evaluación de candidatos
+        boolean esModoTiempo = modo != null && modo.equalsIgnoreCase("TIEMPO");
+
+        if (esModoTiempo && tiempo != null) {
+            // Generar múltiples candidatos y evaluar
+            List<AnalizadorClimatico.ConjuntoEvaluado> candidatos = new ArrayList<>();
+            final int MAX_CANDIDATOS = 20;
+
+            while (candidatos.size() < MAX_CANDIDATOS && intentos < MAX_INTENTOS * 2) {
+                intentos++;
+
+                PrendaSuperior candidatoSup = elegirAleatorio(superiores);
+                PrendaInferior candidatoInf = elegirAleatorio(inferiores);
+                PrendaCalzado candidatoCal = elegirAleatorio(calzados);
+
+                if (candidatoSup == null || candidatoInf == null || candidatoCal == null) {
+                    break;
+                }
+
+                String clave = construirClave(candidatoSup.getId(), candidatoInf.getId(), candidatoCal.getId());
+                if (!combinacionesExistentes.contains(clave)) {
+                    AnalizadorClimatico.ConjuntoEvaluado evaluado =
+                        AnalizadorClimatico.evaluarConjunto(candidatoSup, candidatoInf, candidatoCal, tiempo);
+                    candidatos.add(evaluado);
+                }
+            }
+
+            if (!candidatos.isEmpty()) {
+                // Ordenar por penalización (menor es mejor)
+                candidatos.sort(Comparator.comparingInt(c -> c.penalizacion));
+                AnalizadorClimatico.ConjuntoEvaluado mejor = candidatos.get(0);
+
+                superior = mejor.superior;
+                inferior = mejor.inferior;
+                calzado = mejor.calzado;
+                encontradaNueva = true;
+
+                // Determinar si pudimos adaptar bien al clima
+                boolean pudoAdaptar = AnalizadorClimatico.puedeAdaptarAlClima(superiores, inferiores, calzados, tiempo);
+
+                // Generar explicación inteligente
+                String explicacion = AnalizadorClimatico.generarExplicacion(tiempo, mejor, candidatos.size(), pudoAdaptar);
+
+                dto.setSuperior(mapearPrendaSuperior(superior));
+                dto.setInferior(mapearPrendaInferior(inferior));
+                dto.setCalzado(mapearPrendaCalzado(calzado));
+                dto.setMensaje(explicacion);
+                return dto;
+            }
+            // Si no encontramos candidatos, continuamos con flujo normal
+        }
+
+        // Lógica normal para otros modos
+        intentos = 0;
         while (intentos < MAX_INTENTOS && !encontradaNueva) {
             intentos++;
 
