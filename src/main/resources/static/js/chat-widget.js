@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Agregar mensaje del bot preguntando por el modo
-        appendMessage('¿Cómo quieres que te recomiende hoy?', 'bot');
+        appendMessage('¿Cómo quieres que te ayude con tu armario?', 'bot');
 
         const card = document.createElement('div');
         card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
