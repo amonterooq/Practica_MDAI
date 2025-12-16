@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     let historialRecomendaciones = []; // pila de recomendaciones dentro del modo actual
-    let inicioBtn = null; // botón/icono para volver a la pantalla principal limpia
 
     const showWindow = () => {
         windowEl.classList.add('ai-chat-window--open');
@@ -169,43 +168,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const card = document.createElement('div');
         card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
-
-        const headerRow = document.createElement('div');
-        headerRow.style.display = 'flex';
-        headerRow.style.justifyContent = 'space-between';
-        headerRow.style.alignItems = 'center';
-        headerRow.style.gap = '0.5rem';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.alignItems = 'center';
+        card.style.textAlign = 'center';
 
         const titulo = document.createElement('div');
         titulo.className = 'ai-outfit-explicacion';
         titulo.textContent = '¿Cómo quieres que te recomiende hoy?';
-        headerRow.appendChild(titulo);
-
-        // Icono pequeño de "Inicio" a la derecha del título
-        if (!inicioBtn) {
-            inicioBtn = document.createElement('button');
-            inicioBtn.type = 'button';
-            inicioBtn.className = 'ai-outfit-btn';
-            inicioBtn.innerText = '🏠';
-            inicioBtn.title = 'Volver al menú de modos';
-            inicioBtn.style.padding = '0.25rem 0.5rem';
-            inicioBtn.addEventListener('click', function () {
-                // Desde cualquier punto del flujo, el icono de casa
-                // debe traer de vuelta al menú de modos, sin ir al
-                // estado de saludo inicial.
-                limpiarRecomendacionActiva();
-                resetModo();
-                messagesContainer.innerHTML = '';
-                mostrarMenuModos();
-            });
-        }
-        const inicioIconWrapper = document.createElement('div');
-        inicioIconWrapper.style.display = 'flex';
-        inicioIconWrapper.style.alignItems = 'center';
-        inicioIconWrapper.appendChild(inicioBtn);
-        headerRow.appendChild(inicioIconWrapper);
-
-        card.appendChild(headerRow);
+        card.appendChild(titulo);
 
         const modos = [
             { value: 'SORPRESA', label: 'Conjunto sorpresa' },
@@ -236,8 +207,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        card.appendChild(group);
+        // Centrar el grupo de botones como bloque
+        group.style.justifyContent = 'center';
 
+        card.appendChild(group);
 
         messagesContainer.appendChild(card);
         scrollToBottom();
@@ -399,6 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const renderPrendaColumn = (prenda, tipoClave) => {
         const col = document.createElement('div');
         col.className = 'ai-outfit-prenda';
+        col.style.textAlign = 'center';
 
         const titulo = document.createElement('div');
         titulo.className = 'ai-outfit-prenda-titulo';
@@ -467,32 +441,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return col;
     };
 
-    const crearBotonVolver = () => {
-        const volverBtn = document.createElement('button');
-        volverBtn.type = 'button';
-        volverBtn.className = 'ai-outfit-btn ai-outfit-btn--ghost';
-        volverBtn.textContent = 'Volver';
-
-        if (historialRecomendaciones.length <= 1) {
-            volverBtn.disabled = true;
-            volverBtn.title = 'No hay una recomendación anterior a la que volver';
-        }
-
-        volverBtn.addEventListener('click', function () {
-            if (historialRecomendaciones.length <= 1) {
-                return; // nada a lo que volver
-            }
-            // Quitar la recomendación actual del historial
-            historialRecomendaciones.pop();
-            const anterior = historialRecomendaciones[historialRecomendaciones.length - 1];
-            if (anterior) {
-                // Renderizar de nuevo la recomendación anterior sin resetear modo
-                appendOutfitCard(anterior, { fromHistory: true });
-            }
-        });
-        return volverBtn;
-    };
-
     const appendOutfitCard = (recomendacion, opciones = {}) => {
         const fromHistory = opciones.fromHistory === true;
 
@@ -521,9 +469,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const wrapper = document.createElement('div');
         wrapper.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        wrapper.style.display = 'flex';
+        wrapper.style.flexDirection = 'column';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.textAlign = 'center';
 
         const grid = document.createElement('div');
         grid.className = 'ai-outfit-grid';
+        grid.style.margin = '0 auto';
         grid.appendChild(renderPrendaColumn(recomendacion.superior, 'superior'));
         grid.appendChild(renderPrendaColumn(recomendacion.inferior, 'inferior'));
         grid.appendChild(renderPrendaColumn(recomendacion.calzado, 'calzado'));
@@ -551,10 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const actions = document.createElement('div');
         actions.className = 'ai-outfit-actions';
-
-        // Botón Volver como acción de navegación más discreta
-        const volverBtn = crearBotonVolver();
-        actions.appendChild(volverBtn);
+        actions.style.justifyContent = 'center';
 
         const otraBtn = document.createElement('button');
         otraBtn.type = 'button';
@@ -604,32 +554,6 @@ document.addEventListener('DOMContentLoaded', function () {
         texto.textContent = mensaje;
         wrapper.appendChild(texto);
 
-        const actions = document.createElement('div');
-        actions.className = 'ai-outfit-actions';
-        actions.style.justifyContent = 'flex-start';
-
-        const volverBtn = document.createElement('button');
-        volverBtn.type = 'button';
-        volverBtn.className = 'ai-outfit-btn';
-        volverBtn.textContent = 'Volver al menú';
-        volverBtn.addEventListener('click', function () {
-            limpiarRecomendacionActiva();
-            mostrarMenuModos();
-        });
-
-        const cambiarBtn = document.createElement('button');
-        cambiarBtn.type = 'button';
-        cambiarBtn.className = 'ai-outfit-btn';
-        cambiarBtn.textContent = 'Cambiar modo';
-        cambiarBtn.addEventListener('click', function () {
-            limpiarRecomendacionActiva();
-            resetModo();
-            mostrarMenuModos();
-        });
-
-        actions.appendChild(volverBtn);
-        actions.appendChild(cambiarBtn);
-        wrapper.appendChild(actions);
 
         messagesContainer.appendChild(wrapper);
         scrollToBottom();
