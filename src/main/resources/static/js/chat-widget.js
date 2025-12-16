@@ -177,7 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const mostrarMenuModos = () => {
-        limpiarRecomendacionActiva();
+        // NO limpiamos el chat anterior para mantener el historial visible
+        // Solo reseteamos el estado interno del modo
         resetModo();
 
         // Ocultar el saludo al entrar en el flujo de recomendaciones
@@ -190,17 +191,11 @@ document.addEventListener('DOMContentLoaded', function () {
             barraAccionesGlobal.style.display = 'none';
         }
 
+        // Agregar mensaje del bot preguntando por el modo
+        appendMessage('¿Cómo quieres que te recomiende hoy?', 'bot');
+
         const card = document.createElement('div');
         card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
-        card.style.display = 'flex';
-        card.style.flexDirection = 'column';
-        card.style.alignItems = 'center';
-        card.style.textAlign = 'center';
-
-        const titulo = document.createElement('div');
-        titulo.className = 'ai-outfit-explicacion';
-        titulo.textContent = '¿Cómo quieres que te recomiende hoy?';
-        card.appendChild(titulo);
 
         const modos = [
             { value: 'SORPRESA', label: '🎲 Conjunto sorpresa' },
