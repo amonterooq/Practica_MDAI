@@ -277,5 +277,14 @@
     <p style="margin-top: 10px; font-style: italic;">"La moda se pasa de moda, el estilo jamás."</p>
 </footer>
 
+<!-- Chat Widget (solo si el usuario está autenticado) -->
+<div th:if="${#authorization.expression('isAuthenticated()')}">
+    <div th:replace="~{fragments/chat-widget :: chatWidget}"></div>
+</div>
+
+<!-- Scripts del chat -->
+<link rel="stylesheet" th:href="@{/css/chat-widget.css}" th:if="${#authorization.expression('isAuthenticated()')}">
+<script th:src="@{/js/chat-widget.js}" th:if="${#authorization.expression('isAuthenticated()')}"></script>
+
 </body>
 </html>

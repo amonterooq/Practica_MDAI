@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Fragmento del Chat Widget -->
+<div th:fragment="chatWidget">
+    <!-- Burbuja flotante para abrir el chat -->
+    <div id="ai-chat-bubble" class="ai-chat-bubble" aria-label="Abrir chat de ayuda" title="Abrir chat de ayuda">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- Teaser (mensaje inicial pequeño) -->
+    <div id="ai-chat-teaser" class="ai-chat-teaser ai-chat-teaser--hidden">
+        <div style="flex:1;">
+            ¡Hola! ¿Necesitas ayuda con tus conjuntos?
+        </div>
+        <button id="ai-chat-teaser-close" type="button" aria-label="Cerrar teaser">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Ventana del chat -->
+    <div id="ai-chat-window" class="ai-chat-window ai-chat-window--hidden" role="dialog" aria-label="Chat asistente NADA">
+        <!-- Cabecera -->
+        <div class="ai-chat-header">
+            <div class="ai-chat-title">Asistente NADA</div>
+            <div class="ai-chat-actions">
+                <button id="ai-chat-minimize" type="button" aria-label="Minimizar chat">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button id="ai-chat-close" type="button" aria-label="Cerrar chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Cuerpo del chat -->
+        <div class="ai-chat-body">
+            <!-- Saludo inicial -->
+            <div class="ai-chat-greeting">
+                Hola, soy tu asistente de moda.
+                <br>Pulsa "Recomiéndame…" para empezar.
+            </div>
+
+            <!-- Mensajes dinámicos -->
+            <div class="ai-chat-messages"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -112,5 +112,12 @@
     </section>
 </main>
 
+<!-- Chat Widget -->
+<div th:replace="~{fragments/chat-widget :: chatWidget}"></div>
+
+<!-- Scripts del chat -->
+<link rel="stylesheet" th:href="@{/css/chat-widget.css}">
+<script th:src="@{/js/chat-widget.js}"></script>
+
 </body>
 </html>

@@ -152,7 +152,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const crearGrupoBotones = (opciones, onSelect) => {
         const group = document.createElement('div');
         group.className = 'ai-outfit-actions ai-outfit-actions--chips';
-        group.style.marginTop = '0.4rem';
+        group.style.marginTop = '0.6rem';
+        group.style.marginBottom = '0.6rem';
+        group.style.justifyContent = 'center';
         opciones.forEach(op => {
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -195,7 +197,11 @@ document.addEventListener('DOMContentLoaded', function () {
         appendMessage('¿Cómo quieres que te recomiende hoy?', 'bot');
 
         const card = document.createElement('div');
-        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+        const innerCard = document.createElement('div');
+        innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        innerCard.style.maxWidth = '100%';
 
         const modos = [
             { value: 'SORPRESA', label: '🎲 Conjunto sorpresa' },
@@ -228,11 +234,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Centrar el grupo de botones como bloque
-        group.style.justifyContent = 'center';
-
-        card.appendChild(group);
-
+        innerCard.appendChild(group);
+        card.appendChild(innerCard);
         messagesContainer.appendChild(card);
         scrollToBottom();
     };
@@ -248,14 +251,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Card con los botones de colores
         const card = document.createElement('div');
-        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+        const innerCard = document.createElement('div');
+        innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        innerCard.style.maxWidth = '100%';
 
         const renderOpciones = (colores) => {
             if (!colores || colores.length === 0) {
                 const msg = document.createElement('div');
                 msg.className = 'ai-outfit-warning';
                 msg.textContent = 'No he encontrado colores guardados en tu armario.';
-                card.appendChild(msg);
+                innerCard.appendChild(msg);
+                card.appendChild(innerCard);
                 messagesContainer.appendChild(card);
                 scrollToBottom();
                 return;
@@ -271,7 +279,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Paso 2: Preguntar tipo de combinación
                 preguntarTipoCombinacion('COLOR');
             });
-            card.appendChild(group);
+            innerCard.appendChild(group);
+            card.appendChild(innerCard);
             messagesContainer.appendChild(card);
             scrollToBottom();
         };
@@ -299,14 +308,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Card con los botones de marcas
         const card = document.createElement('div');
-        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+        const innerCard = document.createElement('div');
+        innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        innerCard.style.maxWidth = '100%';
 
         const renderOpciones = (marcas) => {
             if (!marcas || marcas.length === 0) {
                 const msg = document.createElement('div');
                 msg.className = 'ai-outfit-warning';
                 msg.textContent = 'No he encontrado marcas guardadas en tu armario.';
-                card.appendChild(msg);
+                innerCard.appendChild(msg);
+                card.appendChild(innerCard);
                 messagesContainer.appendChild(card);
                 scrollToBottom();
                 return;
@@ -322,7 +336,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Paso 2: Preguntar tipo de combinación
                 preguntarTipoCombinacion('MARCA');
             });
-            card.appendChild(group);
+            innerCard.appendChild(group);
+            card.appendChild(innerCard);
             messagesContainer.appendChild(card);
             scrollToBottom();
         };
@@ -351,7 +366,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Card con botones
         const card = document.createElement('div');
-        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+        const innerCard = document.createElement('div');
+        innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        innerCard.style.maxWidth = '100%';
 
         const opciones = [
             { value: 'TODO', label: criterio === 'COLOR' ? 'Todo del mismo color' : 'Todo de la misma marca' },
@@ -374,7 +393,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        card.appendChild(group);
+        innerCard.appendChild(group);
+        card.appendChild(innerCard);
         messagesContainer.appendChild(card);
         scrollToBottom();
     };
@@ -386,7 +406,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Card con botones
         const card = document.createElement('div');
-        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+        const innerCard = document.createElement('div');
+        innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        innerCard.style.maxWidth = '100%';
 
         const criterioTexto = criterio === 'COLOR' ?
             (estadoModo.colorSeleccionado || 'criterio') :
@@ -408,19 +432,21 @@ document.addEventListener('DOMContentLoaded', function () {
             solicitarRecomendacion();
         });
 
-        card.appendChild(group);
+        innerCard.appendChild(group);
+        card.appendChild(innerCard);
         messagesContainer.appendChild(card);
         scrollToBottom();
     };
 
     const preguntarTiempo = () => {
-        const card = document.createElement('div');
-        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        appendMessage('¿Cómo está el tiempo?', 'bot');
 
-        const titulo = document.createElement('div');
-        titulo.className = 'ai-outfit-explicacion';
-        titulo.textContent = '¿Cómo está el tiempo?';
-        card.appendChild(titulo);
+        const card = document.createElement('div');
+        card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+        const innerCard = document.createElement('div');
+        innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        innerCard.style.maxWidth = '100%';
 
         const opciones = [
             { value: 'FRIO', label: 'Frío' },
@@ -438,19 +464,21 @@ document.addEventListener('DOMContentLoaded', function () {
             solicitarRecomendacion();
         });
 
-        card.appendChild(group);
+        innerCard.appendChild(group);
+        card.appendChild(innerCard);
         messagesContainer.appendChild(card);
         scrollToBottom();
     };
 
     const preguntarOcasion = () => {
-        const card = document.createElement('div');
-        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        appendMessage('¿Para qué ocasión es el conjunto?', 'bot');
 
-        const titulo = document.createElement('div');
-        titulo.className = 'ai-outfit-explicacion';
-        titulo.textContent = '¿Para qué ocasión es el conjunto?';
-        card.appendChild(titulo);
+        const card = document.createElement('div');
+        card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+        const innerCard = document.createElement('div');
+        innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        innerCard.style.maxWidth = '100%';
 
         const opciones = [
             { value: 'TRABAJO', label: 'Trabajo' },
@@ -469,7 +497,8 @@ document.addEventListener('DOMContentLoaded', function () {
             solicitarRecomendacion();
         });
 
-        card.appendChild(group);
+        innerCard.appendChild(group);
+        card.appendChild(innerCard);
         messagesContainer.appendChild(card);
         scrollToBottom();
     };
@@ -480,7 +509,11 @@ document.addEventListener('DOMContentLoaded', function () {
         appendMessage('Perfecto 😊\nElige la prenda que quieres completar.', 'bot');
 
         const card = document.createElement('div');
-        card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+        const innerCard = document.createElement('div');
+        innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+        innerCard.style.maxWidth = '100%';
 
         const opciones = [
             { value: 'SUPERIOR', label: '👕 Superior' },
@@ -498,7 +531,8 @@ document.addEventListener('DOMContentLoaded', function () {
             mostrarPrendasParaCompletar(op.value);
         });
 
-        card.appendChild(group);
+        innerCard.appendChild(group);
+        card.appendChild(innerCard);
         messagesContainer.appendChild(card);
         scrollToBottom();
     };
@@ -1159,9 +1193,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 appendMessage('Conjunto guardado correctamente 😊', 'bot');
                 appendMessage('¿Necesitas algo más?', 'bot');
 
-                // Mostrar botones de modos
+                // Mostrar botones de modos (sin el mensaje "¿Cómo quieres que te recomiende hoy?")
                 const card = document.createElement('div');
-                card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+                card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+                const innerCard = document.createElement('div');
+                innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+                innerCard.style.maxWidth = '100%';
 
                 const modos = [
                     { value: 'SORPRESA', label: '🎲 Conjunto sorpresa' },
@@ -1196,7 +1234,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                card.appendChild(group);
+                innerCard.appendChild(group);
+                card.appendChild(innerCard);
                 messagesContainer.appendChild(card);
                 scrollToBottom();
             })
@@ -1215,7 +1254,11 @@ document.addEventListener('DOMContentLoaded', function () {
             appendMessage('¿Qué te gustaría hacer ahora?', 'bot');
 
             const card = document.createElement('div');
-            card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+            const innerCard = document.createElement('div');
+            innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            innerCard.style.maxWidth = '100%';
 
             const opciones = [
                 { value: 'ELEGIR_OTRA_PRENDA', label: '🔄 Elegir otra prenda' },
@@ -1233,7 +1276,82 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            card.appendChild(group);
+            innerCard.appendChild(group);
+            card.appendChild(innerCard);
+            messagesContainer.appendChild(card);
+            scrollToBottom();
+            return;
+        }
+
+        // Caso específico para modo TIEMPO
+        if (estadoModo.modo === 'TIEMPO') {
+            appendMessage('¿Qué te gustaría hacer ahora?', 'bot');
+
+            const card = document.createElement('div');
+            card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+            const innerCard = document.createElement('div');
+            innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            innerCard.style.maxWidth = '100%';
+
+            const opciones = [
+                { value: 'OTRO_TIEMPO', label: '🌤️ Elegir otro tiempo' },
+                { value: 'CAMBIAR_MODO', label: '🧭 Cambiar de modo' }
+            ];
+
+            const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+                marcarSeleccionEnGrupo(groupEl, btn);
+                appendUserSelection(op.label);
+
+                if (op.value === 'OTRO_TIEMPO') {
+                    // Resetear solo el tiempo, mantener el modo
+                    estadoModo.tiempo = null;
+                    estadoModo.conjuntosUsados.clear();
+                    preguntarTiempo();
+                } else {
+                    mostrarMenuModos();
+                }
+            });
+
+            innerCard.appendChild(group);
+            card.appendChild(innerCard);
+            messagesContainer.appendChild(card);
+            scrollToBottom();
+            return;
+        }
+
+        // Caso específico para modo OCASION
+        if (estadoModo.modo === 'OCASION') {
+            appendMessage('¿Qué te gustaría hacer ahora?', 'bot');
+
+            const card = document.createElement('div');
+            card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+            const innerCard = document.createElement('div');
+            innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            innerCard.style.maxWidth = '100%';
+
+            const opciones = [
+                { value: 'OTRA_OCASION', label: '🎯 Elegir otra ocasión' },
+                { value: 'CAMBIAR_MODO', label: '🧭 Cambiar de modo' }
+            ];
+
+            const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+                marcarSeleccionEnGrupo(groupEl, btn);
+                appendUserSelection(op.label);
+
+                if (op.value === 'OTRA_OCASION') {
+                    // Resetear solo la ocasión, mantener el modo
+                    estadoModo.ocasion = null;
+                    estadoModo.conjuntosUsados.clear();
+                    preguntarOcasion();
+                } else {
+                    mostrarMenuModos();
+                }
+            });
+
+            innerCard.appendChild(group);
+            card.appendChild(innerCard);
             messagesContainer.appendChild(card);
             scrollToBottom();
             return;
@@ -1248,14 +1366,19 @@ document.addEventListener('DOMContentLoaded', function () {
             appendMessage('¿Qué te gustaría hacer ahora?', 'bot');
 
             const card = document.createElement('div');
-            card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+            const innerCard = document.createElement('div');
+            innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            innerCard.style.maxWidth = '100%';
 
             const criterio = estadoModo.modo === 'COLOR' ? 'color' : 'marca';
+            const emoji = estadoModo.modo === 'COLOR' ? '🎨' : '🏷️';
 
             const opciones = [
                 { value: 'PROBAR_COMBINADO', label: 'Probar combinado' },
-                { value: 'ELEGIR_OTRO', label: 'Elegir otro ' + criterio },
-                { value: 'CAMBIAR_MODO', label: 'Cambiar de modo' }
+                { value: 'ELEGIR_OTRO', label: `${emoji} Elegir otro ${criterio}` },
+                { value: 'CAMBIAR_MODO', label: '🧭 Cambiar de modo' }
             ];
 
             const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
@@ -1267,11 +1390,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (op.value === 'PROBAR_COMBINADO') {
                     // Cambiar a combinado y preguntar intensidad
                     estadoModo.tipoCombinacion = 'COMBINADO';
+                    estadoModo.conjuntosUsados.clear();
                     preguntarIntensidad(estadoModo.modo);
                 } else if (op.value === 'ELEGIR_OTRO') {
                     // Volver a preguntar color o marca
-                    resetModo();
-                    estadoModo.modo = estadoModo.modo === 'COLOR' ? 'COLOR' : 'MARCA';
+                    estadoModo.colorSeleccionado = null;
+                    estadoModo.marcaSeleccionada = null;
+                    estadoModo.tipoCombinacion = null;
+                    estadoModo.intensidad = null;
+                    estadoModo.conjuntosUsados.clear();
                     if (estadoModo.modo === 'COLOR') {
                         preguntarColor();
                     } else {
@@ -1283,7 +1410,52 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            card.appendChild(group);
+            innerCard.appendChild(group);
+            card.appendChild(innerCard);
+            messagesContainer.appendChild(card);
+            scrollToBottom();
+        } else if (esModoColorOMarca && !esTodoNoDisponible) {
+            // Caso: Modo COLOR o MARCA con COMBINADO, pero se acabaron las combinaciones
+            appendMessage('¿Qué te gustaría hacer ahora?', 'bot');
+
+            const card = document.createElement('div');
+            card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+            const innerCard = document.createElement('div');
+            innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            innerCard.style.maxWidth = '100%';
+
+            const criterio = estadoModo.modo === 'COLOR' ? 'color' : 'marca';
+            const emoji = estadoModo.modo === 'COLOR' ? '🎨' : '🏷️';
+
+            const opciones = [
+                { value: 'ELEGIR_OTRO', label: `${emoji} Elegir otro ${criterio}` },
+                { value: 'CAMBIAR_MODO', label: '🧭 Cambiar de modo' }
+            ];
+
+            const group = crearGrupoBotones(opciones, (op, groupEl, btn) => {
+                marcarSeleccionEnGrupo(groupEl, btn);
+                appendUserSelection(op.label);
+
+                if (op.value === 'ELEGIR_OTRO') {
+                    // Volver a preguntar color o marca
+                    estadoModo.colorSeleccionado = null;
+                    estadoModo.marcaSeleccionada = null;
+                    estadoModo.tipoCombinacion = null;
+                    estadoModo.intensidad = null;
+                    estadoModo.conjuntosUsados.clear();
+                    if (estadoModo.modo === 'COLOR') {
+                        preguntarColor();
+                    } else {
+                        preguntarMarca();
+                    }
+                } else {
+                    mostrarMenuModos();
+                }
+            });
+
+            innerCard.appendChild(group);
+            card.appendChild(innerCard);
             messagesContainer.appendChild(card);
             scrollToBottom();
         } else {
@@ -1291,7 +1463,11 @@ document.addEventListener('DOMContentLoaded', function () {
             appendMessage('¿Qué te gustaría hacer ahora?', 'bot');
 
             const card = document.createElement('div');
-            card.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            card.className = 'ai-chat-message-wrapper ai-chat-message-wrapper--bot';
+
+            const innerCard = document.createElement('div');
+            innerCard.className = 'ai-chat-message ai-chat-message--bot ai-chat-message--outfit';
+            innerCard.style.maxWidth = '100%';
 
             const modos = [
                 { value: 'SORPRESA', label: '🎲 Conjunto sorpresa' },
@@ -1326,7 +1502,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            card.appendChild(group);
+            innerCard.appendChild(group);
+            card.appendChild(innerCard);
             messagesContainer.appendChild(card);
             scrollToBottom();
         }
