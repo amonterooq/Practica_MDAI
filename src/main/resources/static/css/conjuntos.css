@@ -337,3 +337,26 @@ n .card-meta {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
+/* --- FIX: STICKY CON DESPLAZAMIENTO --- */
+@media (min-width: 901px) {
+    
+    .main-container {
+        overflow: visible; 
+        align-items: start;
+    }
+
+    .upload-panel {
+        position: sticky;
+        
+        /* TRUCO: En lugar de top: 100px, usamos un top negativo grande.
+           Esto permite que la columna se mueva hacia arriba con el scroll general
+           hasta que llegues al final del formulario. */
+        top: -400px; 
+        
+        /* Ajuste para que se vea bien */
+        max-height: none;
+        overflow: visible;
+        margin-bottom: 2rem;
+    }
+}
