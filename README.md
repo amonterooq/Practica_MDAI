@@ -194,7 +194,7 @@ Durante las últimas 2 semanas del desarrollo del proyecto se han implementado l
   - Más opciones de **marcas**.
   - Más opciones de **tallas**.
 - **Edición de conjuntos**: Ahora, al igual que con las prendas, los usuarios pueden **modificar los conjuntos** ya creados, facilitando la gestión y personalización de sus combinaciones.
-- **Vista previa de prendas al crear conjuntos**: Al crear un conjunto, se muestra una vista previa de la prenda seleccionada, permitiendo al usuario ver cómo es antes de añadirla al conjunto.
+- **Vista previa de prendas al crear o modificar conjuntos**: Al crear o modificar un conjunto, se muestra una vista previa de la prenda seleccionada, permitiendo al usuario ver cómo es antes de añadirla al conjunto.
 
 ### Bot de creación de conjuntos
 - Se ha integrado un **bot asistente** que ayuda a los usuarios a crear conjuntos de forma automática, sugiriendo combinaciones basadas en las prendas disponibles en su armario.

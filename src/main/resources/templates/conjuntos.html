@@ -32,7 +32,6 @@
 
 <main class="main-container">
 
-    <!-- PANEL IZQUIERDO: CREAR CONJUNTO -->
     <aside class="upload-panel">
         <div class="panel-header">
             <h2>Nuevo Conjunto</h2>
@@ -97,7 +96,6 @@
         </form>
     </aside>
 
-    <!-- PANEL DERECHO: LISTA DE CONJUNTOS -->
     <section class="gallery-panel">
         <div class="gallery-header">
             <h1>Mis Conjuntos</h1>
@@ -115,7 +113,6 @@
                               data-calzado-id=${conjunto.prendaCalzado != null ? conjunto.prendaCalzado.id : ''}"
                      onclick="abrirModalEdicion(this)">
                 <div class="outfit-images">
-                    <!-- Nombre del conjunto arriba a la izquierda -->
                     <div class="outfit-header">
                         <h3 class="outfit-title" th:text="${conjunto.nombre}">Nombre conjunto</h3>
                     </div>
@@ -126,7 +123,6 @@
                         <i class="fas fa-times"></i>
                     </button>
 
-                    <!-- Slot superior -->
                     <div class="outfit-slot">
                         <img th:if="${conjunto.prendaSuperior != null and conjunto.prendaSuperior.dirImagen != null}"
                              th:src="${conjunto.prendaSuperior.dirImagen}"
@@ -143,7 +139,6 @@
                             <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Sin superior</span>
                         </span>
                     </div>
-                    <!-- Slot inferior -->
                     <div class="outfit-slot">
                         <img th:if="${conjunto.prendaInferior != null and conjunto.prendaInferior.dirImagen != null}"
                              th:src="${conjunto.prendaInferior.dirImagen}"
@@ -160,7 +155,6 @@
                             <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Sin inferior</span>
                         </span>
                     </div>
-                    <!-- Slot calzado -->
                     <div class="outfit-slot">
                         <img th:if="${conjunto.prendaCalzado != null and conjunto.prendaCalzado.dirImagen != null}"
                              th:src="${conjunto.prendaCalzado.dirImagen}"
@@ -180,7 +174,6 @@
                 </div>
 
                 <div class="card-details">
-                    <!-- Nombre ya se muestra arriba; aquí solo la descripción -->
                     <div class="card-meta">
                         <span th:text="${conjunto.descripcion}">Descripción</span>
                     </div>
@@ -201,7 +194,6 @@
 
 </main>
 
-<!-- Modal de edición de conjunto -->
 <div id="editModalOverlay" class="edit-modal-overlay">
     <div class="edit-modal">
         <h2>Editar Conjunto</h2>
@@ -224,9 +216,11 @@
                     <option value="">-- Seleccionar --</option>
                     <option th:each="p : ${prendasSuperiores}"
                             th:value="${p.id}"
-                            th:text="${p.nombre}">
+                            th:text="${p.nombre}"
+                            th:data-imagen="${p.dirImagen}">
                     </option>
                 </select>
+                <div class="preview-container" id="editPreviewSuperior"></div>
             </div>
 
             <div class="form-group">
@@ -235,9 +229,11 @@
                     <option value="">-- Seleccionar --</option>
                     <option th:each="p : ${prendasInferiores}"
                             th:value="${p.id}"
-                            th:text="${p.nombre}">
+                            th:text="${p.nombre}"
+                            th:data-imagen="${p.dirImagen}">
                     </option>
                 </select>
+                <div class="preview-container" id="editPreviewInferior"></div>
             </div>
 
             <div class="form-group">
@@ -246,9 +242,11 @@
                     <option value="">-- Seleccionar --</option>
                     <option th:each="p : ${prendasCalzados}"
                             th:value="${p.id}"
-                            th:text="${p.nombre}">
+                            th:text="${p.nombre}"
+                            th:data-imagen="${p.dirImagen}">
                     </option>
                 </select>
+                <div class="preview-container" id="editPreviewCalzado"></div>
             </div>
 
             <div class="edit-modal-actions">
@@ -259,7 +257,6 @@
     </div>
 </div>
 
-<!-- Modal de confirmación de eliminación -->
 <div id="deleteModalOverlay" class="edit-modal-overlay" style="display:none;">
     <div class="edit-modal" style="max-width: 550px;">
         <div>
@@ -294,12 +291,10 @@
     </div>
 </div>
 
-<!-- Chat Widget -->
 <div th:replace="~{fragments/chat-widget :: chatWidget}"></div>
 
-<!-- Scripts del chat -->
 <script th:src="@{/js/chat-widget.js}"></script>
 
-<script th:src="@{/js/conjuntos.js}"></script>
+<script th:src="@{/js/conjuntos.js?v=2}"></script>
 </body>
 </html>

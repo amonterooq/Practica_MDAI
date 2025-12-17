@@ -15,9 +15,21 @@ function abrirModalEdicion(card) {
     document.getElementById('editId').value = id;
     document.getElementById('editNombre').value = nombre;
     document.getElementById('editDescripcion').value = descripcion || '';
-    document.getElementById('editPrendaSuperiorId').value = superiorId;
-    document.getElementById('editPrendaInferiorId').value = inferiorId;
-    document.getElementById('editPrendaCalzadoId').value = calzadoId;
+
+    // Referencias a los selects
+    const selSuperior = document.getElementById('editPrendaSuperiorId');
+    const selInferior = document.getElementById('editPrendaInferiorId');
+    const selCalzado = document.getElementById('editPrendaCalzadoId');
+
+    // Asignar valores
+    selSuperior.value = superiorId;
+    selInferior.value = inferiorId;
+    selCalzado.value = calzadoId;
+
+    // Actualizar las previews inmediatamente para que se vea la foto actual
+    actualizarPreview(selSuperior, document.getElementById('editPreviewSuperior'));
+    actualizarPreview(selInferior, document.getElementById('editPreviewInferior'));
+    actualizarPreview(selCalzado, document.getElementById('editPreviewCalzado'));
 
     editModalOverlay.style.display = 'flex';
 }
@@ -73,7 +85,7 @@ function confirmarEliminacion() {
     form.submit();
 }
 
-// Event listeners para el modal de eliminación
+// Event listeners para el modal de eliminación y carga inicial
 document.addEventListener('DOMContentLoaded', function() {
     const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
@@ -105,9 +117,14 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function initPreviewSelects() {
     const selects = [
+        // Selects de Crear
         { selectId: 'selectSuperior', previewId: 'previewSuperior' },
         { selectId: 'selectInferior', previewId: 'previewInferior' },
-        { selectId: 'selectCalzado', previewId: 'previewCalzado' }
+        { selectId: 'selectCalzado', previewId: 'previewCalzado' },
+        // Selects de Editar
+        { selectId: 'editPrendaSuperiorId', previewId: 'editPreviewSuperior' },
+        { selectId: 'editPrendaInferiorId', previewId: 'editPreviewInferior' },
+        { selectId: 'editPrendaCalzadoId', previewId: 'editPreviewCalzado' }
     ];
 
     selects.forEach(({ selectId, previewId }) => {
