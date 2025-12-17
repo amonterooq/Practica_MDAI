@@ -36,7 +36,10 @@ services:
       MYSQL_USER: nada
       MYSQL_PASSWORD: N4dA_Db_P4ss_2025
     ports:
-      - "127.0.0.1:8080:8080"   # 🔒 solo localhost (Nginx delante)
+      - "127.0.0.1:8080:8080"
+    volumes:
+      # Monta la carpeta local de imágenes estáticas en /app/static/images dentro del contenedor
+      - ./src/main/resources/static/images:/app/static/images
     networks:
       - backend
 
