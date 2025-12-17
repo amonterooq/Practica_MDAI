@@ -32,19 +32,6 @@ public class UsuarioController {
     }
 
     /**
-     * Lista todos los usuarios del sistema.
-     *
-     * @param model modelo para pasar datos a la vista
-     * @return vista con la lista de usuarios
-     */
-    @GetMapping("/")
-    public String listarUsuarios(Model model) {
-        // Carga todos los usuarios y los añade al modelo para la vista
-        model.addAttribute("usuarios", usuarioService.buscarTodos());
-        return "usuarios";
-    }
-
-    /**
      * Muestra el formulario de registro de nuevo usuario.
      *
      * @param model modelo para pasar el objeto Usuario vacío a la vista
