@@ -380,9 +380,11 @@ public class PrendaController {
         // Añadir marcas personalizadas del usuario
         marcasSet.addAll(prendaService.obtenerMarcasDelUsuario(usuarioId));
 
-        // Ordenar alfabéticamente
+        // Ordenar alfabéticamente, pero "Otra" al final
         List<String> resultado = new ArrayList<>(marcasSet);
+        resultado.remove("Otra");
         Collections.sort(resultado);
+        resultado.add("Otra");
         return resultado;
     }
 

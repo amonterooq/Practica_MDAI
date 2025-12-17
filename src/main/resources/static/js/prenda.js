@@ -97,13 +97,11 @@ function actualizarColorFinal() {
 // --- Marca / color en modal de edición ---
 function actualizarMarcaFinalEdicion() {
     const select = document.getElementById('editMarcaSelect');
-    const inputOtra = document.getElementById('editMarcaOtraInput');
     const hiddenFinal = document.getElementById('editMarca');
-    if (!select || !inputOtra || !hiddenFinal) return;
+    if (!select || !hiddenFinal) return;
 
-    const valorSelect = select.value;
-    const valorOtra = inputOtra.value.trim();
-    hiddenFinal.value = (valorSelect === 'Otro') ? (valorOtra || '') : (valorSelect || '');
+    // Para marca, solo usamos el valor del select (sin campo de texto)
+    hiddenFinal.value = select.value || '';
 }
 
 function actualizarColorFinalEdicion() {
@@ -282,23 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Inicializar selección de tipo/categoría/talla en alta
     mostrarCategorias();
 
-    // Alta: marca
-    const selectMarca = document.getElementById('marcaSelect');
-    const inputMarcaOtra = document.getElementById('marcaOtraInput');
-    if (selectMarca && inputMarcaOtra) {
-        selectMarca.addEventListener('change', function () {
-            if (this.value === 'Otro') {
-                inputMarcaOtra.style.display = 'block';
-            } else {
-                inputMarcaOtra.style.display = 'none';
-                inputMarcaOtra.value = '';
-            }
-            actualizarMarcaFinal();
-        });
-        inputMarcaOtra.addEventListener('input', actualizarMarcaFinal);
-    }
-
-    // Alta: color
+    // Alta: color (con opción de escribir si selecciona "Otro")
     const selectColor = document.getElementById('colorSelect');
     const inputColorOtro = document.getElementById('colorOtroInput');
     if (selectColor && inputColorOtro) {
@@ -314,20 +296,12 @@ document.addEventListener('DOMContentLoaded', function () {
         inputColorOtro.addEventListener('input', actualizarColorFinal);
     }
 
-    // Edición: marca
+    // Edición: marca (solo select, sin campo de texto)
     const selectMarcaEdit = document.getElementById('editMarcaSelect');
-    const inputMarcaOtraEdit = document.getElementById('editMarcaOtraInput');
-    if (selectMarcaEdit && inputMarcaOtraEdit) {
+    if (selectMarcaEdit) {
         selectMarcaEdit.addEventListener('change', function () {
-            if (this.value === 'Otro') {
-                inputMarcaOtraEdit.style.display = 'block';
-            } else {
-                inputMarcaOtraEdit.style.display = 'none';
-                inputMarcaOtraEdit.value = '';
-            }
             actualizarMarcaFinalEdicion();
         });
-        inputMarcaOtraEdit.addEventListener('input', actualizarMarcaFinalEdicion);
     }
 
     // Edición: color
@@ -398,7 +372,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (editTipoPrendaInput) editTipoPrendaInput.value = tipoPrenda;
         if (editNombreInput) editNombreInput.value = nombre;
 
+        // MARCA: Solo seleccionar de la lista, sin campo de texto adicional
+        const editMarcaOtraInput = document.getElementById('editMarcaOtraInput');
         if (editMarcaSelectEl) {
+            // Siempre ocultar el campo de texto para marca
+            if (editMarcaOtraInput) {
+                editMarcaOtraInput.style.display = 'none';
+                editMarcaOtraInput.value = '';
+            }
+
             let found = false;
             Array.from(editMarcaSelectEl.options).forEach(opt => {
                 if (opt.value === marca) {
@@ -406,20 +388,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     found = true;
                 }
             });
+            // Si no está en la lista, seleccionar "Otra" (sin mostrar campo de texto)
             if (!found) {
-                editMarcaSelectEl.value = 'Otro';
-                const extra = document.getElementById('editMarcaOtraInput');
-                if (extra) {
-                    extra.style.display = 'block';
-                    extra.value = marca;
-                }
+                editMarcaSelectEl.value = 'Otra';
             }
             actualizarMarcaFinalEdicion();
         }
 
         rellenarTallasEdicion(tipoPrenda, talla);
 
+        // COLOR: Mostrar campo de texto solo si el color no está en la lista
+        const editColorOtraInput = document.getElementById('editColorOtraInput');
         if (editColorSelectEl) {
+            // Primero ocultar el campo de texto
+            if (editColorOtraInput) {
+                editColorOtraInput.style.display = 'none';
+                editColorOtraInput.value = '';
+            }
+
             let foundColor = false;
             Array.from(editColorSelectEl.options).forEach(opt => {
                 if (opt.value === color) {
@@ -427,12 +413,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     foundColor = true;
                 }
             });
+
+            // Si el color NO está en la lista, es un color personalizado
             if (!foundColor) {
                 editColorSelectEl.value = 'Otro';
-                const extraC = document.getElementById('editColorOtraInput');
-                if (extraC) {
-                    extraC.style.display = 'block';
-                    extraC.value = color;
+                if (editColorOtraInput) {
+                    editColorOtraInput.style.display = 'block';
+                    editColorOtraInput.value = color;
                 }
             }
             actualizarColorFinalEdicion();

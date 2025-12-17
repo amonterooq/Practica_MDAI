@@ -100,13 +100,10 @@
             <!-- 5. Marca -->
             <div class="form-group">
                 <label>Marca</label>
-                <select id="marcaSelect" name="marcaSeleccionada">
+                <select id="marcaSelect" name="marca">
                     <option value="">-- Seleccionar --</option>
                     <option th:each="marca : ${marcas}" th:value="${marca.etiqueta}" th:text="${marca.etiqueta}"></option>
                 </select>
-                <input type="text" id="marcaOtraInput" placeholder="Escribe la marca" style="margin-top:0.5rem; display:none;">
-                <!-- Campo oculto real que se envía al backend -->
-                <input type="hidden" id="marcaFinal" name="marca">
             </div>
 
             <!-- 6. Color -->
@@ -320,7 +317,6 @@
                             <option value="" disabled selected>-- Seleccionar --</option>
                             <option th:each="marca : ${marcas}" th:value="${marca.etiqueta}" th:text="${marca.etiqueta}"></option>
                         </select>
-                        <input type="text" id="editMarcaOtraInput" placeholder="Escribe la marca" style="margin-top:0.5rem; display:none;">
                         <input type="hidden" id="editMarca" name="marca">
                     </div>
                     <div class="form-group" style="flex:1;">
@@ -425,4 +421,3 @@
 <script th:src="@{/js/prenda.js}"></script>
 </body>
 </html>
-
