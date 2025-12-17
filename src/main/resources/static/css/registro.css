@@ -79,6 +79,31 @@ input[type="text"], input[type="password"], input[type="email"] {
     font-size: 1rem;
     transition: all 0.3s;
     color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.3s;
+}
+
+.toggle-password:hover {
+    color: var(--text-primary);
 }
 
 input:focus {
@@ -101,6 +126,7 @@ button {
     font-weight: 700;
     margin-top: 1rem;
     transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 button:hover {
@@ -146,4 +172,3 @@ button:hover {
     .auth-container { padding: 2rem; border: none; box-shadow: none; }
     .home-link { top: 1rem; left: 1rem; }
 }
-
