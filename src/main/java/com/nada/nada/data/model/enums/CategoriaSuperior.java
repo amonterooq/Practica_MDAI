@@ -4,7 +4,7 @@ public enum CategoriaSuperior {
     ABRIGO("Abrigo"),
     AMERICANA("Americana"),
     BLUSA("Blusa"),
-    BODI("Bodi"),
+    BODI("Body"),
     CAMISA("Camisa"),
     CAMISETA("Camiseta"),
     CÁRDIGAN("Cárdigan"),
@@ -14,6 +14,7 @@ public enum CategoriaSuperior {
     CORPIÑO("Corpiño"),
     JERSEY("Jersey"),
     KIMONO("Kimono"),
+    VESTIDO("Vestido"),
     POLO("Polo"),
     SUDADERA("Sudadera"),
     TOP("Top");

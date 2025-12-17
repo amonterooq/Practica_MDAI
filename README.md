@@ -174,3 +174,27 @@ La aplicación utiliza diferentes configuraciones según el entorno de ejecució
 ```
 
 - El esquema de la BD se genera dinámicamente mediante Hibernate (ddl-auto=create-drop).
+
+---
+
+## Modificaciones adicionales
+
+Durante las últimas 2 semanas del desarrollo del proyecto se han implementado las siguientes mejoras y funcionalidades adicionales:
+
+### Nueva entidad: Post
+- Se ha añadido una nueva entidad **Post** que permite a los usuarios **publicar sus conjuntos** en un apartado social de la aplicación.
+- Los usuarios pueden ver los conjuntos publicados por otros usuarios, dando **"me gusta"** a los que más les gusten.
+- Cada usuario guarda un registro de los **posts a los que ha dado like**, permitiendo acceder a ellos fácilmente.
+
+### Mejoras visuales y de usabilidad
+- **Icono de ojo en los campos de contraseña**: Se ha añadido el típico icono de ojo en los formularios de login y registro para mostrar/ocultar la contraseña, mejorando la experiencia de usuario.
+- **Botón de adjuntar imagen mejorado**: Se ha rediseñado el botón para subir imágenes de prendas, haciéndolo más intuitivo y visualmente atractivo.
+- **Más opciones de personalización**: Se han ampliado las opciones disponibles para categorizar las prendas:
+  - Más opciones de **colores**.
+  - Más opciones de **marcas**.
+  - Más opciones de **tallas**.
+- **Edición de conjuntos**: Ahora, al igual que con las prendas, los usuarios pueden **modificar los conjuntos** ya creados, facilitando la gestión y personalización de sus combinaciones.
+- **Vista previa de prendas al crear conjuntos**: Al crear un conjunto, se muestra una vista previa de la prenda seleccionada, permitiendo al usuario ver cómo es antes de añadirla al conjunto.
+
+### Bot de creación de conjuntos
+- Se ha integrado un **bot asistente** que ayuda a los usuarios a crear conjuntos de forma automática, sugiriendo combinaciones basadas en las prendas disponibles en su armario.
