@@ -5,10 +5,33 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
+/**
+ * Repositorio para operaciones CRUD de la entidad Conjunto.
+ * Proporciona consultas para búsqueda de conjuntos por usuario.
+ */
 public interface ConjuntoRepository extends CrudRepository<Conjunto, Long> {
-    public Conjunto findByNombre(String nombre);
-    public long countByUsuario_Id(Long usuarioId);
 
-    // Añadido para permitir obtener los conjuntos de un usuario desde el servicio
+    /**
+     * Busca un conjunto por su nombre exacto.
+     *
+     * @param nombre nombre del conjunto
+     * @return el conjunto si existe, null si no
+     */
+    Conjunto findByNombre(String nombre);
+
+    /**
+     * Cuenta el número de conjuntos de un usuario.
+     *
+     * @param usuarioId ID del usuario
+     * @return número de conjuntos
+     */
+    long countByUsuario_Id(Long usuarioId);
+
+    /**
+     * Obtiene todos los conjuntos de un usuario.
+     *
+     * @param usuarioId ID del usuario
+     * @return lista de conjuntos del usuario
+     */
     List<Conjunto> findByUsuario_Id(Long usuarioId);
 }

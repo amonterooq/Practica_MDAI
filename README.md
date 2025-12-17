@@ -102,7 +102,7 @@ Esto:
 3. Una vez MySQL esté levantado, importa manualmente los datos iniciales desde `src/main/resources/data.sql` dentro del contenedor de la base de datos:
 
 ```bash
-  docker exec -i mysql_db mysql -unada -pnada --default-character-set=utf8mb4 nada < src/main/resources/data.sql
+  docker exec -i mysql_db mysql -u nada -pN4dA_Db_P4ss_2025 -h 127.0.0.1 --protocol=tcp --default-character-set=utf8mb4 nada < src/main/resources/data.sql
 ```
 
 Nota: Si se van a introducir datos iniciales, es importante que no se creen otros usuarios antes de la
@@ -140,7 +140,7 @@ Para detener los contenedores y eliminar también los volúmenes (incluidos los 
 En este caso, al volver a levantar con `docker compose up -d --build` la base de datos estará vacía y será necesario volver a importar los datos con el comando:
 
 ```bash
-  docker exec -i mysql_db mysql -unada -pnada --default-character-set=utf8mb4 nada < src/main/resources/data.sql
+  docker exec -i mysql_db mysql -u nada -pN4dA_Db_P4ss_2025 -h 127.0.0.1 --protocol=tcp --default-character-set=utf8mb4 nada < src/main/resources/data.sql
 ```
 
 ## Estructura del proyecto

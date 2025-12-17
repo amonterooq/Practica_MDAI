@@ -1,4 +1,4 @@
-package com.nada.nada;
+package com.nada.nada.repository;
 
 import com.nada.nada.data.model.*;
 import com.nada.nada.data.model.enums.CategoriaCalzado;
@@ -14,6 +14,9 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests de integración para ConjuntoRepository.
+ */
 @SpringBootTest
 @ActiveProfiles("test")
 class ConjuntoRepositoryTests {
@@ -33,6 +36,12 @@ class ConjuntoRepositoryTests {
     @Autowired
     private ConjuntoRepository conjuntoRepository;
 
+    /**
+     * Crea y persiste un usuario de prueba.
+     *
+     * @param username nombre de usuario único
+     * @return usuario guardado en base de datos
+     */
     private Usuario nuevoUsuario(String username) {
         Usuario u = new Usuario();
         u.setUsername(username);
@@ -41,6 +50,12 @@ class ConjuntoRepositoryTests {
         return usuarioRepository.save(u);
     }
 
+    /**
+     * Crea y persiste una prenda superior de prueba.
+     *
+     * @param u usuario propietario
+     * @return prenda superior guardada
+     */
     private PrendaSuperior sup(Usuario u) {
         PrendaSuperior p = new PrendaSuperior();
         p.setNombre("Camiseta");
@@ -54,6 +69,12 @@ class ConjuntoRepositoryTests {
         return prendaSuperiorRepository.save(p);
     }
 
+    /**
+     * Crea y persiste una prenda inferior de prueba.
+     *
+     * @param u usuario propietario
+     * @return prenda inferior guardada
+     */
     private PrendaInferior inf(Usuario u) {
         PrendaInferior p = new PrendaInferior();
         p.setNombre("Pantalon");
@@ -66,6 +87,12 @@ class ConjuntoRepositoryTests {
         return prendaInferiorRepository.save(p);
     }
 
+    /**
+     * Crea y persiste un calzado de prueba.
+     *
+     * @param u usuario propietario
+     * @return calzado guardado
+     */
     private PrendaCalzado cal(Usuario u) {
         PrendaCalzado p = new PrendaCalzado();
         p.setNombre("Zapatilla");
@@ -78,6 +105,9 @@ class ConjuntoRepositoryTests {
         return prendaCalzadoRepository.save(p);
     }
 
+    /**
+     * Verifica que los datos iniciales se cargan correctamente desde data.sql.
+     */
     @Test
     void testComprobarDatosIniciales() {
         Conjunto c = conjuntoRepository.findByNombre("Negocios");
@@ -85,6 +115,9 @@ class ConjuntoRepositoryTests {
         assertEquals("Negocios", c.getNombre());
     }
 
+    /**
+     * Verifica que se puede guardar un conjunto completo y recuperarlo con todas sus relaciones.
+     */
     @Test
     void testGuardarYRecuperarConjuntoCompleto() {
         Usuario u = nuevoUsuario("eva");
@@ -113,6 +146,9 @@ class ConjuntoRepositoryTests {
         assertEquals(rec.getUsuario().getId(), rec.getPrendaCalzado().getUsuario().getId());
     }
 
+    /**
+     * Verifica que una misma prenda puede ser reutilizada en varios conjuntos.
+     */
     @Test
     void testPermitirReutilizarPrendaEnVariosConjuntos() {
         Usuario u = nuevoUsuario("reuse");
@@ -152,6 +188,9 @@ class ConjuntoRepositoryTests {
         assertEquals(antes + 2, conjuntoRepository.count());
     }
 
+    /**
+     * Verifica que se pueden actualizar las prendas y descripción de un conjunto.
+     */
     @Test
     void testActualizarConjuntoCambiaPrendasYDescripcion() {
         Usuario u = nuevoUsuario("upd");
@@ -185,6 +224,9 @@ class ConjuntoRepositoryTests {
         assertEquals(pc2.getId(), after.getPrendaCalzado().getId());
     }
 
+    /**
+     * Verifica que no se puede guardar un conjunto sin usuario asociado.
+     */
     @Test
     void testGuardarConjuntoSinUsuarioDebeFallar() {
         Usuario u = nuevoUsuario("nouser");

@@ -1,4 +1,4 @@
-package com.nada.nada;
+package com.nada.nada.repository;
 
 import com.nada.nada.data.model.*;
 import com.nada.nada.data.model.enums.CategoriaCalzado;
@@ -17,6 +17,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests de integración para UsuarioRepository.
+ */
 @SpringBootTest
 @ActiveProfiles("test")
 class UsuarioRepositoryTests {
@@ -36,6 +39,12 @@ class UsuarioRepositoryTests {
     @Autowired
     private ConjuntoRepository conjuntoRepository;
 
+    /**
+     * Crea un nuevo usuario con datos básicos para testing.
+     *
+     * @param username nombre de usuario único
+     * @return usuario sin persistir
+     */
     private Usuario nuevoUsuario(String username) {
         Usuario u = new Usuario();
         u.setUsername(username);
@@ -44,6 +53,13 @@ class UsuarioRepositoryTests {
         return u;
     }
 
+    /**
+     * Crea una prenda superior asociada a un usuario.
+     *
+     * @param u usuario propietario
+     * @param nombre nombre de la prenda
+     * @return prenda superior sin persistir
+     */
     private PrendaSuperior nuevaSuperior(Usuario u, String nombre) {
         PrendaSuperior p = new PrendaSuperior();
         p.setNombre(nombre);
@@ -57,6 +73,13 @@ class UsuarioRepositoryTests {
         return p;
     }
 
+    /**
+     * Crea una prenda inferior asociada a un usuario.
+     *
+     * @param u usuario propietario
+     * @param nombre nombre de la prenda
+     * @return prenda inferior sin persistir
+     */
     private PrendaInferior nuevaInferior(Usuario u, String nombre) {
         PrendaInferior p = new PrendaInferior();
         p.setNombre(nombre);
@@ -69,6 +92,13 @@ class UsuarioRepositoryTests {
         return p;
     }
 
+    /**
+     * Crea un calzado asociado a un usuario.
+     *
+     * @param u usuario propietario
+     * @param nombre nombre del calzado
+     * @return calzado sin persistir
+     */
     private PrendaCalzado nuevoCalzado(Usuario u, String nombre) {
         PrendaCalzado p = new PrendaCalzado();
         p.setNombre(nombre);
@@ -81,6 +111,9 @@ class UsuarioRepositoryTests {
         return p;
     }
 
+    /**
+     * Verifica que los datos iniciales se cargan correctamente desde data.sql.
+     */
     @Test
     void testComprobarDatosIniciales() {
         Optional<Usuario> franOpt = usuarioRepository.findByUsername("fran");
@@ -89,6 +122,9 @@ class UsuarioRepositoryTests {
         assertEquals("fran", fran.getUsername());
     }
 
+    /**
+     * Verifica que se puede guardar un usuario y buscarlo por username.
+     */
     @Test
     void testGuardarYBuscarUsuarioPorUsername() {
         Usuario u = nuevoUsuario("anita");
@@ -101,6 +137,9 @@ class UsuarioRepositoryTests {
         assertNotNull(encontrado.getId());
     }
 
+    /**
+     * Verifica que un usuario puede tener múltiples prendas y conjuntos asociados.
+     */
     @Test
     @Transactional
     void testUsuarioPoseePrendasYConjuntos() {
@@ -132,12 +171,18 @@ class UsuarioRepositoryTests {
         assertEquals(1, recargado.getConjuntos().size());
     }
 
+    /**
+     * Verifica que buscar un usuario inexistente devuelve Optional vacío.
+     */
     @Test
     void testBuscarUsuarioNoExistenteDevuelveNull() {
         Optional<Usuario> inexistente = usuarioRepository.findByUsername("no-existe");
         assertThat(inexistente).isNotPresent();
     }
 
+    /**
+     * Verifica que se pueden actualizar los datos básicos de un usuario.
+     */
     @Test
     void testActualizarDatosBasicosUsuario() {
         usuarioRepository.save(nuevoUsuario("carl"));
@@ -154,6 +199,9 @@ class UsuarioRepositoryTests {
         assertThat(after.getEmail()).isEqualTo("nuevo@gmail.com");
     }
 
+    /**
+     * Verifica la navegación de relaciones desde el usuario hacia sus entidades relacionadas.
+     */
     @Test
     @Transactional
     void testNavegarRelacionesDesdeUsuario() {

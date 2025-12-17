@@ -120,15 +120,15 @@ public class PostServiceImpl implements PostService {
         if (postId == null || postId <= 0) {
             return;
         }
-
+        
         // Cargar el post con sus likes
         Optional<Post> postOpt = postRepository.findByIdWithLikes(postId);
         if (postOpt.isEmpty()) {
             return;
         }
-
+        
         Post post = postOpt.get();
-
+        
         // Recorrer los usuarios que dieron like y eliminar el post de sus listas
         // Copiamos la lista para evitar ConcurrentModificationException
         List<Usuario> usuarios = new ArrayList<>(post.getUsuariosQueDieronLike());

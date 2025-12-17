@@ -1,19 +1,51 @@
 package com.nada.nada.dto.chat;
 
+/**
+ * DTO para representar una prenda en las recomendaciones.
+ * Contiene la información básica necesaria para mostrar la prenda al usuario.
+ */
 public class RecomendacionPrendaDto {
 
+    /** ID de la prenda */
     private Long id;
-    private String tipo; // SUPERIOR, INFERIOR, CALZADO
+
+    /** Tipo de prenda: SUPERIOR, INFERIOR, CALZADO */
+    private String tipo;
+
+    /** Nombre de la prenda */
     private String nombre;
+
+    /** Marca de la prenda */
     private String marca;
+
+    /** Color de la prenda */
     private String color;
+
+    /** Categoría específica de la prenda */
     private String categoria;
+
+    /** URL de la imagen de la prenda */
     private String imagenUrl;
 
+    /**
+     * Constructor por defecto.
+     */
     public RecomendacionPrendaDto() {
     }
 
-    public RecomendacionPrendaDto(Long id, String tipo, String nombre, String marca, String color, String categoria, String imagenUrl) {
+    /**
+     * Constructor con todos los campos.
+     *
+     * @param id ID de la prenda
+     * @param tipo tipo de prenda
+     * @param nombre nombre de la prenda
+     * @param marca marca de la prenda
+     * @param color color de la prenda
+     * @param categoria categoría de la prenda
+     * @param imagenUrl URL de la imagen
+     */
+    public RecomendacionPrendaDto(Long id, String tipo, String nombre, String marca,
+                                   String color, String categoria, String imagenUrl) {
         this.id = id;
         this.tipo = tipo;
         this.nombre = nombre;
@@ -22,6 +54,10 @@ public class RecomendacionPrendaDto {
         this.categoria = categoria;
         this.imagenUrl = imagenUrl;
     }
+
+    // =====================================================================
+    // GETTERS Y SETTERS
+    // =====================================================================
 
     public Long getId() {
         return id;

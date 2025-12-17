@@ -1,0 +1,166 @@
+/* --- VARIABLES Y BASE --- */
+:root {
+    --bg-color: #fafafa;
+    --card-bg: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #555555;
+    --accent: #2c3e50;
+    --border-color: #e0e0e0;
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Lato', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; transition: 0.3s; }
+ul { list-style: none; }
+img { display: block; max-width: 100%; height: auto; }
+
+/* --- NAVEGACIÓN --- */
+.navbar {
+    background: var(--card-bg);
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky; top: 0; z-index: 100;
+}
+
+.nav-container {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.5rem; font-weight: 700; letter-spacing: 2px;
+}
+
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);
+}
+.nav-links a:hover { color: var(--accent); }
+
+/* --- HERO SECTION (Portada) --- */
+.hero {
+    max-width: 1200px; margin: 4rem auto; padding: 0 2rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    min-height: 60vh;
+}
+
+.hero-content h1 {
+    font-family: var(--font-heading);
+    font-size: 4rem; line-height: 1.1; margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.hero-content .slogan {
+    font-size: 1.2rem; font-style: italic; color: var(--text-secondary); margin-bottom: 2rem; display: block;
+}
+
+.hero-content p {
+    font-size: 1rem; color: var(--text-secondary); margin-bottom: 2.5rem; max-width: 450px;
+}
+
+.hero-image {
+    position: relative;
+}
+
+/* Marco decorativo para la imagen */
+.hero-image img {
+    width: 100%; border-radius: 4px; filter: grayscale(20%); transition: 0.5s;
+}
+.hero-image:hover img { filter: grayscale(0%); }
+
+/* Botón estilo Editorial */
+.btn-editorial {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: var(--text-primary);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid var(--text-primary);
+}
+.btn-editorial:hover {
+    background: transparent; color: var(--text-primary);
+}
+
+/* --- FEATURES (Grid Minimalista) --- */
+.features {
+    background: #fff; border-top: 1px solid var(--border-color);
+    padding: 6rem 2rem;
+}
+
+.section-title {
+    text-align: center; margin-bottom: 4rem;
+}
+.section-title h2 {
+    font-family: var(--font-heading); font-size: 2.5rem; margin-bottom: 1rem;
+}
+.section-title span {
+    display: block; width: 60px; height: 3px; background: var(--accent); margin: 0 auto;
+}
+
+.features-grid {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem;
+}
+
+.feature-item {
+    padding: 2rem; border: 1px solid transparent; text-align: center; transition: 0.3s;
+}
+.feature-item:hover {
+    border-color: var(--border-color); background: #fafafa;
+}
+
+.feature-icon { font-size: 2rem; margin-bottom: 1.5rem; color: var(--accent); }
+.feature-item h3 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
+.feature-item p { font-size: 0.95rem; color: var(--text-secondary); }
+
+/* --- TEAM SECTION (Integrantes) --- */
+.team-section {
+    padding: 6rem 2rem; max-width: 1000px; margin: 0 auto; text-align: center;
+}
+
+.team-grid {
+    display: flex; justify-content: center; gap: 4rem; margin-top: 3rem; flex-wrap: wrap;
+}
+
+.member {
+    text-align: center;
+}
+
+.member-img-frame {
+    width: 150px; height: 150px; margin: 0 auto 1.5rem;
+    border-radius: 50%; overflow: hidden;
+    border: 3px solid #fff; box-shadow: 0 0 0 1px var(--border-color);
+}
+.member img { width: 100%; height: 100%; object-fit: cover; }
+
+.member h4 { font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 0.5rem; }
+.member span { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #999; }
+
+/* --- FOOTER --- */
+footer {
+    border-top: 1px solid var(--border-color);
+    padding: 3rem; text-align: center; font-size: 0.85rem; color: #888; background: #fff;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+    .hero-content p { margin: 0 auto 2rem; }
+    .features-grid { grid-template-columns: 1fr; }
+    .hero-content h1 { font-size: 3rem; }
+}
+

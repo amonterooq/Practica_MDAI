@@ -81,7 +81,7 @@ VALUES (41, 'Camisa blanca', 'Blanco', 'Hugo Boss', 'M', '/images/6/prenda_1.jpg
        (44, 'Pantalón jogger', 'Gris', 'Nike', '36', '/images/6/prenda_4.jpg', 6, 'INFERIOR'),
        (45, 'Jeans slim', 'Azul', 'Pepe Jeans', '36', '/images/6/prenda_5.jpg', 6, 'INFERIOR'),
        (46, 'Short deporte', 'Negro', 'Adidas', '36', '/images/6/prenda_6.jpg', 6, 'INFERIOR'),
-       (47, 'Zapatillas trail', 'Naranja', 'Salomon', '40', '/images/6/prenda_7.jpg', 6, 'CALZADO'),
+       (47, 'Zapatillas trail', 'Naranja', 'Nike', '40', '/images/6/prenda_7.jpg', 6, 'CALZADO'),
        (48, 'Zapatos derby', 'Marrón', 'Clarks', '40', '/images/6/prenda_8.jpg', 6, 'CALZADO');
 
 -- =========================================================

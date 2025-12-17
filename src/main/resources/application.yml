@@ -9,21 +9,23 @@ spring:
         format_sql: true
 
 ---
-
 spring:
   config:
     activate:
       on-profile: docker
+
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:db}:${MYSQL_PORT:3306}/${MYSQL_DB:nada}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
-    username: ${MYSQL_USER:nada}
-    password: ${MYSQL_PASSWORD:nada}
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: update
     defer-datasource-initialization: true
+
   sql:
     init:
       mode: never

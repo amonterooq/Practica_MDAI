@@ -7,31 +7,59 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad que representa una prenda superior (camiseta, jersey, abrigo, etc.).
+ * Extiende de Prenda y añade atributos específicos como categoría y tipo de manga.
+ */
 @Entity
 @DiscriminatorValue("SUPERIOR")
 public class PrendaSuperior extends Prenda {
 
+    /** Categoría de la prenda superior (camiseta, jersey, abrigo, etc.) */
     private CategoriaSuperior categoria;
+
+    /** Tipo de manga de la prenda (corta, larga, sin mangas) */
     private Manga manga;
 
-    @OneToMany(mappedBy = "prendaSuperior", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
+    /** Conjuntos que incluyen esta prenda superior */
+    @OneToMany(mappedBy = "prendaSuperior", cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+               fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Conjunto> conjuntos = new ArrayList<>();
 
+    /**
+     * Constructor por defecto requerido por JPA.
+     */
     public PrendaSuperior() {
     }
 
+    /**
+     * Constructor con atributos específicos de prenda superior.
+     *
+     * @param categoria categoría de la prenda
+     * @param conjuntos lista de conjuntos asociados
+     * @param manga tipo de manga
+     */
     public PrendaSuperior(CategoriaSuperior categoria, List<Conjunto> conjuntos, Manga manga) {
         this.categoria = categoria;
         this.conjuntos = conjuntos;
         this.manga = manga;
     }
 
-    public PrendaSuperior(String nombre, String color, String marca, Usuario usuario, String talla, String urlImagen, CategoriaSuperior categoria, List<Conjunto> conjuntos, Manga manga) {
+    /**
+     * Constructor completo con todos los atributos.
+     */
+    public PrendaSuperior(String nombre, String color, String marca, Usuario usuario,
+                          String talla, String urlImagen, CategoriaSuperior categoria,
+                          List<Conjunto> conjuntos, Manga manga) {
         super(nombre, color, marca, usuario, talla, urlImagen);
         this.categoria = categoria;
         this.conjuntos = conjuntos;
         this.manga = manga;
     }
+
+    // =====================================================================
+    // GETTERS Y SETTERS
+    // =====================================================================
 
     public CategoriaSuperior getCategoria() {
         return categoria;

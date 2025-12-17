@@ -1,4 +1,4 @@
-package com.nada.nada;
+package com.nada.nada.services;
 
 import com.nada.nada.data.model.Usuario;
 import com.nada.nada.data.repository.UsuarioRepository;
@@ -13,6 +13,9 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests de integración para UsuarioService.
+ */
 @SpringBootTest
 @ActiveProfiles("test")
 class UsuarioServiceTests {
@@ -23,6 +26,12 @@ class UsuarioServiceTests {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    /**
+     * Crea un nuevo usuario con datos básicos para testing.
+     *
+     * @param username nombre de usuario único
+     * @return usuario sin persistir
+     */
     private Usuario nuevoUsuario(String username) {
         Usuario u = new Usuario();
         u.setUsername(username);
@@ -31,6 +40,9 @@ class UsuarioServiceTests {
         return u;
     }
 
+    /**
+     * Verifica que se puede crear un usuario válido y aparece en la lista de todos.
+     */
     @Test
     void testCrearUsuarioValidoYBuscarTodos() {
         // "usuarioServ1" tiene 12 caracteres, cumple la validación (<= 15)
@@ -43,6 +55,9 @@ class UsuarioServiceTests {
         assertTrue(usuarios.stream().anyMatch(us -> us.getUsername().equals("usuarioServ1")));
     }
 
+    /**
+     * Verifica que crear un usuario con username duplicado lanza excepción.
+     */
     @Test
     void testCrearUsuarioDuplicadoPorUsernameLanzaExcepcion() {
         Usuario u1 = nuevoUsuario("usuarioDup");
@@ -52,6 +67,9 @@ class UsuarioServiceTests {
         assertThrows(IllegalArgumentException.class, () -> usuarioService.crearUsuario(u2));
     }
 
+    /**
+     * Verifica la validación de login con credenciales correctas e incorrectas.
+     */
     @Test
     void testValidarLoginCorrectoEIncorrecto() {
         Usuario u = nuevoUsuario("usuarioLogin");
@@ -65,6 +83,9 @@ class UsuarioServiceTests {
         assertTrue(fail.isEmpty());
     }
 
+    /**
+     * Verifica que se puede cambiar la contraseña correctamente.
+     */
     @Test
     void testCambiarPasswordCorrectamente() {
         Usuario u = nuevoUsuario("usuarioPwd");
@@ -78,6 +99,9 @@ class UsuarioServiceTests {
         assertEquals("nueva", recargado.get().getPassword());
     }
 
+    /**
+     * Verifica que cambiar la contraseña con la antigua incorrecta lanza excepción.
+     */
     @Test
     void testCambiarPasswordConOldIncorrectoLanzaExcepcion() {
         Usuario u = nuevoUsuario("usuarioPwdErr");
@@ -87,6 +111,9 @@ class UsuarioServiceTests {
         assertThrows(IllegalArgumentException.class, () -> usuarioService.cambiarPassword(guardado.getId(), "otra", "nueva"));
     }
 
+    /**
+     * Verifica que eliminar un usuario lo elimina de la base de datos.
+     */
     @Test
     void testEliminarUsuarioEliminaDeLaBaseDeDatos() {
         Usuario u = nuevoUsuario("usuarioBorrar");

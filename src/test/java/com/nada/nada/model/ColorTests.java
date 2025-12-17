@@ -1,11 +1,17 @@
-package com.nada.nada;
+package com.nada.nada.model;
 
 import com.nada.nada.data.model.enums.Color;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests unitarios para el enum Color.
+ */
 public class ColorTests {
 
+    /**
+     * Verifica que los colores básicos tienen su etiqueta correcta.
+     */
     @Test
     void testColorTieneEtiqueta() {
         assertEquals("Negro", Color.NEGRO.getEtiqueta());
@@ -13,6 +19,9 @@ public class ColorTests {
         assertEquals("Rojo", Color.ROJO.getEtiqueta());
     }
 
+    /**
+     * Verifica que los colores compuestos tienen etiquetas con espacios.
+     */
     @Test
     void testColorTieneEtiquetaConEspacios() {
         assertEquals("Azul marino", Color.AZUL_MARINO.getEtiqueta());
@@ -20,12 +29,18 @@ public class ColorTests {
         assertEquals("Verde militar", Color.VERDE_MILITAR.getEtiqueta());
     }
 
+    /**
+     * Verifica que los colores con acentos mantienen su etiqueta correcta.
+     */
     @Test
     void testColorTieneEtiquetaConAcentos() {
         assertEquals("Azul eléctrico", Color.AZUL_ELECTRICO.getEtiqueta());
         assertEquals("Marrón", Color.MARRON.getEtiqueta());
     }
 
+    /**
+     * Verifica la validación de colores usando la etiqueta legible.
+     */
     @Test
     void testColorEsValidoConEtiquetaCorrecta() {
         assertTrue(Color.esValida("Negro"));
@@ -34,6 +49,9 @@ public class ColorTests {
         assertTrue(Color.esValida("Azul marino"));
     }
 
+    /**
+     * Verifica la validación de colores usando el nombre del enum (case insensitive).
+     */
     @Test
     void testColorEsValidoConNombreEnum() {
         assertTrue(Color.esValida("NEGRO"));
@@ -41,6 +59,9 @@ public class ColorTests {
         assertTrue(Color.esValida("RoJo"));
     }
 
+    /**
+     * Verifica que valores incorrectos, vacíos o nulos no son válidos.
+     */
     @Test
     void testColorNoEsValidoConValorIncorrecto() {
         assertFalse(Color.esValida("ColorInexistente"));
@@ -48,12 +69,18 @@ public class ColorTests {
         assertFalse(Color.esValida(null));
     }
 
+    /**
+     * Verifica que existe la opción "Otro" para colores no predefinidos.
+     */
     @Test
     void testColorContieneOtro() {
         assertEquals("Otro", Color.OTRO.getEtiqueta());
         assertTrue(Color.esValida("Otro"));
     }
 
+    /**
+     * Verifica que existen los patrones especiales (cuadros, rayas, estampados, etc.).
+     */
     @Test
     void testColorContienePatrones() {
         assertEquals("A cuadros", Color.A_CUADROS.getEtiqueta());
@@ -63,6 +90,9 @@ public class ColorTests {
         assertEquals("Animal print", Color.ANIMAL_PRINT.getEtiqueta());
     }
 
+    /**
+     * Verifica que el enum contiene todos los colores esperados.
+     */
     @Test
     void testColorTieneTodosLosColoresEsperados() {
         Color[] colores = Color.values();
@@ -87,6 +117,9 @@ public class ColorTests {
         assertTrue(tieneOtro, "Debe contener la opción Otro");
     }
 
+    /**
+     * Verifica el método valueOf para obtener colores por nombre de enum.
+     */
     @Test
     void testColorValueOf() {
         assertEquals(Color.NEGRO, Color.valueOf("NEGRO"));
@@ -94,6 +127,9 @@ public class ColorTests {
         assertEquals(Color.AZUL_MARINO, Color.valueOf("AZUL_MARINO"));
     }
 
+    /**
+     * Verifica que valueOf lanza excepción para valores inválidos.
+     */
     @Test
     void testColorValueOfLanzaExcepcionParaValorInvalido() {
         assertThrows(IllegalArgumentException.class, () -> Color.valueOf("COLOR_INEXISTENTE"));
@@ -134,4 +170,3 @@ public class ColorTests {
         assertTrue(Color.esValida("Marfil"));
     }
 }
-

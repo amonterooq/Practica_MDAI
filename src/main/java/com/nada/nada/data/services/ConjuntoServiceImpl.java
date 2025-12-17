@@ -109,7 +109,7 @@ public class ConjuntoServiceImpl implements ConjuntoService {
 
                     // Eliminar los likes usando el servicio
                     postService.eliminarLikesDelPost(postId);
-
+                    
                     // NO llamar a eliminarPost aquí, el orphanRemoval ya lo hará
                 }
 

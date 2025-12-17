@@ -1,4 +1,4 @@
-package com.nada.nada;
+package com.nada.nada.repository;
 
 import com.nada.nada.data.model.*;
 import com.nada.nada.data.model.enums.CategoriaCalzado;
@@ -13,6 +13,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests de integración para PrendaRepository y sus repositorios especializados.
+ */
 @SpringBootTest
 @ActiveProfiles("test")
 public class PrendaRepositoryTest {
@@ -32,6 +35,11 @@ public class PrendaRepositoryTest {
     @Autowired
     private PrendaCalzadoRepository prendaCalzadoRepository;
 
+    /**
+     * Crea y persiste un usuario de prueba.
+     *
+     * @return usuario guardado en base de datos
+     */
     private Usuario seedUsuario() {
         Usuario u = new Usuario();
         u.setUsername("user1");
@@ -40,6 +48,9 @@ public class PrendaRepositoryTest {
         return usuarioRepository.save(u);
     }
 
+    /**
+     * Verifica que los datos iniciales se cargan correctamente desde data.sql.
+     */
     @Test
     void testComprobarDatosIniciales() {
         Prenda p = prendaRepository.findById(1);
@@ -47,6 +58,9 @@ public class PrendaRepositoryTest {
         assertEquals("Camiseta blanca", p.getNombre());
     }
 
+    /**
+     * Verifica que se puede guardar una prenda y buscarla por nombre.
+     */
     @Test
     void testGuardarYBuscarPorNombreEnRepositorioBase() {
         Usuario u = seedUsuario();
@@ -69,6 +83,10 @@ public class PrendaRepositoryTest {
         assertTrue(encontrada instanceof PrendaSuperior);
     }
 
+    /**
+     * Verifica la correcta persistencia de las subclases de Prenda.
+     * Comprueba que cada tipo de prenda se guarda con su discriminador correcto.
+     */
     @Test
     void testPersistenciaDeHerenciaSubclases() {
         int numPrendasInicial = (int) prendaRepository.count();
@@ -112,6 +130,9 @@ public class PrendaRepositoryTest {
         assertTrue(prendaRepository.findByNombre("Zapato") instanceof PrendaCalzado);
     }
 
+    /**
+     * Verifica que una prenda mantiene la relación con su usuario propietario.
+     */
     @Test
     void testRelacionPrendaConUsuario() {
         Usuario u = seedUsuario();
@@ -133,6 +154,9 @@ public class PrendaRepositoryTest {
     }
 
 
+    /**
+     * Verifica que un usuario puede tener múltiples prendas y se cuentan correctamente.
+     */
     @Test
     void testUsuarioPoseeMultiplesPrendasSegunRepositorioBase() {
         Usuario u = seedUsuario();
@@ -177,6 +201,9 @@ public class PrendaRepositoryTest {
                 .allMatch(p -> p != null && p.getUsuario() != null && p.getUsuario().getId().equals(u.getId())));
     }
 
+    /**
+     * Verifica que eliminar una prenda no elimina al usuario propietario.
+     */
     @Test
     void testEliminarPrendaNoEliminaUsuario() {
         Usuario u = seedUsuario();

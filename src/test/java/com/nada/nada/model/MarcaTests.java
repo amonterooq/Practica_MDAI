@@ -1,11 +1,17 @@
-package com.nada.nada;
+package com.nada.nada.model;
 
 import com.nada.nada.data.model.enums.Marca;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests unitarios para el enum Marca.
+ */
 public class MarcaTests {
 
+    /**
+     * Verifica que las marcas básicas tienen su etiqueta correcta.
+     */
     @Test
     void testMarcaTieneEtiqueta() {
         assertEquals("Zara", Marca.ZARA.getEtiqueta());
@@ -13,6 +19,9 @@ public class MarcaTests {
         assertEquals("Adidas", Marca.ADIDAS.getEtiqueta());
     }
 
+    /**
+     * Verifica que las marcas compuestas tienen etiquetas con espacios.
+     */
     @Test
     void testMarcaTieneEtiquetaConEspacios() {
         assertEquals("Bimba y Lola", Marca.BIMBA_Y_LOLA.getEtiqueta());
@@ -20,6 +29,9 @@ public class MarcaTests {
         assertEquals("Massimo Dutti", Marca.MASSIMO_DUTTI.getEtiqueta());
     }
 
+    /**
+     * Verifica que las marcas con caracteres especiales mantienen su etiqueta.
+     */
     @Test
     void testMarcaTieneEtiquetaConCaracteresEspeciales() {
         assertEquals("H&M", Marca.HM.getEtiqueta());
@@ -27,6 +39,9 @@ public class MarcaTests {
         assertEquals("Women'Secret", Marca.WOMEN_SECRET.getEtiqueta());
     }
 
+    /**
+     * Verifica la validación de marcas usando la etiqueta legible.
+     */
     @Test
     void testMarcaEsValidaConEtiquetaCorrecta() {
         assertTrue(Marca.esValida("Zara"));
@@ -34,6 +49,9 @@ public class MarcaTests {
         assertTrue(Marca.esValida("Adidas"));
     }
 
+    /**
+     * Verifica la validación de marcas usando el nombre del enum (case insensitive).
+     */
     @Test
     void testMarcaEsValidaConNombreEnum() {
         assertTrue(Marca.esValida("ZARA"));
@@ -41,6 +59,9 @@ public class MarcaTests {
         assertTrue(Marca.esValida("AdIdAs"));
     }
 
+    /**
+     * Verifica que valores incorrectos, vacíos o nulos no son válidos.
+     */
     @Test
     void testMarcaNoEsValidaConValorIncorrecto() {
         assertFalse(Marca.esValida("MarcaInexistente"));
@@ -48,12 +69,18 @@ public class MarcaTests {
         assertFalse(Marca.esValida(null));
     }
 
+    /**
+     * Verifica que existe la opción "Otra" para marcas no predefinidas.
+     */
     @Test
     void testMarcaContieneOtra() {
         assertEquals("Otra", Marca.OTRA.getEtiqueta());
         assertTrue(Marca.esValida("Otra"));
     }
 
+    /**
+     * Verifica que el enum contiene todas las marcas esperadas.
+     */
     @Test
     void testMarcaTieneTodasLasMarcasEsperadas() {
         Marca[] marcas = Marca.values();
@@ -78,6 +105,9 @@ public class MarcaTests {
         assertTrue(tieneOtra, "Debe contener la opción Otra");
     }
 
+    /**
+     * Verifica el método valueOf para obtener marcas por nombre de enum.
+     */
     @Test
     void testMarcaValueOf() {
         assertEquals(Marca.ZARA, Marca.valueOf("ZARA"));
@@ -85,6 +115,9 @@ public class MarcaTests {
         assertEquals(Marca.ADIDAS, Marca.valueOf("ADIDAS"));
     }
 
+    /**
+     * Verifica que valueOf lanza excepción para valores inválidos.
+     */
     @Test
     void testMarcaValueOfLanzaExcepcionParaValorInvalido() {
         assertThrows(IllegalArgumentException.class, () -> {
@@ -92,4 +125,3 @@ public class MarcaTests {
         });
     }
 }
-

@@ -2,31 +2,57 @@ package com.nada.nada.dto.chat;
 
 import java.util.List;
 
+/**
+ * DTO para las solicitudes de recomendación de conjuntos.
+ * Contiene todas las preferencias y filtros para generar recomendaciones personalizadas.
+ */
 public class RecomendacionConjuntoRequestDto {
 
+    /** ID de prenda superior fija (opcional) */
     private Long superiorFijoId;
+
+    /** ID de prenda inferior fija (opcional) */
     private Long inferiorFijoId;
+
+    /** ID de calzado fijo (opcional) */
     private Long calzadoFijoId;
 
-    // Modo de recomendación (SORPRESA, COLOR, MARCA, TIEMPO, OCASION, SIN_REPETIR, COMPLETAR)
+    /** Modo de recomendación: SORPRESA, COLOR, MARCA, TIEMPO, OCASION, SIN_REPETIR, COMPLETAR */
     private String modo;
 
-    // Filtros y preferencias
-    private String colorFiltro;  // opcional
-    private String marcaFiltro;  // opcional
-    private String tiempo;       // FRIO, TEMPLADO, CALOR
-    private String ocasion;      // TRABAJO, FIESTA, DEPORTE, CASUAL
+    /** Filtro por color (opcional) */
+    private String colorFiltro;
 
-    // Para "Sin repetir": prendas que debemos evitar en esta sesión
+    /** Filtro por marca (opcional) */
+    private String marcaFiltro;
+
+    /** Condición climática: FRIO, TEMPLADO, CALOR */
+    private String tiempo;
+
+    /** Tipo de ocasión: TRABAJO, FIESTA, DEPORTE, CASUAL */
+    private String ocasion;
+
+    /** IDs de prendas a evitar en esta sesión (modo SIN_REPETIR) */
     private List<Long> prendasEvitarIds;
-    private List<String> conjuntosUsados; // claves "supId-infId-calId" ya servidas al usuario en esta sesión
 
-    // Nuevos campos para el flujo unificado de COLOR/MARCA
-    private String tipoCombinacion; // TODO, COMBINADO
-    private String intensidad;      // PROTAGONISTA, TOQUE
+    /** Claves de conjuntos ya mostrados en esta sesión (formato: "supId-infId-calId") */
+    private List<String> conjuntosUsados;
 
+    /** Tipo de combinación para modos COLOR/MARCA: TODO, COMBINADO */
+    private String tipoCombinacion;
+
+    /** Intensidad del criterio: PROTAGONISTA, TOQUE */
+    private String intensidad;
+
+    /**
+     * Constructor por defecto.
+     */
     public RecomendacionConjuntoRequestDto() {
     }
+
+    // =====================================================================
+    // GETTERS Y SETTERS
+    // =====================================================================
 
     public Long getSuperiorFijoId() {
         return superiorFijoId;

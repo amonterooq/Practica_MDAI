@@ -26,16 +26,19 @@ public class PrendaServiceImpl implements PrendaService {
     private final PrendaSuperiorRepository prendaSuperiorRepository;
     private final PrendaInferiorRepository prendaInferiorRepository;
     private final PrendaCalzadoRepository prendaCalzadoRepository;
+    private final PostService postService;
 
     @Autowired
     public PrendaServiceImpl(PrendaRepository prendaRepository,
                              PrendaSuperiorRepository prendaSuperiorRepository,
                              PrendaInferiorRepository prendaInferiorRepository,
-                             PrendaCalzadoRepository prendaCalzadoRepository) {
+                             PrendaCalzadoRepository prendaCalzadoRepository,
+                             PostService postService) {
         this.prendaRepository = prendaRepository;
         this.prendaSuperiorRepository = prendaSuperiorRepository;
         this.prendaInferiorRepository = prendaInferiorRepository;
         this.prendaCalzadoRepository = prendaCalzadoRepository;
+        this.postService = postService;
     }
 
     @Override
@@ -147,6 +150,17 @@ public class PrendaServiceImpl implements PrendaService {
             Prenda prenda = optPrenda.get();
             String dirImagen = prenda.getDirImagen();
 
+            // Antes de borrar la prenda, limpiar los likes de todos los posts
+            // de los conjuntos que usan esta prenda (para evitar violación de FK)
+            List<Conjunto> conjuntosAfectados = obtenerConjuntosDePrend(prenda);
+            for (Conjunto conjunto : conjuntosAfectados) {
+                if (conjunto.getPost() != null) {
+                    Long postId = conjunto.getPost().getId();
+                    logger.info("borrarPrenda: limpiando likes del post id={} antes de borrar prenda id={}", postId, id);
+                    postService.eliminarLikesDelPost(postId);
+                }
+            }
+
             prendaRepository.deleteById(id);
             boolean stillExists = prendaRepository.existsById(id);
             if (stillExists) {
@@ -173,6 +187,27 @@ public class PrendaServiceImpl implements PrendaService {
             logger.error("borrarPrenda: error al borrar prenda id={}", id, e);
             throw new RuntimeException("Error al borrar la prenda: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Obtiene los conjuntos que usan una prenda específica.
+     */
+    private List<Conjunto> obtenerConjuntosDePrend(Prenda prenda) {
+        List<Conjunto> conjuntos = new ArrayList<>();
+        if (prenda instanceof PrendaSuperior sup) {
+            if (sup.getConjuntos() != null) {
+                conjuntos.addAll(sup.getConjuntos());
+            }
+        } else if (prenda instanceof PrendaInferior inf) {
+            if (inf.getConjuntos() != null) {
+                conjuntos.addAll(inf.getConjuntos());
+            }
+        } else if (prenda instanceof PrendaCalzado cal) {
+            if (cal.getConjuntos() != null) {
+                conjuntos.addAll(cal.getConjuntos());
+            }
+        }
+        return conjuntos;
     }
 
     @Override
